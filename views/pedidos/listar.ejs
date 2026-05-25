@@ -1,0 +1,84 @@
+<%- include('../partials/header', {title: 'Pedidos de Fornecimento'}) %>
+<div class="container">
+    <div class="page-header">
+        <h2>Pedidos de Fornecimento</h2>
+        <a href="/pedidos/novo" class="btn btn-primary">Novo Pedido</a>
+    </div>
+
+    <div class="filters">
+        <form method="GET" class="filter-form">
+            <div class="form-group">
+                <label for="status" class="form-label">Filtrar por status:</label>
+                <select id="status" name="status" class="form-control">
+                    <option value="todos" <%= statusFiltro === 'todos' ? 'selected' : '' %>>Todos</option>
+                    <option value="pendente" <%= statusFiltro === 'pendente' ? 'selected' : '' %>>Pendentes</option>
+                    <option value="processando" <%= statusFiltro === 'processando' ? 'selected' : '' %>>Processando</option>
+                    <option value="concluido" <%= statusFiltro === 'concluido' ? 'selected' : '' %>>Concluídos</option>
+                    <option value="cancelado" <%= statusFiltro === 'cancelado' ? 'selected' : '' %>>Cancelados</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Data Pedido</th>
+                    <th>Funcionário</th>
+                    <th>Valor Total</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (pedidos.length > 0) { %>
+                    <% pedidos.forEach(pedido => { %>
+                    <tr>
+                        <td><%= pedido.id %></td>
+                        <td><%= new Date(pedido.data_pedido).toLocaleDateString('pt-BR') %></td>
+                        <td><%= pedido.Funcionario.nome %></td>
+                        <td>R$ <%= pedido.valor_total.toFixed(2) %></td>
+                        <td>
+                            <span class="status-badge status-<%= pedido.status %>">
+                                <%= formatStatus(pedido.status) %>
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/pedidos/<%= pedido.id %>" class="btn btn-sm btn-info">Detalhes</a>
+                            <% if (pedido.status === 'pendente') { %>
+                                <form action="/pedidos/receber/<%= pedido.id %>" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-success">Receber</button>
+                                </form>
+                                <form action="/pedidos/cancelar/<%= pedido.id %>" method="POST" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger">Cancelar</button>
+                                </form>
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="6" class="text-center">Nenhum pedido encontrado</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function formatStatus(status) {
+    const statusMap = {
+        'pendente': 'Pendente',
+        'processando': 'Processando',
+        'concluido': 'Concluído',
+        'cancelado': 'Cancelado'
+    };
+    return statusMap[status] || status;
+}
+</script>
+
+<%- include('../partials/footer') %>

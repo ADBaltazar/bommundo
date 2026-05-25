@@ -1,0 +1,60 @@
+<%- include('../partials/header', {title: 'Nova Solicitação de Produção'}) %>
+<div class="container">
+    <div class="page-header">
+        <h2>Nova Solicitação de Produção</h2>
+        <a href="/producao" class="btn btn-secondary">Voltar</a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Informações da Solicitação</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/producao/novo">
+                        <div class="form-group">
+                            <label for="descricao" class="form-label">Descrição:</label>
+                            <textarea id="descricao" name="descricao" class="form-control" rows="4" required 
+                                placeholder="Descreva detalhadamente o que precisa ser produzido"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="quantidade" class="form-label">Quantidade:</label>
+                            <input type="number" id="quantidade" name="quantidade" class="form-control" 
+                                min="1" value="1" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="prioridade" class="form-label">Prioridade:</label>
+                            <select id="prioridade" name="prioridade" class="form-control" required>
+                                <option value="baixa">Baixa</option>
+                                <option value="media" selected>Média</option>
+                                <option value="alta">Alta</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="data_prevista" class="form-label">Data Prevista de Conclusão:</label>
+                            <input type="date" id="data_prevista" name="data_prevista" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="funcionario_responsavel_id" class="form-label">Responsável:</label>
+                            <select id="funcionario_responsavel_id" name="funcionario_responsavel_id" class="form-control">
+                                <option value="">Selecionar responsável...</option>
+                                <% funcionarios.forEach(funcionario => { %>
+                                    <option value="<%= funcionario.id %>"><%= funcionario.nome %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block">Criar Solicitação</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

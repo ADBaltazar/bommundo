@@ -1,0 +1,112 @@
+<%- include('../partials/header', {title: 'Controle de Produção'}) %>
+<div class="container">
+    <div class="page-header">
+        <h2>Controle de Produção</h2>
+        <a href="/producao/novo" class="btn btn-primary">Nova Solicitação</a>
+    </div>
+
+    <div class="filters">
+        <form method="GET" class="filter-form">
+            <div class="form-group">
+                <label for="status" class="form-label">Filtrar por status:</label>
+                <select id="status" name="status" class="form-control">
+                    <option value="todos" <%= statusFiltro === 'todos' ? 'selected' : '' %>>Todos</option>
+                    <option value="pendente" <%= statusFiltro === 'pendente' ? 'selected' : '' %>>Pendentes</option>
+                    <option value="em_producao" <%= statusFiltro === 'em_producao' ? 'selected' : '' %>>Em Produção</option>
+                    <option value="concluido" <%= statusFiltro === 'concluido' ? 'selected' : '' %>>Concluídos</option>
+                    <option value="cancelado" <%= statusFiltro === 'cancelado' ? 'selected' : '' %>>Cancelados</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Data Solicitação</th>
+                    <th>Solicitante</th>
+                    <th>Responsável</th>
+                    <th>Descrição</th>
+                    <th>Quantidade</th>
+                    <th>Prioridade</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (producoes.length > 0) { %>
+                    <% producoes.forEach(producao => { %>
+                    <tr>
+                        <td><%= producao.id %></td>
+                        <td><%= new Date(producao.data_solicitacao).toLocaleDateString('pt-BR') %></td>
+                        <td><%= producao.Solicitante.nome %></td>
+                        <td><%= producao.Responsavel ? producao.Responsavel.nome : 'Não atribuído' %></td>
+                        <td><%= producao.descricao.length > 50 ? producao.descricao.substring(0, 50) + '...' : producao.descricao %></td>
+                        <td><%= producao.quantidade %></td>
+                        <td>
+                            <span class="badge priority-<%= producao.prioridade %>">
+                                <%= formatPriority(producao.prioridade) %>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge status-<%= producao.status %>">
+                                <%= formatStatus(producao.status) %>
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/producao/<%= producao.id %>" class="btn btn-sm btn-info">Detalhes</a>
+                        </td>
+                    </tr>
+                    <% }) %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="9" class="text-center">Nenhuma solicitação encontrada</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function formatStatus(status) {
+    const statusMap = {
+        'pendente': 'Pendente',
+        'em_producao': 'Em Produção',
+        'concluido': 'Concluído',
+        'cancelado': 'Cancelado'
+    };
+    return statusMap[status] || status;
+}
+
+function formatPriority(priority) {
+    const priorityMap = {
+        'baixa': 'Baixa',
+        'media': 'Média',
+        'alta': 'Alta'
+    };
+    return priorityMap[priority] || priority;
+}
+</script>
+
+<style>
+.priority-baixa {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.priority-media {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.priority-alta {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+</style>
+
+<%- include('../partials/footer') %>

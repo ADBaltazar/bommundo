@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Sistema de Gestão</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+       <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-globe-americas"></i>
+            <span>BOM MUNDO</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+            <li><a href="/caixa" class="nav-link <%= currentPath.startsWith('/caixa') ? 'active' : '' %>"><i class="fas fa-cash-register"></i> <span>Caixas</span></a></li>
+            <li><a href="/vendas" class="nav-link <%= currentPath.startsWith('/vendas') ? '' : '' %>"><i class="fas fa-shopping-cart"></i> <span>Vendas</span></a></li>
+            <li><a href="/produtos" class="nav-link <%= currentPath.startsWith('/produtos') ? 'active' : '' %>"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
+            <li><a href="#"><i class="fas fa-users"></i> <span>Clientes</span></a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> <span>Relatórios</span></a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+        </ul>
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>Sistema de Gestão</h1>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/dashboard" class="nav-link <%= currentPath === '/dashboard' ? 'active' : '' %>">Dashboard</a></li>
+                <li class="nav-item"><a href="/produtos" class="nav-link <%= currentPath.startsWith('/produtos') ? 'active' : '' %>">Produtos</a></li>
+                <li class="nav-item"><a href="/vendas" class="nav-link <%= currentPath.startsWith('/vendas') ? 'active' : '' %>">Vendas</a></li>
+                <li class="nav-item"><a href="/caixa" class="nav-link <%= currentPath.startsWith('/caixa') ? 'active' : '' %>">Caixa</a></li>
+                <li class="nav-item"><a href="/pedidos" class="nav-link <%= currentPath.startsWith('/pedidos') ? 'active' : '' %>">Pedidos</a></li>
+                <li class="nav-item"><a href="/producao" class="nav-link <%= currentPath.startsWith('/producao') ? 'active' : '' %>">Produção</a></li>
+                <% if (user) { %>
+                <li class="nav-item"><a href="/auth/logout" class="nav-link">Sair</a></li>
+                <% } %>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <% if (success_msg) { %>
+        <div class="alert alert-success">
+            <%= success_msg %>
+        </div>
+        <% } %>
+        <% if (error_msg) { %>
+        <div class="alert alert-error">
+            <%= error_msg %>
+        </div>
+        <% } %>

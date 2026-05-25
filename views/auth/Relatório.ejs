@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Relatórios - Bom Mundo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset e configurações gerais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #F5F5F5;
+            color: #2E2E2E;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background-color: #E53935;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #c62828;
+        }
+        
+        .btn-secondary {
+            background-color: #2E2E2E;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #1a1a1a;
+        }
+        
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #f57c00;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #388E3C;
+        }
+        
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #138496;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .btn-lg {
+            padding: 12px 24px;
+            font-size: 16px;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #2E2E2E;
+            color: white;
+            padding: 20px 0;
+            height: 100vh;
+            position: fixed;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #E53935;
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #444;
+            margin-bottom: 20px;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            margin-bottom: 5px;
+        }
+        
+        .nav-menu a {
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-menu a:hover {
+            background-color: #3a3a3a;
+            color: #E53935;
+        }
+        
+        .nav-menu a.active {
+            background-color: #3a3a3a;
+            color: #E53935;
+            border-left: 3px solid #E53935;
+        }
+        
+        .nav-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .user-info {
+            padding: 20px;
+            border-top: 1px solid #444;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #E53935;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .user-details {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .page-title {
+            color: #2E2E2E;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 5px;
+            padding: 8px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .search-box input {
+            border: none;
+            outline: none;
+            padding: 5px;
+            width: 250px;
+        }
+        
+        .search-box i {
+            color: #777;
+        }
+        
+        .notification {
+            position: relative;
+            background: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #E53935;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h2 {
+            color: #2E2E2E;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        /* Card Styles */
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background-color: #F5F5F5;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-header h3 {
+            color: #2E2E2E;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2E2E2E;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #E53935;
+            outline: none;
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+        
+        .col-md-3, .col-md-4, .col-md-6, .col-md-8, .col-md-12 {
+            padding: 0 10px;
+        }
+        
+        .col-md-3 {
+            flex: 0 0 25%;
+        }
+        
+        .col-md-4 {
+            flex: 0 0 33.333333%;
+        }
+        
+        .col-md-6 {
+            flex: 0 0 50%;
+        }
+        
+        .col-md-8 {
+            flex: 0 0 66.666667%;
+        }
+        
+        .col-md-12 {
+            flex: 0 0 100%;
+        }
+        
+        .justify-content-center {
+            justify-content: center;
+        }
+        
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-table th {
+            background-color: #F5F5F5;
+            color: #2E2E2E;
+            text-align: left;
+            padding: 15px;
+            font-weight: 600;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-end {
+            text-align: right;
+        }
+        
+        .text-danger {
+            color: #E53935;
+            font-weight: bold;
+        }
+        
+        .text-success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-concluido {
+            background-color: #E8F5E9;
+            color: #4CAF50;
+        }
+        
+        .status-processando {
+            background-color: #E3F2FD;
+            color: #2196F3;
+        }
+        
+        .status-erro {
+            background-color: #FFEBEE;
+            color: #E53935;
+        }
+        
+        .status-pendente {
+            background-color: #FFF3E0;
+            color: #FF9800;
+        }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background-color: #E8F5E9;
+            color: #4CAF50;
+        }
+        
+        .badge-danger {
+            background-color: #FFEBEE;
+            color: #E53935;
+        }
+        
+        .badge-warning {
+            background-color: #FFF3E0;
+            color: #FF9800;
+        }
+        
+        .badge-info {
+            background-color: #E3F2FD;
+            color: #2196F3;
+        }
+        
+        .badge-secondary {
+            background-color: #F5F5F5;
+            color: #666;
+        }
+        
+        /* Alert Styles */
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+            border-left-color: #4CAF50;
+        }
+        
+        .alert-warning {
+            background-color: #FFF3E0;
+            color: #856404;
+            border-left-color: #FF9800;
+        }
+        
+        .alert-info {
+            background-color: #E3F2FD;
+            color: #0d47a1;
+            border-left-color: #2196F3;
+        }
+        
+        .alert-danger {
+            background-color: #FFEBEE;
+            color: #C62828;
+            border-left-color: #E53935;
+        }
+        
+        /* Filters */
+        .filters {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .filter-form {
+            display: flex;
+            align-items: end;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-form .form-group {
+            margin-bottom: 0;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        /* Info Group */
+        .info-group {
+            margin-bottom: 15px;
+        }
+        
+        .info-group label {
+            font-weight: 600;
+            color: #2E2E2E;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .info-group p {
+            margin: 0;
+            color: #666;
+        }
+        
+        .form-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        /* Report Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #E53935;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Report Cards */
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .report-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #E53935;
+        }
+        
+        .report-card h4 {
+            margin-bottom: 10px;
+            color: #2E2E2E;
+        }
+        
+        .report-card p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .report-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom-color: #E53935;
+            color: #E53935;
+            font-weight: 600;
+        }
+        
+        .tab:hover {
+            color: #E53935;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Preview Area */
+        .preview-area {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .preview-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .preview-table th,
+        .preview-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        
+        .preview-table th {
+            background-color: #F5F5F5;
+            font-weight: 600;
+        }
+        
+        /* Export Options */
+        .export-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        /* Progress Bar */
+        .progress {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: #E53935;
+            transition: width 0.3s ease;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar .logo span, 
+            .sidebar .nav-menu span,
+            .sidebar .user-details {
+                display: none;
+            }
+            
+            .sidebar .logo {
+                justify-content: center;
+                padding: 0 10px 20px;
+            }
+            
+            .sidebar .logo i {
+                margin-right: 0;
+            }
+            
+            .sidebar .nav-menu a {
+                justify-content: center;
+                padding: 12px 10px;
+            }
+            
+            .sidebar .nav-menu i {
+                margin-right: 0;
+            }
+            
+            .sidebar .user-info {
+                justify-content: center;
+                padding: 20px 10px;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .search-box input {
+                width: 150px;
+            }
+            
+            .col-md-3, .col-md-4, .col-md-6, .col-md-8, .col-md-12 {
+                flex: 0 0 100%;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .filter-form {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .reports-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .export-options {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-box {
+                flex: 1;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                border-bottom: none;
+                border-left: 3px solid transparent;
+            }
+            
+            .tab.active {
+                border-left-color: #E53935;
+                border-bottom-color: transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-globe-americas"></i>
+            <span>BOM MUNDO</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+            <li><a href="vendas.html"><i class="fas fa-shopping-cart"></i> <span>Vendas</span></a></li>
+            <li><a href="produtos.html"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
+            <li><a href="caixas.html"><i class="fas fa-cash-register"></i> <span>Caixas</span></a></li>
+            <li><a href="clientes.html"><i class="fas fa-users"></i> <span>Clientes</span></a></li>
+            <li><a href="utilizadores.html"><i class="fas fa-user-cog"></i> <span>Utilizadores</span></a></li>
+            <li><a href="#" class="active"><i class="fas fa-chart-bar"></i> <span>Relatórios</span></a></li>
+        </ul>
+        
+        <div class="user-info">
+            <div class="user-avatar">JS</div>
+            <div class="user-details">
+                <div class="user-name">João Silva</div>
+                <div class="user-role">Administrador</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1 class="page-title" id="page-title">Gestão de Relatórios</h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Pesquisar relatórios..." id="search-reports">
+                </div>
+                <div class="notification">
+                    <i class="fas fa-bell"></i>
+                    <div class="notification-badge">2</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        <div class="alert alert-success" id="success-alert" style="display: none;">
+            <i class="fas fa-check-circle"></i> Relatório gerado com sucesso!
+        </div>
+
+        <!-- Conteúdo da Página (será alterado dinamicamente) -->
+        <div id="page-content">
+            <!-- Conteúdo inicial: Dashboard de Relatórios -->
+            <div class="page-header">
+                <h2>Gestão de Relatórios</h2>
+                <button class="btn btn-primary" onclick="showGerarRelatorio()">
+                    <i class="fas fa-plus"></i> Novo Relatório
+                </button>
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">156</div>
+                    <div class="stat-label">Relatórios Gerados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">45</div>
+                    <div class="stat-label">Este Mês</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Agendados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3.2GB</div>
+                    <div class="stat-label">Armazenamento</div>
+                </div>
+            </div>
+
+            <!-- Relatórios Rápidos -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Relatórios Rápidos</h3>
+                </div>
+                <div class="card-body">
+                    <div class="reports-grid">
+                        <div class="report-card">
+                            <h4>Vendas do Dia</h4>
+                            <p>Relatório detalhado de todas as vendas realizadas hoje</p>
+                            <div class="report-actions">
+                                <button class="btn btn-sm btn-primary" onclick="gerarRelatorioRapido('vendas_dia')">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </button>
+                                <button class="btn btn-sm btn-success" onclick="gerarRelatorioRapido('vendas_dia')">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="report-card">
+                            <h4>Estoque Crítico</h4>
+                            <p>Produtos com estoque abaixo do mínimo estabelecido</p>
+                            <div class="report-actions">
+                                <button class="btn btn-sm btn-primary" onclick="gerarRelatorioRapido('estoque_critico')">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </button>
+                                <button class="btn btn-sm btn-success" onclick="gerarRelatorioRapido('estoque_critico')">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="report-card">
+                            <h4>Clientes Ativos</h4>
+                            <p>Lista de clientes com compras nos últimos 30 dias</p>
+                            <div class="report-actions">
+                                <button class="btn btn-sm btn-primary" onclick="gerarRelatorioRapido('clientes_ativos')">
+                                    <i class="fas fa-file-pdf"></i> PDF
+                                </button>
+                                <button class="btn btn-sm btn-success" onclick="gerarRelatorioRapido('clientes_ativos')">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filters">
+                <form method="GET" class="filter-form">
+                    <div class="form-group">
+                        <label for="tipo_relatorio" class="form-label">Filtrar por tipo:</label>
+                        <select id="tipo_relatorio" name="tipo_relatorio" class="form-control">
+                            <option value="todos">Todos</option>
+                            <option value="vendas">Vendas</option>
+                            <option value="estoque">Estoque</option>
+                            <option value="clientes">Clientes</option>
+                            <option value="financeiro">Financeiro</option>
+                            <option value="customizado">Customizado</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="status" class="form-label">Filtrar por status:</label>
+                        <select id="status" name="status" class="form-control">
+                            <option value="todos">Todos</option>
+                            <option value="concluido">Concluído</option>
+                            <option value="processando">Processando</option>
+                            <option value="erro">Erro</option>
+                            <option value="pendente">Pendente</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_inicio" class="form-label">Data Início:</label>
+                        <input type="date" id="data_inicio" name="data_inicio" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="data_fim" class="form-label">Data Fim:</label>
+                        <input type="date" id="data_fim" name="data_fim" class="form-control">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="aplicarFiltros()">Filtrar</button>
+                    <button type="button" class="btn btn-secondary" onclick="limparFiltros()">Limpar</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Histórico de Relatórios</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="data-table" id="relatorios-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Tipo</th>
+                                    <th>Data Geração</th>
+                                    <th>Tamanho</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>RPT-001</td>
+                                    <td>Relatório de Vendas - Out/2023</td>
+                                    <td><span class="badge badge-info">Vendas</span></td>
+                                    <td>15/10/2023 14:30</td>
+                                    <td>2.4 MB</td>
+                                    <td>
+                                        <span class="status-badge status-concluido">Concluído</span>
+                                    </td>
+                                    <td>
+                                        <div class="export-options">
+                                            <button class="btn btn-sm btn-primary" title="Download PDF">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-success" title="Download Excel">
+                                                <i class="fas fa-file-excel"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-warning" title="Download JSON">
+                                                <i class="fas fa-file-code"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" title="Excluir">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>RPT-002</td>
+                                    <td>Análise de Estoque Mensal</td>
+                                    <td><span class="badge badge-warning">Estoque</span></td>
+                                    <td>14/10/2023 11:15</td>
+                                    <td>1.8 MB</td>
+                                    <td>
+                                        <span class="status-badge status-concluido">Concluído</span>
+                                    </td>
+                                    <td>
+                                        <div class="export-options">
+                                            <button class="btn btn-sm btn-primary" title="Download PDF">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-success" title="Download Excel">
+                                                <i class="fas fa-file-excel"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-warning" title="Download JSON">
+                                                <i class="fas fa-file-code"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" title="Excluir">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>RPT-003</td>
+                                    <td>Clientes Preferenciais</td>
+                                    <td><span class="badge badge-success">Clientes</span></td>
+                                    <td>14/10/2023 09:45</td>
+                                    <td>856 KB</td>
+                                    <td>
+                                        <span class="status-badge status-concluido">Concluído</span>
+                                    </td>
+                                    <td>
+                                        <div class="export-options">
+                                            <button class="btn btn-sm btn-primary" title="Download PDF">
+                                                <i class="fas fa-file-pdf"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-success" title="Download Excel">
+                                                <i class="fas fa-file-excel"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-warning" title="Download JSON">
+                                                <i class="fas fa-file-code"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-danger" title="Excluir">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>RPT-004</td>
+                                    <td>Fluxo de Caixa Semanal</td>
+                                    <td><span class="badge badge-danger">Financeiro</span></td>
+                                    <td>13/10/2023 16:20</td>
+                                    <td>Processando...</td>
+                                    <td>
+                                        <span class="status-badge status-processando">Processando</span>
+                                        <div class="progress">
+                                            <div class="progress-bar" style="width: 65%"></div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-secondary" disabled>
+                                            <i class="fas fa-clock"></i> Aguarde
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates para as diferentes páginas -->
+    
+    <!-- Template: Gerar Relatório -->
+    <template id="gerar-relatorio-template">
+        <div class="page-header">
+            <h2>Gerar Novo Relatório</h2>
+            <button class="btn btn-secondary" onclick="showRelatoriosList()">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Configurações do Relatório</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="gerar-relatorio-form">
+                            <div class="form-group">
+                                <label for="nome_relatorio" class="form-label">Nome do Relatório:</label>
+                                <input type="text" id="nome_relatorio" name="nome_relatorio" class="form-control" required placeholder="Ex: Relatório de Vendas - Out/2023">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tipo_relatorio" class="form-label">Tipo de Relatório:</label>
+                                <select id="tipo_relatorio" name="tipo_relatorio" class="form-control" required onchange="atualizarCamposRelatorio()">
+                                    <option value="">Selecione...</option>
+                                    <option value="vendas">Relatório de Vendas</option>
+                                    <option value="estoque">Relatório de Estoque</option>
+                                    <option value="clientes">Relatório de Clientes</option>
+                                    <option value="financeiro">Relatório Financeiro</option>
+                                    <option value="customizado">Relatório Customizado</option>
+                                </select>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="data_inicio" class="form-label">Data Início:</label>
+                                        <input type="date" id="data_inicio" name="data_inicio" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="data_fim" class="form-label">Data Fim:</label>
+                                        <input type="date" id="data_fim" name="data_fim" class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Campos específicos para Vendas -->
+                            <div id="campos-vendas" class="campos-especificos" style="display: none;">
+                                <div class="form-group">
+                                    <label class="form-label">Filtros de Vendas:</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input type="checkbox" id="filtro_vendedor" name="filtros[]" value="vendedor" class="form-check-input">
+                                                <label for="filtro_vendedor" class="form-check-label">Por Vendedor</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" id="filtro_forma_pagamento" name="filtros[]" value="forma_pagamento" class="form-check-input">
+                                                <label for="filtro_forma_pagamento" class="form-check-label">Por Forma de Pagamento</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input type="checkbox" id="filtro_produto" name="filtros[]" value="produto" class="form-check-input">
+                                                <label for="filtro_produto" class="form-check-label">Por Produto</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" id="filtro_cliente" name="filtros[]" value="cliente" class="form-check-input">
+                                                <label for="filtro_cliente" class="form-check-label">Por Cliente</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Campos específicos para Estoque -->
+                            <div id="campos-estoque" class="campos-especificos" style="display: none;">
+                                <div class="form-group">
+                                    <label class="form-label">Filtros de Estoque:</label>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input type="checkbox" id="filtro_categoria" name="filtros[]" value="categoria" class="form-check-input">
+                                                <label for="filtro_categoria" class="form-check-label">Por Categoria</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" id="filtro_estoque_baixo" name="filtros[]" value="estoque_baixo" class="form-check-input" checked>
+                                                <label for="filtro_estoque_baixo" class="form-check-label">Apenas Estoque Baixo</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check">
+                                                <input type="checkbox" id="filtro_fornecedor" name="filtros[]" value="fornecedor" class="form-check-input">
+                                                <label for="filtro_fornecedor" class="form-check-label">Por Fornecedor</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" id="filtro_validade" name="filtros[]" value="validade" class="form-check-input">
+                                                <label for="filtro_validade" class="form-check-label">Por Validade</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Formatos de Exportação:</label>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input type="checkbox" id="formato_pdf" name="formatos[]" value="pdf" class="form-check-input" checked>
+                                            <label for="formato_pdf" class="form-check-label">
+                                                <i class="fas fa-file-pdf text-danger"></i> PDF
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input type="checkbox" id="formato_excel" name="formatos[]" value="excel" class="form-check-input" checked>
+                                            <label for="formato_excel" class="form-check-label">
+                                                <i class="fas fa-file-excel text-success"></i> Excel
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input type="checkbox" id="formato_json" name="formatos[]" value="json" class="form-check-input">
+                                            <label for="formato_json" class="form-check-label">
+                                                <i class="fas fa-file-code text-warning"></i> JSON
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-check">
+                                            <input type="checkbox" id="formato_csv" name="formatos[]" value="csv" class="form-check-input">
+                                            <label for="formato_csv" class="form-check-label">
+                                                <i class="fas fa-file-csv text-info"></i> CSV
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="agendamento" class="form-label">Agendamento:</label>
+                                <select id="agendamento" name="agendamento" class="form-control">
+                                    <option value="imediato">Execução Imediata</option>
+                                    <option value="diario">Diário</option>
+                                    <option value="semanal">Semanal</option>
+                                    <option value="mensal">Mensal</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="observacoes" class="form-label">Observações:</label>
+                                <textarea id="observacoes" name="observacoes" class="form-control" rows="3" placeholder="Observações adicionais sobre o relatório..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                <i class="fas fa-cog"></i> Gerar Relatório
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Pré-visualização</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="preview-content">
+                            <p class="text-center text-muted">Selecione o tipo de relatório para visualizar a prévia</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3>Relatórios Salvos</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-group">
+                            <label>Último Relatório de Vendas:</label>
+                            <p>15/10/2023 - 2.4 MB</p>
+                        </div>
+                        <div class="info-group">
+                            <label>Último Relatório de Estoque:</label>
+                            <p>14/10/2023 - 1.8 MB</p>
+                        </div>
+                        <div class="info-group">
+                            <label>Espaço Utilizado:</label>
+                            <p>3.2 GB de 10 GB</p>
+                        </div>
+                        <button class="btn btn-secondary btn-block" onclick="showRelatoriosList()">
+                            <i class="fas fa-history"></i> Ver Histórico Completo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // Funções para navegação entre páginas
+        function showRelatoriosList() {
+            document.getElementById('page-title').textContent = 'Gestão de Relatórios';
+            document.getElementById('page-content').innerHTML = document.querySelector('#page-content').innerHTML;
+        }
+
+        function showGerarRelatorio() {
+            document.getElementById('page-title').textContent = 'Gerar Relatório';
+            const template = document.getElementById('gerar-relatorio-template');
+            document.getElementById('page-content').innerHTML = template.innerHTML;
+            
+            // Inicializar funcionalidades do formulário
+            document.getElementById('gerar-relatorio-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Simular geração de relatório
+                document.getElementById('success-alert').textContent = 'Relatório em processamento! Você será notificado quando estiver pronto.';
+                document.getElementById('success-alert').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('success-alert').style.display = 'none';
+                    showRelatoriosList();
+                }, 3000);
+            });
+            
+            // Atualizar pré-visualização quando o tipo mudar
+            document.getElementById('tipo_relatorio').addEventListener('change', function() {
+                atualizarCamposRelatorio();
+                atualizarPreview();
+            });
+            
+            // Definir datas padrão
+            const hoje = new Date();
+            const primeiroDiaMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+            
+            document.getElementById('data_inicio').value = primeiroDiaMes.toISOString().split('T')[0];
+            document.getElementById('data_fim').value = hoje.toISOString().split('T')[0];
+        }
+
+        function gerarRelatorioRapido(tipo) {
+            // Simular geração rápida de relatório
+            document.getElementById('success-alert').textContent = 'Relatório rápido gerado com sucesso!';
+            document.getElementById('success-alert').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('success-alert').style.display = 'none';
+            }, 3000);
+        }
+
+        // Funções auxiliares
+        function atualizarCamposRelatorio() {
+            const tipo = document.getElementById('tipo_relatorio').value;
+            const camposEspecificos = document.querySelectorAll('.campos-especificos');
+            
+            // Esconder todos os campos específicos
+            camposEspecificos.forEach(campo => {
+                campo.style.display = 'none';
+            });
+            
+            // Mostrar campos específicos do tipo selecionado
+            if (tipo) {
+                const camposTipo = document.getElementById(`campos-${tipo}`);
+                if (camposTipo) {
+                    camposTipo.style.display = 'block';
+                }
+            }
+        }
+
+        function atualizarPreview() {
+            const tipo = document.getElementById('tipo_relatorio').value;
+            const previewContent = document.getElementById('preview-content');
+            
+            if (!tipo) {
+                previewContent.innerHTML = '<p class="text-center text-muted">Selecione o tipo de relatório para visualizar a prévia</p>';
+                return;
+            }
+            
+            const previews = {
+                'vendas': `
+                    <h5>Pré-visualização - Relatório de Vendas</h5>
+                    <div class="preview-area">
+                        <table class="preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Vendedor</th>
+                                    <th>Cliente</th>
+                                    <th>Valor</th>
+                                    <th>Forma Pagamento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>15/10/2023</td>
+                                    <td>João Silva</td>
+                                    <td>Empresa ABC</td>
+                                    <td>R$ 1.250,00</td>
+                                    <td>Cartão Crédito</td>
+                                </tr>
+                                <tr>
+                                    <td>15/10/2023</td>
+                                    <td>Maria Santos</td>
+                                    <td>João Pereira</td>
+                                    <td>R$ 450,00</td>
+                                    <td>PIX</td>
+                                </tr>
+                                <tr>
+                                    <td>14/10/2023</td>
+                                    <td>Carlos Oliveira</td>
+                                    <td>Maria Silva</td>
+                                    <td>R$ 890,00</td>
+                                    <td>Dinheiro</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="form-text">Total aproximado: 15.230 registros</p>
+                `,
+                'estoque': `
+                    <h5>Pré-visualização - Relatório de Estoque</h5>
+                    <div class="preview-area">
+                        <table class="preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Categoria</th>
+                                    <th>Estoque Atual</th>
+                                    <th>Estoque Mínimo</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Notebook Dell</td>
+                                    <td>Informática</td>
+                                    <td>3</td>
+                                    <td>5</td>
+                                    <td class="text-danger">Crítico</td>
+                                </tr>
+                                <tr>
+                                    <td>Impressora HP</td>
+                                    <td>Impressão</td>
+                                    <td>12</td>
+                                    <td>3</td>
+                                    <td class="text-success">Normal</td>
+                                </tr>
+                                <tr>
+                                    <td>Resma A4</td>
+                                    <td>Suprimentos</td>
+                                    <td>2</td>
+                                    <td>10</td>
+                                    <td class="text-danger">Crítico</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="form-text">Total aproximado: 154 produtos</p>
+                `,
+                'clientes': `
+                    <h5>Pré-visualização - Relatório de Clientes</h5>
+                    <div class="preview-area">
+                        <table class="preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Cliente</th>
+                                    <th>E-mail</th>
+                                    <th>Telefone</th>
+                                    <th>Total Compras</th>
+                                    <th>Última Compra</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>João Silva</td>
+                                    <td>joao@email.com</td>
+                                    <td>(11) 99999-9999</td>
+                                    <td>R$ 4.520,00</td>
+                                    <td>15/10/2023</td>
+                                </tr>
+                                <tr>
+                                    <td>Empresa ABC</td>
+                                    <td>contato@abc.com</td>
+                                    <td>(11) 3333-3333</td>
+                                    <td>R$ 12.850,00</td>
+                                    <td>14/10/2023</td>
+                                </tr>
+                                <tr>
+                                    <td>Maria Santos</td>
+                                    <td>maria@email.com</td>
+                                    <td>(11) 88888-8888</td>
+                                    <td>R$ 2.150,00</td>
+                                    <td>10/10/2023</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="form-text">Total aproximado: 1.245 clientes</p>
+                `,
+                'financeiro': `
+                    <h5>Pré-visualização - Relatório Financeiro</h5>
+                    <div class="preview-area">
+                        <table class="preview-table">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Descrição</th>
+                                    <th>Entradas</th>
+                                    <th>Saídas</th>
+                                    <th>Saldo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>15/10/2023</td>
+                                    <td>Vendas do dia</td>
+                                    <td>R$ 2.450,00</td>
+                                    <td>-</td>
+                                    <td>R$ 2.450,00</td>
+                                </tr>
+                                <tr>
+                                    <td>15/10/2023</td>
+                                    <td>Despesas operacionais</td>
+                                    <td>-</td>
+                                    <td>R$ 850,00</td>
+                                    <td>R$ 1.600,00</td>
+                                </tr>
+                                <tr>
+                                    <td>14/10/2023</td>
+                                    <td>Vendas do dia</td>
+                                    <td>R$ 1.890,00</td>
+                                    <td>-</td>
+                                    <td>R$ 3.490,00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="form-text">Período: Últimos 30 dias</p>
+                `,
+                'customizado': `
+                    <h5>Pré-visualização - Relatório Customizado</h5>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Este relatório combinará dados de múltiplas fontes conforme sua configuração.
+                    </div>
+                    <div class="preview-area">
+                        <p class="text-center text-muted">
+                            A pré-visualização estará disponível após configurar os filtros específicos.
+                        </p>
+                    </div>
+                    <p class="form-text">Dados de: Vendas, Estoque e Clientes</p>
+                `
+            };
+            
+            previewContent.innerHTML = previews[tipo] || '<p class="text-center text-muted">Tipo de relatório não reconhecido</p>';
+        }
+
+        function aplicarFiltros() {
+            const tipo = document.getElementById('tipo_relatorio').value;
+            const status = document.getElementById('status').value;
+            const dataInicio = document.getElementById('data_inicio').value;
+            const dataFim = document.getElementById('data_fim').value;
+            const searchTerm = document.getElementById('search-reports').value.toLowerCase();
+            
+            const rows = document.querySelectorAll('#relatorios-table tbody tr');
+            
+            rows.forEach(row => {
+                const tipoCell = row.cells[2];
+                const statusCell = row.querySelector('.status-badge');
+                const dataCell = row.cells[3];
+                const nomeCell = row.cells[1];
+                
+                let showRow = true;
+                
+                // Filtro por tipo
+                if (tipo !== 'todos') {
+                    const tipoText = tipoCell.textContent.toLowerCase();
+                    const rowTipo = tipoText.includes('vendas') ? 'vendas' :
+                                  tipoText.includes('estoque') ? 'estoque' :
+                                  tipoText.includes('clientes') ? 'clientes' :
+                                  tipoText.includes('financeiro') ? 'financeiro' : 'customizado';
+                    if (tipo !== rowTipo) showRow = false;
+                }
+                
+                // Filtro por status
+                if (status !== 'todos') {
+                    const statusText = statusCell.textContent.toLowerCase();
+                    const rowStatus = statusText.includes('concluído') ? 'concluido' :
+                                    statusText.includes('processando') ? 'processando' :
+                                    statusText.includes('erro') ? 'erro' : 'pendente';
+                    if (status !== rowStatus) showRow = false;
+                }
+                
+                // Filtro por data
+                if (dataInicio && dataFim) {
+                    const dataRow = new Date(dataCell.textContent.split(' ')[0].split('/').reverse().join('-'));
+                    const inicio = new Date(dataInicio);
+                    const fim = new Date(dataFim);
+                    
+                    if (dataRow < inicio || dataRow > fim) showRow = false;
+                }
+                
+                // Filtro por busca
+                if (searchTerm && !nomeCell.textContent.toLowerCase().includes(searchTerm)) {
+                    showRow = false;
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+
+        function limparFiltros() {
+            document.getElementById('tipo_relatorio').value = 'todos';
+            document.getElementById('status').value = 'todos';
+            document.getElementById('data_inicio').value = '';
+            document.getElementById('data_fim').value = '';
+            document.getElementById('search-reports').value = '';
+            aplicarFiltros();
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ativar/desativar itens do menu
+            const menuItems = document.querySelectorAll('.nav-menu a');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Busca em tempo real
+            document.getElementById('search-reports').addEventListener('input', aplicarFiltros);
+            
+            // Simular notificações
+            const notification = document.querySelector('.notification');
+            notification.addEventListener('click', function() {
+                alert('Você tem 2 relatórios prontos para download');
+            });
+        });
+    </script>
+</body>
+</html>

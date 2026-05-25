@@ -1,0 +1,122 @@
+<%- include('../partials/header', {title: `Venda #${venda.id}`}) %>
+<div class="container">
+    <div class="page-header">
+        <h2>Venda #<%= venda.id %></h2>
+        <a href="/vendas" class="btn btn-secondary">Voltar</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Itens da Venda</h3>
+                </div>
+                <div class="card-body">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Quantidade</th>
+                                <th>Preço Unit.</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% venda.ItemVendas.forEach(item => { %>
+                            <tr>
+                                <td><%= item.Produto.nome %></td>
+                                <td><%= item.quantidade %></td>
+                                <td>R$ <%= item.preco_unitario %></td>
+                                <td>R$ <%= item.subtotal %></td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                <td><strong>R$ <%= venda.valor_total %></strong></td>
+                            </tr>
+                            <% if (venda.desconto > 0) { %>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Desconto:</strong></td>
+                                <td><strong>-R$ <%= venda.desconto %></strong></td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Total Final:</strong></td>
+                                <td><strong>R$ <%= (venda.valor_total + venda.desconto) %></strong></td>
+                            </tr>
+                            <% } %>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Informações da Venda</h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-group">
+                        <label>Data/Hora:</label>
+                        <p><%= new Date(venda.data_venda).toLocaleString('pt-AO') %></p>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Funcionário:</label>
+                        <p><%= venda.Funcionario.nome %></p>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Forma de Pagamento:</label>
+                        <p>
+                            <% const formasPagamento = {
+                                'dinheiro': 'Dinheiro',
+                                'cartao_debito': 'Cartão de Débito',
+                                'cartao_credito': 'Cartão de Crédito',
+                                'pix': 'PIX',
+                                'transferencia': 'Transferência'
+                            } %>
+                            <%= formasPagamento[venda.forma_pagamento] || venda.forma_pagamento %>
+                        </p>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Status:</label>
+                        <p>
+                            <span class="status-badge status-<%= venda.status %>">
+                                <% const statusVenda = {
+                                    'pendente': 'Pendente',
+                                    'concluida': 'Concluída',
+                                    'cancelada': 'Cancelada'
+                                } %>
+                                <%= statusVenda[venda.status] || venda.status %>
+                            </span>
+                        </p>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Caixa:</label>
+                        <p>#<%= venda.Caixa.id %></p>
+                    </div>
+                </div>
+            </div>
+            
+            <% if (venda.status === 'pendente') { %>
+            <div class="card mt-3">
+                <div class="card-body">
+                    <form action="/vendas/concluir/<%= venda.id %>" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-success btn-block">Concluir Venda</button>
+                    </form>
+                    <form action="/vendas/cancelar/<%= venda.id %>" method="POST" style="display: inline; margin-top: 10px;">
+                        <button type="submit" class="btn btn-danger btn-block">Cancelar Venda</button>
+                    </form>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

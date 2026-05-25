@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Caixas - Bom Mundo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset e configurações gerais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #F5F5F5;
+            color: #2E2E2E;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background-color: #E53935;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #c62828;
+        }
+        
+        .btn-secondary {
+            background-color: #2E2E2E;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #1a1a1a;
+        }
+        
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #f57c00;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #388E3C;
+        }
+        
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #138496;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .btn-lg {
+            padding: 12px 24px;
+            font-size: 16px;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #2E2E2E;
+            color: white;
+            padding: 20px 0;
+            height: 100vh;
+            position: fixed;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #E53935;
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #444;
+            margin-bottom: 20px;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            margin-bottom: 5px;
+        }
+        
+        .nav-menu a {
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-menu a:hover {
+            background-color: #3a3a3a;
+            color: #E53935;
+        }
+        
+        .nav-menu a.active {
+            background-color: #3a3a3a;
+            color: #E53935;
+            border-left: 3px solid #E53935;
+        }
+        
+        .nav-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .user-info {
+            padding: 20px;
+            border-top: 1px solid #444;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #E53935;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .user-details {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .page-title {
+            color: #2E2E2E;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 5px;
+            padding: 8px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .search-box input {
+            border: none;
+            outline: none;
+            padding: 5px;
+            width: 200px;
+        }
+        
+        .search-box i {
+            color: #777;
+        }
+        
+        .notification {
+            position: relative;
+            background: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #E53935;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h2 {
+            color: #2E2E2E;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        /* Card Styles */
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background-color: #F5F5F5;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-header h3 {
+            color: #2E2E2E;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2E2E2E;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #E53935;
+            outline: none;
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+        
+        .col-md-4, .col-md-6, .col-md-8 {
+            padding: 0 10px;
+        }
+        
+        .col-md-4 {
+            flex: 0 0 33.333333%;
+        }
+        
+        .col-md-6 {
+            flex: 0 0 50%;
+        }
+        
+        .col-md-8 {
+            flex: 0 0 66.666667%;
+        }
+        
+        .justify-content-center {
+            justify-content: center;
+        }
+        
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-table th {
+            background-color: #F5F5F5;
+            color: #2E2E2E;
+            text-align: left;
+            padding: 15px;
+            font-weight: 600;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-end {
+            text-align: right;
+        }
+        
+        .text-danger {
+            color: #E53935;
+            font-weight: bold;
+        }
+        
+        .text-success {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-aberto {
+            background-color: #E8F5E9;
+            color: #4CAF50;
+        }
+        
+        .status-fechado {
+            background-color: #FFEBEE;
+            color: #E53935;
+        }
+        
+        .badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background-color: #E8F5E9;
+            color: #4CAF50;
+        }
+        
+        .badge-danger {
+            background-color: #FFEBEE;
+            color: #E53935;
+        }
+        
+        /* Alert Styles */
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+        
+        .alert-success {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+            border-left-color: #4CAF50;
+        }
+        
+        .alert-warning {
+            background-color: #FFF3E0;
+            color: #856404;
+            border-left-color: #FF9800;
+        }
+        
+        .alert-info {
+            background-color: #E3F2FD;
+            color: #0d47a1;
+            border-left-color: #2196F3;
+        }
+        
+        .alert-danger {
+            background-color: #FFEBEE;
+            color: #C62828;
+            border-left-color: #E53935;
+        }
+        
+        /* Filters */
+        .filters {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .filter-form {
+            display: flex;
+            align-items: end;
+            gap: 15px;
+        }
+        
+        .filter-form .form-group {
+            margin-bottom: 0;
+        }
+        
+        /* Info Group */
+        .info-group {
+            margin-bottom: 15px;
+        }
+        
+        .info-group label {
+            font-weight: 600;
+            color: #2E2E2E;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .info-group p {
+            margin: 0;
+            color: #666;
+        }
+        
+        .form-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar .logo span, 
+            .sidebar .nav-menu span,
+            .sidebar .user-details {
+                display: none;
+            }
+            
+            .sidebar .logo {
+                justify-content: center;
+                padding: 0 10px 20px;
+            }
+            
+            .sidebar .logo i {
+                margin-right: 0;
+            }
+            
+            .sidebar .nav-menu a {
+                justify-content: center;
+                padding: 12px 10px;
+            }
+            
+            .sidebar .nav-menu i {
+                margin-right: 0;
+            }
+            
+            .sidebar .user-info {
+                justify-content: center;
+                padding: 20px 10px;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .search-box input {
+                width: 150px;
+            }
+            
+            .col-md-4, .col-md-6, .col-md-8 {
+                flex: 0 0 100%;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .filter-form {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-box {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-globe-americas"></i>
+            <span>BOM MUNDO</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> <span>Painel principal</span></a></li>
+            <li><a href="/caixa"   class="active" class="nav-link <%= currentPath.startsWith('/caixa') ? 'active' : '' %>"><i class="fas fa-cash-register"></i> <span>Caixas</span></a></li>
+            <li><a href="/vendas" class="nav-link <%= currentPath.startsWith('/vendas') ? '' : '' %>"><i class="fas fa-shopping-cart"></i> <span>Vendas</span></a></li>
+            <li><a href="/produtos" class="nav-link <%= currentPath.startsWith('/produtos') ? 'active' : '' %>"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
+            <li><a href="#"><i class="fas fa-users"></i> <span>Clientes</span></a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> <span>Relatórios</span></a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+        </ul>
+        
+        <div class="user-info">
+            <div class="user-avatar">JS</div>
+            <div class="user-details">
+                <div class="user-name">João Silva</div>
+                <div class="user-role">Gerente</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1 class="page-title" id="page-title">Controle de Caixa</h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Pesquisar caixas...">
+                </div>
+                <div class="notification">
+                    <i class="fas fa-bell"></i>
+                    <div class="notification-badge">2</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        <div class="alert alert-success" id="success-alert" style="display: none;">
+            <i class="fas fa-check-circle"></i> Operação realizada com sucesso!
+        </div>
+
+        <!-- Conteúdo da Página (será alterado dinamicamente) -->
+        <div id="page-content">
+            <!-- Conteúdo inicial: Lista de Caixas -->
+            <div class="page-header">
+                <h2>Controle de Caixa</h2>
+                <button class="btn btn-primary" onclick="showAbrirCaixa()">
+                    <i class="fas fa-plus"></i> Abrir Caixa
+                </button>
+            </div>
+
+            <div class="filters">
+                <form method="GET" class="filter-form">
+                    <div class="form-group">
+                        <label for="status" class="form-label">Filtrar por status:</label>
+                        <select id="status" name="status" class="form-control">
+                            <option value="todos">Todos</option>
+                            <option value="aberto">Abertos</option>
+                            <option value="fechado">Fechados</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Histórico de Caixas</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Data Abertura</th>
+                                    <th>Data Fechamento</th>
+                                    <th>Funcionário</th>
+                                    <th>Valor Abertura</th>
+                                    <th>Saldo Final</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody> 
+                                <% if (caixas.length > 0) { %>
+                                    <% caixas.forEach(caixa => { %>
+                                    <tr>
+                                        <td><%= caixa.id %></td>
+                                        <td><%= new Date(caixa.data_abertura).toLocaleDateString('pt-BR') %></td>
+                                        <td><%= caixa.data_fechamento ? new Date(caixa.data_fechamento).toLocaleDateString('pt-BR') : '-' %></td>
+                                        <td><%= caixa.Funcionario.nome %></td>
+                                        <td><%= caixa.valor_abertura %> Kz</td>
+                                        <td><%= caixa.saldo_final ? caixa.saldo_final : '-' %> Kz</td>
+                                        <td>
+                                            <span class="status-badge status-<%= caixa.status %>">
+                                                <%= caixa.status === 'aberto' ? 'Aberto' : 'Fechado' %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="/caixa/<%= caixa.id %>" class="btn btn-sm btn-info" onclick="S_showDetalhesCaixa()">
+                                                <i class="fas fa-eye"></i> Detalhes
+                                            </a>
+                                            <% if (caixa.status === 'aberto') { %>
+                                                <form action="/caixa/fechar/<%= caixa.id %>" method="POST" style="display: inline;">
+                                                    <button type="submit" class="btn btn-sm btn-warning">
+                                                        <i class="fas fa-lock"></i> Fechar
+                                                    </button>
+                                                </form>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="8" class="text-center">Nenhum caixa encontrado</td>
+                                    </tr>
+                                <% } %> 
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Template: Abrir Caixa -->
+    <template id="abrir-caixa-template">
+        <div class="page-header">
+            <h2>Abrir Caixa</h2>
+            <a href="/caixa" class="btn btn-secondary" onclick="showCaixaList()">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Informações do Caixa</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="abrir-caixa-form">
+                            <div class="form-group">
+                                <label for="valor_abertura" class="form-label">Valor de Abertura (AO):</label>
+                                <input type="number" id="valor_abertura" name="valor_abertura" class="form-control" 
+                                    step="0.01" min="0" value="0" required>
+                                <small class="form-text text-muted">Informe o valor em dinheiro disponível no caixa</small>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-lock-open"></i> Abrir Caixa
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // Funções para navegação entre páginas
+        function showCaixaList() {
+            document.getElementById('page-title').textContent = 'Controle de Caixa';
+            document.getElementById('page-content').innerHTML = document.querySelector('#page-content').innerHTML;
+        }
+
+        function showAbrirCaixa() {
+            document.getElementById('page-title').textContent = 'Abrir Caixa';
+            const template = document.getElementById('abrir-caixa-template');
+            document.getElementById('page-content').innerHTML = template.innerHTML;
+            
+            // Inicializar funcionalidades do formulário
+            document.getElementById('abrir-caixa-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Simular sucesso
+                document.getElementById('success-alert').textContent = 'Caixa aberto com sucesso!';
+                document.getElementById('success-alert').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('success-alert').style.display = 'none';
+                    showCaixaList();
+                }, 3000);
+            });
+        }
+
+        function showDetalhesCaixa() {
+            document.getElementById('page-title').textContent = 'Detalhes do Caixa';
+            const template = document.getElementById('detalhes-caixa-template');
+            document.getElementById('page-content').innerHTML = template.innerHTML;
+            
+            // Inicializar funcionalidades dos formulários
+            document.getElementById('fechar-caixa-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (confirm('Tem certeza que deseja fechar este caixa?')) {
+                    // Simular sucesso
+                    document.getElementById('success-alert').textContent = 'Caixa fechado com sucesso!';
+                    document.getElementById('success-alert').style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('success-alert').style.display = 'none';
+                        showCaixaList();
+                    }, 3000);
+                }
+            });
+            
+            document.getElementById('adicionar-movimento-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Simular sucesso
+                document.getElementById('success-alert').textContent = 'Movimento adicionado com sucesso!';
+                document.getElementById('success-alert').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('success-alert').style.display = 'none';
+                    // Limpar formulário
+                    document.getElementById('adicionar-movimento-form').reset();
+                }, 3000);
+            });
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ativar/desativar itens do menu
+            const menuItems = document.querySelectorAll('.nav-menu a');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Simular notificações
+            const notification = document.querySelector('.notification');
+            notification.addEventListener('click', function() {
+                alert('Você tem 2 caixas abertos que precisam de atenção');
+            });
+            
+            // Filtro de status
+            document.getElementById('status').addEventListener('change', function() {
+                // Simulação de filtro - em uma aplicação real, isso faria uma requisição ao servidor
+                const status = this.value;
+                const rows = document.querySelectorAll('.data-table tbody tr');
+                
+                rows.forEach(row => {
+                    if (status === 'todos') {
+                        row.style.display = '';
+                    } else {
+                        const statusCell = row.querySelector('.status-badge');
+                        if (statusCell) {
+                            const rowStatus = statusCell.classList.contains('status-aberto') ? 'aberto' : 'fechado';
+                            row.style.display = rowStatus === status ? '' : 'none';
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bom Mundo - Acesso ao Sistema</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset e configurações gerais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #2E2E2E 0%, #000000 100%);
+            color: #2E2E2E;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1000px;
+            width: 100%;
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            min-height: 600px;
+        }
+        
+        .welcome-section {
+            flex: 1;
+            background: linear-gradient(rgba(229, 57, 53, 0.9), rgba(198, 40, 40, 0.9)), 
+                        url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .welcome-content h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .welcome-content p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .features {
+            list-style: none;
+            margin-top: 30px;
+        }
+        
+        .features li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .features i {
+            margin-right: 10px;
+            color: #FFD700;
+            font-size: 18px;
+        }
+        
+        .auth-section {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            color: #E53935;
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .auth-tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #666;
+        }
+        
+        .auth-tab.active {
+            border-bottom-color: #E53935;
+            color: #E53935;
+        }
+        
+        .auth-tab:hover {
+            color: #E53935;
+        }
+        
+        .auth-form {
+            display: none;
+        }
+        
+        .auth-form.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2E2E2E;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #E53935;
+            outline: none;
+        }
+        
+        .auth-btn {
+            background-color: #E53935;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        .auth-btn:hover {
+            background-color: #c62828;
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #2E2E2E;
+        }
+        
+        .form-footer a {
+            color: #E53935;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        /* File Upload Styles */
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-upload-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 15px;
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload-label:hover {
+            border-color: #E53935;
+            background-color: #f0f0f0;
+        }
+        
+        .file-upload-label i {
+            margin-right: 10px;
+            color: #666;
+        }
+        
+        .file-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .logo-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            display: none;
+            margin: 0 auto;
+        }
+        
+        .logo-controls {
+            margin-top: 10px;
+            display: none;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .logo-control-btn {
+            padding: 5px 10px;
+            background-color: #2E2E2E;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .form-check-input {
+            margin-right: 10px;
+            margin-top: 3px;
+        }
+        
+        .form-check-label {
+            font-size: 14px;
+            color: #2E2E2E;
+        }
+        
+        .terms-link {
+            color: #E53935;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            border-bottom: 1px solid #eee;
+            background-color: #2E2E2E;
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            transition: color 0.3s;
+        }
+        
+        .modal-close:hover {
+            color: #E53935;
+        }
+        
+        .modal-body {
+            padding: 30px;
+        }
+        
+        .terms-content {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .terms-content h3 {
+            margin-bottom: 15px;
+            color: #2E2E2E;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .terms-content h4 {
+            margin: 20px 0 10px 0;
+            color: #E53935;
+        }
+        
+        .terms-content p {
+            margin-bottom: 15px;
+        }
+        
+        .terms-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .terms-content li {
+            margin-bottom: 8px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                max-width: 500px;
+            }
+            
+            .welcome-section {
+                padding: 30px;
+            }
+            
+            .auth-section {
+                padding: 30px;
+            }
+            
+            .welcome-content h1 {
+                font-size: 28px;
+            }
+            
+            .welcome-content p {
+                font-size: 16px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .welcome-section, .auth-section {
+                padding: 20px;
+            }
+            
+            .auth-tabs {
+                flex-direction: column;
+            }
+            
+            .auth-tab {
+                text-align: center;
+                border-bottom: none;
+                border-left: 3px solid transparent;
+            }
+            
+            .auth-tab.active {
+                border-left-color: #E53935;
+                border-bottom-color: transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Seção de Boas-Vindas -->
+        <div class="welcome-section">
+            <div class="welcome-content">
+                <h1>Sistema de Gestão Bom Mundo</h1>
+                <p>Gerencie seu negócio de forma eficiente com nossa plataforma completa de gestão empresarial.</p>
+                
+                <ul class="features">
+                    <li><i class="fas fa-check-circle"></i> Controle completo de estoque</li>
+                    <li><i class="fas fa-check-circle"></i> Gestão de vendas e clientes</li>
+                    <li><i class="fas fa-check-circle"></i> Relatórios financeiros detalhados</li>
+                    <li><i class="fas fa-check-circle"></i> Suporte técnico especializado</li>
+                    <li><i class="fas fa-check-circle"></i> Multiplataforma e responsivo</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Seção de Autenticação -->
+        <div class="auth-section">
+            <div class="logo">
+                <i class="fas fa-globe-americas"></i>
+                BOM MUNDO
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="alternarFormulario('login')">Login</div>
+                <div class="auth-tab" onclick="alternarFormulario('registro')">Criar Conta</div>
+            </div>
+            
+            <!-- Formulário de Login -->
+            <div id="login-form" class="auth-form active">
+                <form id="login-empresa-form" action="/auth/login" method="post">
+                    <div class="form-group">
+                        <label for="email-empresa" class="form-label">E-mail Corporativo</label>
+                        <input type="email" id="email-empresa" name="email" class="form-control" placeholder="seu.email@empresa.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="senha-empresa" class="form-label">Senha</label>
+                        <input type="password" id="senha-empresa" name="senha" class="form-control" placeholder="Digite sua senha" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" id="lembrar" class="form-check-input">
+                            <label for="lembrar" class="form-check-label">Lembrar-me</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="auth-btn">Entrar no Sistema</button>
+                </form>
+                <div class="form-footer">
+                    <p>Problemas com acesso? <a href="#">Recuperar senha</a></p>
+                </div>
+            </div>
+            
+            <!-- Formulário de Registo -->
+            <div id="registro-form" class="auth-form">
+                <form id="registro-empresa-form">
+                    <div class="form-group">
+                        <label for="nome-empresa" class="form-label">Nome da Empresa</label>
+                        <input type="text" id="nome-empresa" name="nome_empresa" class="form-control" placeholder="Nome completo da empresa" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nif-empresa" class="form-label">NIF da Empresa</label>
+                        <input type="text" id="nif-empresa" name="nif" class="form-control" placeholder="Número de Identificação Fiscal" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email-empresa-registro" class="form-label">E-mail Corporativo</label>
+                        <input type="email" id="email-empresa-registro" name="email" class="form-control" placeholder="empresa@exemplo.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefone-empresa" class="form-label">Telefone</label>
+                        <input type="tel" id="telefone-empresa" name="telefone" class="form-control" placeholder="+351 XXX XXX XXX" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="senha-empresa-registro" class="form-label">Senha</label>
+                        <input type="password" id="senha-empresa-registro" name="senha" class="form-control" placeholder="Crie uma senha segura" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmar-senha" class="form-label">Confirmar Senha</label>
+                        <input type="password" id="confirmar-senha" name="confirmar_senha" class="form-control" placeholder="Repita a senha" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Logotipo da Empresa</label>
+                        <div class="file-upload">
+                            <input type="file" id="logo-empresa" name="logo" class="file-upload-input" accept="image/*">
+                            <label for="logo-empresa" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span id="file-label">Clique para fazer upload do logotipo</span>
+                            </label>
+                        </div>
+                        <div class="file-preview">
+                            <img id="logo-preview" class="logo-preview" src="" alt="Pré-visualização do logotipo">
+                            <div id="logo-controls" class="logo-controls">
+                                <button type="button" class="logo-control-btn" onclick="ajustarLogotipo('aumentar')">
+                                    <i class="fas fa-search-plus"></i> Aumentar
+                                </button>
+                                <button type="button" class="logo-control-btn" onclick="ajustarLogotipo('diminuir')">
+                                    <i class="fas fa-search-minus"></i> Diminuir
+                                </button>
+                                <button type="button" class="logo-control-btn" onclick="ajustarLogotipo('reset')">
+                                    <i class="fas fa-undo"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" id="aceitar-termos" class="form-check-input" required>
+                            <label for="aceitar-termos" class="form-check-label">
+                                Li e concordo com os <span class="terms-link" onclick="abrirModalTermos()">Termos e Condições</span> de utilização do sistema
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="auth-btn">Criar Conta Empresarial</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Termos e Condições -->
+    <div id="modal-termos" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Termos e Condições de Utilização</h3>
+                <button class="modal-close" onclick="fecharModalTermos()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="terms-content">
+                    <h3>Termos e Condições de Utilização do Sistema Bom Mundo</h3>
+                    
+                    <h4>1. Aceitação dos Termos</h4>
+                    <p>Ao registar-se no Sistema de Gestão Bom Mundo, você concorda com estes termos e condições na íntegra. Se não concordar com qualquer parte destes termos, não poderá utilizar o nosso sistema.</p>
+                    
+                    <h4>2. Definições</h4>
+                    <p>Para efeitos destes Termos e Condições:</p>
+                    <ul>
+                        <li><strong>"Sistema"</strong> refere-se ao software de gestão empresarial Bom Mundo;</li>
+                        <li><strong>"Utilizador"</strong> refere-se à pessoa ou empresa que utiliza o Sistema;</li>
+                        <li><strong>"Dados"</strong> refere-se a toda a informação inserida no Sistema pelo Utilizador;</li>
+                        <li><strong>"Conta"</strong> refere-se ao perfil de acesso único criado pelo Utilizador.</li>
+                    </ul>
+                    
+                    <h4>3. Registo e Conta</h4>
+                    <p>Para utilizar o Sistema, o Utilizador deve:</p>
+                    <ul>
+                        <li>Fornecer informações verdadeiras, precisas e completas durante o registo;</li>
+                        <li>Manter e atualizar rapidamente os dados de registo para mantê-los verdadeiros, precisos e completos;</li>
+                        <li>Ser maior de 18 anos ou ter autorização legal para celebrar contratos;</li>
+                        <li>Manter a segurança da sua conta e senha.</li>
+                    </ul>
+                    
+                    <h4>4. Licença de Utilização</h4>
+                    <p>A Bom Mundo concede ao Utilizador uma licença limitada, não exclusiva, não transferível e revogável para utilizar o Sistema de acordo com estes Termos.</p>
+                    
+                    <h4>5. Restrições de Utilização</h4>
+                    <p>O Utilizador compromete-se a não:</p>
+                    <ul>
+                        <li>Utilizar o Sistema para qualquer finalidade ilegal ou não autorizada;</li>
+                        <li>Copiar, modificar ou distribuir o Sistema sem autorização;</li>
+                        <li>Tentar aceder a áreas restritas do Sistema;</li>
+                        <li>Interferir com a segurança ou o funcionamento do Sistema;</li>
+                        <li>Partilhar a sua conta com terceiros.</li>
+                    </ul>
+                    
+                    <h4>6. Propriedade Intelectual</h4>
+                    <p>Todo o conteúdo do Sistema, incluindo mas não limitado a texto, gráficos, logótipos, ícones, imagens, clipes de áudio, downloads digitais e compilações de dados, é propriedade da Bom Mundo ou dos seus fornecedores de conteúdo e está protegido por leis de direitos de autor.</p>
+                    
+                    <h4>7. Dados do Utilizador</h4>
+                    <p>O Utilizador mantém todos os direitos sobre os seus dados. A Bom Mundo apenas processa estes dados para fornecer os serviços contratados e em conformidade com a nossa Política de Privacidade.</p>
+                    
+                    <h4>8. Limitação de Responsabilidade</h4>
+                    <p>O Sistema é fornecido "no estado em que se encontra". A Bom Mundo não garante que:</p>
+                    <ul>
+                        <li>O Sistema atenderá a todos os requisitos do Utilizador;</li>
+                        <li>O funcionamento do Sistema será ininterrupto ou livre de erros;</li>
+                        <li>Quaisquer erros no Sistema serão corrigidos.</li>
+                    </ul>
+                    
+                    <h4>9. Modificações do Serviço</h4>
+                    <p>A Bom Mundo reserva-se o direito de modificar ou descontinuar, temporária ou permanentemente, o Sistema com ou sem aviso prévio. A Bom Mundo não será responsável perante o Utilizador ou qualquer terceiro por qualquer modificação, suspensão ou descontinuação do Sistema.</p>
+                    
+                    <h4>10. Rescisão</h4>
+                    <p>Estes Termos são efectivos até serem rescindidos pelo Utilizador ou pela Bom Mundo. O Utilizador pode rescindir estes Termos a qualquer momento, notificando a Bom Mundo por escrito. A Bom Mundo pode rescindir estes Termos imediatamente, sem aviso prévio, se o Utilizador não cumprir qualquer disposição destes Termos.</p>
+                    
+                    <h4>11. Lei Aplicável</h4>
+                    <p>Estes Termos serão regidos e interpretados de acordo com as leis de Portugal. Qualquer disputa decorrente destes Termos será submetida à jurisdição exclusiva dos tribunais de Lisboa.</p>
+                    
+                    <h4>12. Alterações aos Termos</h4>
+                    <p>A Bom Mundo reserva-se o direito de modificar estes Termos a qualquer momento. As alterações entrarão em vigor imediatamente após a sua publicação no Sistema. O uso continuado do Sistema após tais alterações constitui aceitação dos novos Termos.</p>
+                    
+                    <h4>13. Contactos</h4>
+                    <p>Para questões relacionadas com estes Termos, entre em contacto connosco através de:</p>
+                    <p>Email: abprimesoft@gmail.com<br>
+                    Telefone: +244 933 493 238<br>
+                    Endereço: Bairro Mbemba Nagango, Rua A, Junto a Entrada da Escola 17 de Setembro</p>
+                    
+                    <p><em>Data da última atualização: 25 de Outubro de 2025</em></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variáveis para controle do logotipo
+        let logoScale = 1;
+        const originalLogoSize = { width: 0, height: 0 };
+        
+        // Função para alternar entre formulários
+        function alternarFormulario(tipo) {
+            const loginForm = document.getElementById('login-form');
+            const registroForm = document.getElementById('registro-form');
+            const loginTab = document.querySelectorAll('.auth-tab')[0];
+            const registroTab = document.querySelectorAll('.auth-tab')[1];
+            
+            if (tipo === 'login') {
+                loginForm.classList.add('active');
+                registroForm.classList.remove('active');
+                loginTab.classList.add('active');
+                registroTab.classList.remove('active');
+            } else {
+                loginForm.classList.remove('active');
+                registroForm.classList.add('active');
+                loginTab.classList.remove('active');
+                registroTab.classList.add('active');
+            }
+        }
+        
+        // Função para abrir modal de termos
+        function abrirModalTermos() {
+            document.getElementById('modal-termos').style.display = 'flex';
+        }
+        
+        // Função para fechar modal de termos
+        function fecharModalTermos() {
+            document.getElementById('modal-termos').style.display = 'none';
+        }
+        
+        // Preview do logotipo
+        document.getElementById('logo-empresa').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('logo-preview');
+            const fileLabel = document.getElementById('file-label');
+            const logoControls = document.getElementById('logo-controls');
+            
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    fileLabel.textContent = file.name;
+                    logoControls.style.display = 'flex';
+                    
+                    // Salvar tamanho original
+                    preview.onload = function() {
+                        originalLogoSize.width = preview.naturalWidth;
+                        originalLogoSize.height = preview.naturalHeight;
+                        logoScale = 1;
+                        aplicarEscalaLogotipo();
+                    };
+                }
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Função para ajustar o tamanho do logotipo
+        function ajustarLogotipo(acao) {
+            const preview = document.getElementById('logo-preview');
+            
+            switch(acao) {
+                case 'aumentar':
+                    logoScale = Math.min(logoScale + 0.1, 2); // Máximo 200%
+                    break;
+                case 'diminuir':
+                    logoScale = Math.max(logoScale - 0.1, 0.5); // Mínimo 50%
+                    break;
+                case 'reset':
+                    logoScale = 1;
+                    break;
+            }
+            
+            aplicarEscalaLogotipo();
+        }
+        
+        // Aplicar escala ao logotipo
+        function aplicarEscalaLogotipo() {
+            const preview = document.getElementById('logo-preview');
+            preview.style.width = (originalLogoSize.width * logoScale) + 'px';
+            preview.style.height = (originalLogoSize.height * logoScale) + 'px';
+        }
+        
+        // Adicionar event listeners aos formulários
+        document.addEventListener('DOMContentLoaded', function() {
+            // Login de empresas
+            document.getElementById('login-empresa-form').addEventListener('submit', function(e) {
+                //e.preventDefault();
+                // Simulação de login bem-sucedido
+                //alert('Login realizado com sucesso! Redirecionando para o sistema...');
+                // Em uma implementação real, aqui seria o redirecionamento
+            });
+            
+            // Registro de empresas
+            document.getElementById('registro-empresa-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validações
+                const senha = document.getElementById('senha-empresa-registro').value;
+                const confirmarSenha = document.getElementById('confirmar-senha').value;
+                const termosAceitos = document.getElementById('aceitar-termos').checked;
+                
+                if (senha !== confirmarSenha) {
+                    alert('As senhas não coincidem!');
+                    return;
+                }
+                
+                if (!termosAceitos) {
+                    alert('É necessário aceitar os Termos e Condições para criar uma conta.');
+                    return;
+                }
+                
+                // Simular sucesso
+                alert('Conta empresarial criada com sucesso! Em breve você receberá um e-mail de confirmação.');
+                this.reset();
+                document.getElementById('logo-preview').style.display = 'none';
+                document.getElementById('file-label').textContent = 'Clique para fazer upload do logotipo';
+                document.getElementById('logo-controls').style.display = 'none';
+                alternarFormulario('login');
+            });
+            
+            // Fechar modal ao clicar fora
+            window.addEventListener('click', function(e) {
+                const modal = document.getElementById('modal-termos');
+                if (e.target === modal) {
+                    fecharModalTermos();
+                }
+            });
+            
+            // Fechar modal com ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    fecharModalTermos();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

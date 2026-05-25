@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Produtos - Bom Mundo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset e configurações gerais */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #F5F5F5;
+            color: #2E2E2E;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background-color: #E53935;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #c62828;
+        }
+        
+        .btn-secondary {
+            background-color: #2E2E2E;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #1a1a1a;
+        }
+        
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #f57c00;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #388E3C;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: #2E2E2E;
+            color: white;
+            padding: 20px 0;
+            height: 100vh;
+            position: fixed;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #E53935;
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #444;
+            margin-bottom: 20px;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            margin-bottom: 5px;
+        }
+        
+        .nav-menu a {
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            border-left: 3px solid transparent;
+        }
+        
+        .nav-menu a:hover {
+            background-color: #3a3a3a;
+            color: #E53935;
+        }
+        
+        .nav-menu a.active {
+            background-color: #3a3a3a;
+            color: #E53935;
+            border-left: 3px solid #E53935;
+        }
+        
+        .nav-menu i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .user-info {
+            padding: 20px;
+            border-top: 1px solid #444;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #E53935;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .user-details {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .page-title {
+            color: #2E2E2E;
+            font-size: 28px;
+            font-weight: 600;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 5px;
+            padding: 8px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .search-box input {
+            border: none;
+            outline: none;
+            padding: 5px;
+            width: 200px;
+        }
+        
+        .search-box i {
+            color: #777;
+        }
+        
+        .notification {
+            position: relative;
+            background: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #E53935;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h2 {
+            color: #2E2E2E;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        /* Card Styles */
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background-color: #F5F5F5;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-header h3 {
+            color: #2E2E2E;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2E2E2E;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #E53935;
+            outline: none;
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+        
+        .col-md-6 {
+            flex: 0 0 50%;
+            padding: 0 10px;
+        }
+        
+        .col-md-8 {
+            flex: 0 0 66.666667%;
+            padding: 0 10px;
+        }
+        
+        .justify-content-center {
+            justify-content: center;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-table th {
+            background-color: #F5F5F5;
+            color: #2E2E2E;
+            text-align: left;
+            padding: 15px;
+            font-weight: 600;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-danger {
+            color: #E53935;
+            font-weight: bold;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-ativo {
+            background-color: #E8F5E9;
+            color: #4CAF50;
+        }
+        
+        .status-inativo {
+            background-color: #FFEBEE;
+            color: #E53935;
+        }
+        
+        .status-baixo {
+            background-color: #FFF3E0;
+            color: #FF9800;
+        }
+        
+        /* Alert Styles */
+        .alert {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-success {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .alert-danger {
+            background-color: #FFEBEE;
+            color: #C62828;
+            border-left: 4px solid #E53935;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .sidebar .logo span, 
+            .sidebar .nav-menu span,
+            .sidebar .user-details {
+                display: none;
+            }
+            
+            .sidebar .logo {
+                justify-content: center;
+                padding: 0 10px 20px;
+            }
+            
+            .sidebar .logo i {
+                margin-right: 0;
+            }
+            
+            .sidebar .nav-menu a {
+                justify-content: center;
+                padding: 12px 10px;
+            }
+            
+            .sidebar .nav-menu i {
+                margin-right: 0;
+            }
+            
+            .sidebar .user-info {
+                justify-content: center;
+                padding: 20px 10px;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .search-box input {
+                width: 150px;
+            }
+            
+            .col-md-6, .col-md-8 {
+                flex: 0 0 100%;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-box {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-globe-americas"></i>
+            <span>BOM MUNDO</span>
+        </div>
+        
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+            <li><a href="#"><i class="fas fa-shopping-cart"></i> <span>Vendas</span></a></li>
+            <li><a href="#" class="active"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
+            <li><a href="#"><i class="fas fa-users"></i> <span>Clientes</span></a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> <span>Relatórios</span></a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+        </ul>
+        
+        <div class="user-info">
+            <div class="user-avatar">JS</div>
+            <div class="user-details">
+                <div class="user-name">João Silva</div>
+                <div class="user-role">Gerente</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1 class="page-title" id="page-title">Gestão de Produtos</h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Pesquisar produtos...">
+                </div>
+                <div class="notification">
+                    <i class="fas fa-bell"></i>
+                    <div class="notification-badge">3</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertas -->
+        <div class="alert alert-success" id="success-alert" style="display: none;">
+            <i class="fas fa-check-circle"></i> Produto adicionado com sucesso!
+        </div>
+
+        <!-- Conteúdo da Página (será alterado dinamicamente) -->
+        <div id="page-content">
+            <!-- Conteúdo inicial: Lista de Produtos -->
+            <div class="page-header">
+                <h2>Gestão de Produtos</h2>
+                <button class="btn btn-primary" onclick="showAddProductForm()">
+                    <i class="fas fa-plus"></i> Novo Produto
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Lista de Produtos</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Código de Barras</th>
+                                    <th>Preço Custo</th>
+                                    <th>Preço Venda</th>
+                                    <th>Estoque</th>
+                                    <th>Estoque Mínimo</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1001</td>
+                                    <td>Notebook Dell Inspiron</td>
+                                    <td>7891234567890</td>
+                                    <td>R$ 2.500,00</td>
+                                    <td>R$ 3.200,00</td>
+                                    <td>
+                                        <span class="text-danger">3</span>
+                                    </td>
+                                    <td>5</td>
+                                    <td>
+                                        <span class="status-badge status-ativo">Ativo</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="showEditProductForm()">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <i class="fas fa-times"></i> Desativar
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>1002</td>
+                                    <td>Impressora HP LaserJet</td>
+                                    <td>7891234567891</td>
+                                    <td>R$ 800,00</td>
+                                    <td>R$ 1.100,00</td>
+                                    <td>12</td>
+                                    <td>3</td>
+                                    <td>
+                                        <span class="status-badge status-ativo">Ativo</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="showEditProductForm()">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <i class="fas fa-times"></i> Desativar
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>1003</td>
+                                    <td>Resma de Papel A4</td>
+                                    <td>7891234567892</td>
+                                    <td>R$ 15,00</td>
+                                    <td>R$ 22,00</td>
+                                    <td>
+                                        <span class="text-danger">2</span>
+                                    </td>
+                                    <td>10</td>
+                                    <td>
+                                        <span class="status-badge status-ativo">Ativo</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="showEditProductForm()">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <i class="fas fa-times"></i> Desativar
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>1004</td>
+                                    <td>Mouse Óptico USB</td>
+                                    <td>7891234567893</td>
+                                    <td>R$ 12,00</td>
+                                    <td>R$ 25,00</td>
+                                    <td>25</td>
+                                    <td>5</td>
+                                    <td>
+                                        <span class="status-badge status-ativo">Ativo</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" onclick="showEditProductForm()">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <i class="fas fa-times"></i> Desativar
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates para as diferentes páginas -->
+    
+    <!-- Template: Adicionar Produto -->
+    <template id="add-product-template">
+        <div class="page-header">
+            <h2>Adicionar Novo Produto</h2>
+            <button class="btn btn-secondary" onclick="showProductList()">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Informações do Produto</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="add-product-form">
+                            <div class="form-group">
+                                <label for="nome" class="form-label">Nome do Produto:</label>
+                                <input type="text" id="nome" name="nome" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="descricao" class="form-label">Descrição:</label>
+                                <textarea id="descricao" name="descricao" class="form-control" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="codigo_barras" class="form-label">Código de Barras:</label>
+                                <input type="text" id="codigo_barras" name="codigo_barras" class="form-control">
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="preco_custo" class="form-label">Preço de Custo (R$):</label>
+                                        <input type="number" id="preco_custo" name="preco_custo" class="form-control" 
+                                            step="0.01" min="0" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="preco_venda" class="form-label">Preço de Venda (R$):</label>
+                                        <input type="number" id="preco_venda" name="preco_venda" class="form-control" 
+                                            step="0.01" min="0" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="quantidade_estoque" class="form-label">Quantidade em Estoque:</label>
+                                        <input type="number" id="quantidade_estoque" name="quantidade_estoque" class="form-control" 
+                                            min="0" value="0" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="quantidade_minima" class="form-label">Estoque Mínimo:</label>
+                                        <input type="number" id="quantidade_minima" name="quantidade_minima" class="form-control" 
+                                            min="0" value="5" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="categoria_id" class="form-label">Categoria:</label>
+                                <select id="categoria_id" name="categoria_id" class="form-control">
+                                    <option value="">Sem categoria</option>
+                                    <option value="1">Computadores</option>
+                                    <option value="2">Impressoras</option>
+                                    <option value="3">Suprimentos</option>
+                                    <option value="4">Periféricos</option>
+                                    <option value="5">Acessórios</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-plus"></i> Adicionar Produto
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template: Editar Produto -->
+    <template id="edit-product-template">
+        <div class="page-header">
+            <h2>Editar Produto</h2>
+            <button class="btn btn-secondary" onclick="showProductList()">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Informações do Produto</h3>
+                    </div>
+                    <div class="card-body">
+                        <form id="edit-product-form">
+                            <div class="form-group">
+                                <label for="edit-nome" class="form-label">Nome do Produto:</label>
+                                <input type="text" id="edit-nome" name="nome" class="form-control" value="Notebook Dell Inspiron" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="edit-descricao" class="form-label">Descrição:</label>
+                                <textarea id="edit-descricao" name="descricao" class="form-control" rows="3">Notebook Dell Inspiron 15, Intel Core i5, 8GB RAM, 256GB SSD</textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="edit-codigo_barras" class="form-label">Código de Barras:</label>
+                                <input type="text" id="edit-codigo_barras" name="codigo_barras" class="form-control" value="7891234567890">
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit-preco_custo" class="form-label">Preço de Custo (R$):</label>
+                                        <input type="number" id="edit-preco_custo" name="preco_custo" class="form-control" 
+                                            step="0.01" min="0" value="2500.00" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit-preco_venda" class="form-label">Preço de Venda (R$):</label>
+                                        <input type="number" id="edit-preco_venda" name="preco_venda" class="form-control" 
+                                            step="0.01" min="0" value="3200.00" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit-quantidade_estoque" class="form-label">Quantidade em Estoque:</label>
+                                        <input type="number" id="edit-quantidade_estoque" name="quantidade_estoque" class="form-control" 
+                                            min="0" value="3" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="edit-quantidade_minima" class="form-label">Estoque Mínimo:</label>
+                                        <input type="number" id="edit-quantidade_minima" name="quantidade_minima" class="form-control" 
+                                            min="0" value="5" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="edit-categoria_id" class="form-label">Categoria:</label>
+                                <select id="edit-categoria_id" name="categoria_id" class="form-control">
+                                    <option value="">Sem categoria</option>
+                                    <option value="1" selected>Computadores</option>
+                                    <option value="2">Impressoras</option>
+                                    <option value="3">Suprimentos</option>
+                                    <option value="4">Periféricos</option>
+                                    <option value="5">Acessórios</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-save"></i> Atualizar Produto
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // Funções para navegação entre páginas
+        function showProductList() {
+            document.getElementById('page-title').textContent = 'Gestão de Produtos';
+            document.getElementById('page-content').innerHTML = document.querySelector('#page-content').innerHTML;
+        }
+
+        function showAddProductForm() {
+            document.getElementById('page-title').textContent = 'Adicionar Produto';
+            const template = document.getElementById('add-product-template');
+            document.getElementById('page-content').innerHTML = template.innerHTML;
+            
+            // Adicionar evento de submit ao formulário
+            document.getElementById('add-product-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Simular sucesso
+                document.getElementById('success-alert').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('success-alert').style.display = 'none';
+                    showProductList();
+                }, 3000);
+            });
+        }
+
+        function showEditProductForm() {
+            document.getElementById('page-title').textContent = 'Editar Produto';
+            const template = document.getElementById('edit-product-template');
+            document.getElementById('page-content').innerHTML = template.innerHTML;
+            
+            // Adicionar evento de submit ao formulário
+            document.getElementById('edit-product-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Simular sucesso
+                document.getElementById('success-alert').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('success-alert').style.display = 'none';
+                    showProductList();
+                }, 3000);
+            });
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ativar/desativar itens do menu
+            const menuItems = document.querySelectorAll('.nav-menu a');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+            
+            // Simular notificações
+            const notification = document.querySelector('.notification');
+            notification.addEventListener('click', function() {
+                alert('Você tem 3 notificações não lidas');
+            });
+        });
+    </script>
+</body>
+</html>

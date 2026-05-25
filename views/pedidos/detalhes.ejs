@@ -1,0 +1,118 @@
+<%- include('../partials/header', {title: `Pedido #${pedido.id}`}) %>
+<div class="container">
+    <div class="page-header">
+        <h2>Pedido #<%= pedido.id %></h2>
+        <a href="/pedidos" class="btn btn-secondary">Voltar</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Itens do Pedido</h3>
+                </div>
+                <div class="card-body">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Quantidade</th>
+                                <th>Preço Unit.</th>
+                                <th>Subtotal</th>
+                                <th>Recebido</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% pedido.ItemPedidos.forEach(item => { %>
+                            <tr>
+                                <td><%= item.Produto.nome %></td>
+                                <td><%= item.quantidade %></td>
+                                <td>R$ <%= item.preco_unitario.toFixed(2) %></td>
+                                <td>R$ <%= item.subtotal.toFixed(2) %></td>
+                                <td><%= item.quantidade_recebida %>/<%= item.quantidade %></td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                <td><strong>R$ <%= pedido.valor_total.toFixed(2) %></strong></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Informações do Pedido</h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-group">
+                        <label>Data do Pedido:</label>
+                        <p><%= new Date(pedido.data_pedido).toLocaleString('pt-BR') %></p>
+                    </div>
+                    
+                    <% if (pedido.data_prevista_entrega) { %>
+                    <div class="info-group">
+                        <label>Data Prevista de Entrega:</label>
+                        <p><%= new Date(pedido.data_prevista_entrega).toLocaleDateString('pt-BR') %></p>
+                    </div>
+                    <% } %>
+                    
+                    <% if (pedido.data_entrega) { %>
+                    <div class="info-group">
+                        <label>Data de Entrega:</label>
+                        <p><%= new Date(pedido.data_entrega).toLocaleString('pt-BR') %></p>
+                    </div>
+                    <% } %>
+                    
+                    <div class="info-group">
+                        <label>Funcionário:</label>
+                        <p><%= pedido.Funcionario.nome %></p>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Status:</label>
+                        <p>
+                            <span class="status-badge status-<%= pedido.status %>">
+                                <% const statusPedido = {
+                                    'pendente': 'Pendente',
+                                    'processando': 'Processando',
+                                    'concluido': 'Concluído',
+                                    'cancelado': 'Cancelado'
+                                } %>
+                                <%= statusPedido[pedido.status] || pedido.status %>
+                            </span>
+                        </p>
+                    </div>
+                    
+                    <% if (pedido.observacoes) { %>
+                    <div class="info-group">
+                        <label>Observações:</label>
+                        <p><%= pedido.observacoes %></p>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+            
+            <% if (pedido.status === 'pendente') { %>
+            <div class="card mt-3">
+                <div class="card-body">
+                    <form action="/pedidos/receber/<%= pedido.id %>" method="POST">
+                        <button type="submit" class="btn btn-success btn-block">Receber Pedido</button>
+                    </form>
+                    <form action="/pedidos/cancelar/<%= pedido.id %>" method="POST" style="margin-top: 10px;">
+                        <button type="submit" class="btn btn-danger btn-block">Cancelar Pedido</button>
+                    </form>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

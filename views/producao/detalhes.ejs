@@ -1,0 +1,135 @@
+<%- include('../partials/header', {title: `Produção #${producao.id}`}) %>
+<div class="container">
+    <div class="page-header">
+        <h2>Produção #<%= producao.id %></h2>
+        <a href="/producao" class="btn btn-secondary">Voltar</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Detalhes da Solicitação</h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-group">
+                        <label>Descrição:</label>
+                        <p><%= producao.descricao %></p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label>Quantidade:</label>
+                                <p><%= producao.quantidade %></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-group">
+                                <label>Prioridade:</label>
+                                <p>
+                                    <span class="badge priority-<%= producao.prioridade %>">
+                                        <% const prioridades = {
+                                            'baixa': 'Baixa',
+                                            'media': 'Média',
+                                            'alta': 'Alta'
+                                        } %>
+                                        <%= prioridades[producao.prioridade] || producao.prioridade %>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <% if (producao.data_prevista_conclusao) { %>
+                    <div class="info-group">
+                        <label>Data Prevista de Conclusão:</label>
+                        <p><%= new Date(producao.data_prevista_conclusao).toLocaleDateString('pt-BR') %></p>
+                    </div>
+                    <% } %>
+                    
+                    <% if (producao.data_conclusao) { %>
+                    <div class="info-group">
+                        <label>Data de Conclusão:</label>
+                        <p><%= new Date(producao.data_conclusao).toLocaleString('pt-BR') %></p>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Informações de Controle</h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-group">
+                        <label>Data de Solicitação:</label>
+                        <p><%= new Date(producao.data_solicitacao).toLocaleString('pt-BR') %></p>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Solicitante:</label>
+                        <p><%= producao.Solicitante.nome %></p>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Responsável:</label>
+                        <p><%= producao.Responsavel ? producao.Responsavel.nome : 'Não atribuído' %></p>
+                    </div>
+                    
+                    <div class="info-group">
+                        <label>Status:</label>
+                        <p>
+                            <span class="status-badge status-<%= producao.status %>">
+                                <% const statusProducao = {
+                                    'pendente': 'Pendente',
+                                    'em_producao': 'Em Produção',
+                                    'concluido': 'Concluído',
+                                    'cancelado': 'Cancelado'
+                                } %>
+                                <%= statusProducao[producao.status] || producao.status %>
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h3>Ações</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/producao/<%= producao.id %>/status">
+                        <div class="form-group">
+                            <label for="status" class="form-label">Alterar Status:</label>
+                            <select id="status" name="status" class="form-control" required>
+                                <option value="pendente" <%= producao.status === 'pendente' ? 'selected' : '' %>>Pendente</option>
+                                <option value="em_producao" <%= producao.status === 'em_producao' ? 'selected' : '' %>>Em Produção</option>
+                                <option value="concluido" <%= producao.status === 'concluido' ? 'selected' : '' %>>Concluído</option>
+                                <option value="cancelado" <%= producao.status === 'cancelado' ? 'selected' : '' %>>Cancelado</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Atualizar Status</button>
+                    </form>
+                    
+                    <form method="POST" action="/producao/<%= producao.id %>/responsavel" class="mt-3">
+                        <div class="form-group">
+                            <label for="funcionario_responsavel_id" class="form-label">Atribuir Responsável:</label>
+                            <select id="funcionario_responsavel_id" name="funcionario_responsavel_id" class="form-control">
+                                <option value="">Nenhum</option>
+                                <% // Esta lista precisaria ser passada pelo controller %>
+                                <option value="1" <%= producao.funcionario_responsavel_id === 1 ? 'selected' : '' %>>Funcionário 1</option>
+                                <option value="2" <%= producao.funcionario_responsavel_id === 2 ? 'selected' : '' %>>Funcionário 2</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-secondary btn-block">Atribuir Responsável</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

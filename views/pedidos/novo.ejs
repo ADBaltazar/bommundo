@@ -1,0 +1,239 @@
+<%- include('../partials/header', {title: 'Novo Pedido'}) %>
+<div class="container">
+    <h2>Novo Pedido de Fornecimento</h2>
+    
+    <form id="pedidoForm" method="POST" action="/pedidos/novo">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Produtos</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="produtoSearch" class="form-label">Buscar Produto:</label>
+                            <input type="text" id="produtoSearch" class="form-control" placeholder="Digite o nome ou código do produto">
+                        </div>
+                        
+                        <div id="produtosList" class="produtos-list">
+                            <% produtos.forEach(produto => { %>
+                                <div class="produto-item" data-id="<%= produto.id %>" data-preco="<%= produto.preco_custo %>">
+                                    <div class="produto-info">
+                                        <h5><%= produto.nome %></h5>
+                                        <p>Código: <%= produto.codigo_barras || 'N/A' %></p>
+                                        <p>Preço de Custo: R$ <%= produto.preco_custo.toFixed(2) %></p>
+                                        <p>Estoque: <%= produto.quantidade_estoque %></p>
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-add-produto">Adicionar</button>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h3>Itens do Pedido</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="carrinhoVazio" class="text-center py-4">
+                            <p>Nenhum produto adicionado ao pedido</p>
+                        </div>
+                        
+                        <table id="tabelaItens" class="data-table" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Produto</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço Unit.</th>
+                                    <th>Subtotal</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="itensCarrinho">
+                                <!-- Itens serão adicionados aqui via JavaScript -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td id="totalPedido">R$ 0,00</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Informações do Pedido</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="observacoes" class="form-label">Observações:</label>
+                            <textarea id="observacoes" name="observacoes" class="form-control" rows="4"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Total do Pedido:</label>
+                            <h3 id="totalPedidoDisplay">R$ 0,00</h3>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success btn-lg btn-block">Criar Pedido</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Campos hidden para enviar os dados -->
+        <input type="hidden" id="produtosData" name="produtos">
+        <input type="hidden" id="quantidadesData" name="quantidades">
+    </form>
+</div>
+
+<script>
+let carrinho = [];
+let totalPedido = 0;
+
+// Busca de produtos
+document.getElementById('produtoSearch').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const produtos = document.querySelectorAll('.produto-item');
+    
+    produtos.forEach(produto => {
+        const nome = produto.querySelector('h5').textContent.toLowerCase();
+        const codigo = produto.querySelector('p').textContent.toLowerCase();
+        
+        if (nome.includes(searchTerm) || codigo.includes(searchTerm)) {
+            produto.style.display = 'flex';
+        } else {
+            produto.style.display = 'none';
+        }
+    });
+});
+
+// Adicionar produto ao carrinho
+document.querySelectorAll('.btn-add-produto').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const produtoItem = this.closest('.produto-item');
+        const produtoId = produtoItem.dataset.id;
+        const produtoNome = produtoItem.querySelector('h5').textContent;
+        const preco = parseFloat(produtoItem.dataset.preco);
+        
+        // Verificar se produto já está no carrinho
+        const itemExistente = carrinho.find(item => item.id === produtoId);
+        
+        if (itemExistente) {
+            itemExistente.quantidade++;
+            itemExistente.subtotal = itemExistente.quantidade * preco;
+            atualizarItemCarrinho(produtoId);
+        } else {
+            carrinho.push({
+                id: produtoId,
+                nome: produtoNome,
+                preco: preco,
+                quantidade: 1,
+                subtotal: preco
+            });
+            adicionarItemCarrinho(produtoId, produtoNome, preco, 1, preco);
+        }
+        
+        atualizarTotal();
+        atualizarVisibilidadeCarrinho();
+    });
+});
+
+// Funções para manipular o carrinho (similares às da view de vendas)
+function adicionarItemCarrinho(id, nome, preco, quantidade, subtotal) {
+    const tbody = document.getElementById('itensCarrinho');
+    const tr = document.createElement('tr');
+    tr.id = `item-${id}`;
+    tr.innerHTML = `
+        <td>${nome}</td>
+        <td>
+            <div class="quantidade-control">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="alterarQuantidade('${id}', -1)">-</button>
+                <span class="quantidade">${quantidade}</span>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="alterarQuantidade('${id}', 1)">+</button>
+            </div>
+        </td>
+        <td>R$ ${preco.toFixed(2)}</td>
+        <td>R$ ${subtotal.toFixed(2)}</td>
+        <td>
+            <button type="button" class="btn btn-sm btn-danger" onclick="removerItem('${id}')">×</button>
+        </td>
+    `;
+    tbody.appendChild(tr);
+}
+
+function atualizarItemCarrinho(id) {
+    const item = carrinho.find(item => item.id === id);
+    if (item) {
+        const tr = document.getElementById(`item-${id}`);
+        tr.querySelector('.quantidade').textContent = item.quantidade;
+        tr.querySelector('td:nth-child(4)').textContent = `R$ ${item.subtotal.toFixed(2)}`;
+    }
+}
+
+function alterarQuantidade(id, change) {
+    const item = carrinho.find(item => item.id === id);
+    if (item) {
+        const novoTotal = item.quantidade + change;
+        if (novoTotal > 0) {
+            item.quantidade = novoTotal;
+            item.subtotal = item.quantidade * item.preco;
+            atualizarItemCarrinho(id);
+            atualizarTotal();
+        }
+    }
+}
+
+function removerItem(id) {
+    carrinho = carrinho.filter(item => item.id !== id);
+    document.getElementById(`item-${id}`).remove();
+    atualizarTotal();
+    atualizarVisibilidadeCarrinho();
+}
+
+function atualizarTotal() {
+    totalPedido = carrinho.reduce((total, item) => total + item.subtotal, 0);
+    document.getElementById('totalPedido').textContent = `R$ ${totalPedido.toFixed(2)}`;
+    document.getElementById('totalPedidoDisplay').textContent = `R$ ${totalPedido.toFixed(2)}`;
+}
+
+function atualizarVisibilidadeCarrinho() {
+    const carrinhoVazio = document.getElementById('carrinhoVazio');
+    const tabelaItens = document.getElementById('tabelaItens');
+    
+    if (carrinho.length === 0) {
+        carrinhoVazio.style.display = 'block';
+        tabelaItens.style.display = 'none';
+    } else {
+        carrinhoVazio.style.display = 'none';
+        tabelaItens.style.display = 'table';
+    }
+}
+
+// Submit do formulário
+document.getElementById('pedidoForm').addEventListener('submit', function(e) {
+    if (carrinho.length === 0) {
+        e.preventDefault();
+        alert('Adicione pelo menos um produto ao pedido!');
+        return;
+    }
+    
+    // Preparar dados para envio
+    const produtos = carrinho.map(item => item.id);
+    const quantidades = carrinho.map(item => item.quantidade);
+    
+    document.getElementById('produtosData').value = JSON.stringify(produtos);
+    document.getElementById('quantidadesData').value = JSON.stringify(quantidades);
+});
+
+// Inicializar visibilidade do carrinho
+atualizarVisibilidadeCarrinho();
+</script>
+
+<%- include('../partials/footer') %>

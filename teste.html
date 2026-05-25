@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pagamento BAI Paga</title>
+
+  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #f4f6f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+h1 {
+  color: #d71920;
+  margin-bottom: 10px;
+}
+
+p {
+  color: #777;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background: #d71920;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #b31319;
+}
+
+.preview {
+  margin-top: 25px;
+  display: flex;
+  justify-content: center;
+}
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="card">
+      <h1>BAI Paga</h1>
+      <p>Sistema de Pagamento Online</p>
+
+      <div class="form-group">
+        <label>Descrição</label>
+        <input 
+          type="text" 
+          id="description"
+          placeholder="Ex: Compra de Produto"
+        >
+      </div>
+
+      <div class="form-group">
+        <label>Valor (AOA)</label>
+        <input 
+          type="number" 
+          id="amount"
+          placeholder="Ex: 5000"
+        >
+      </div>
+
+      <button id="payBtn">
+        Pagar Agora
+      </button>
+
+      <div class="preview">
+        <span
+          id="bai-paga-button"
+          data-description=""
+          data-amount=""
+          data-merchant="14627"
+          style="cursor: pointer"
+        >
+          <svg width="161" height="50">
+            <image
+              xlink:href="https://bo.baipaga.ao/payment-widget/white-button.svg"
+              width="161"
+              height="50"
+            />
+          </svg>
+        </span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+const payBtn = document.getElementById("payBtn");
+
+payBtn.addEventListener("click", () => {
+
+  const description = document.getElementById("description").value;
+  const amount = document.getElementById("amount").value;
+
+  if (!description || !amount) {
+    alert("Preencha todos os campos.");
+    return;
+  }
+
+  // Referência ao botão BAI Paga
+  const baiButton = document.getElementById("bai-paga-button");
+
+  // Definir dados dinamicamente
+  baiButton.setAttribute("data-description", description);
+  baiButton.setAttribute("data-amount", amount);
+
+  // Merchant ID
+  const merchant = baiButton.dataset.merchant;
+
+  // URL do widget
+  const paymentURL = `https://bo.baipaga.ao/payment-widget/?description=${encodeURIComponent(description)}&amount=${encodeURIComponent(amount)}&merchant=${merchant}`;
+
+  // Abrir popup
+  window.open(
+    paymentURL,
+    "_blank",
+    "height=462,width=490"
+  );
+
+});
+  </script>
+
+</body>
+</html>
