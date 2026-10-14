@@ -16,7 +16,6 @@ const vendaRoutes = require('./routes/vendas');
 const caixaRoutes = require('./routes/caixa');
 const pedidoRoutes = require('./routes/pedidos');
 const producaoRoutes = require('./routes/producao');
-const iniciais = require('./init-db');
 
 const app = express();
 
@@ -80,4 +79,4 @@ sequelize.sync({ force: false })
     console.error('Erro ao sincronizar banco de dados:', err);
   });
  
-module.exports = app; 
+module.exports = app;
