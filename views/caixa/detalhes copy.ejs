@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caixa <%= typeof caixa !== 'undefined' ? caixa.id : '' %> - Bom Mundo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============================================================
+           RESET / BASE
+           ============================================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #F5F5F5; color: #2E2E2E; line-height: 1.6; display: flex; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+
+        /* ============================================================
+           BOTÕES
+           ============================================================ */
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+            padding: 9px 16px; border-radius: 6px; font-weight: 600; cursor: pointer;
+            transition: all .2s; border: none; font-size: 14px; white-space: nowrap;
+        }
+        .btn:disabled { opacity: .55; cursor: not-allowed; }
+        .btn-primary { background: #E53935; color: #fff; }
+        .btn-primary:hover:not(:disabled) { background: #c62828; }
+        .btn-secondary { background: #2E2E2E; color: #fff; }
+        .btn-secondary:hover:not(:disabled) { background: #1a1a1a; }
+        .btn-warning { background: #ff9800; color: #fff; }
+        .btn-warning:hover:not(:disabled) { background: #f57c00; }
+        .btn-danger { background: #dc3545; color: #fff; }
+        .btn-danger:hover:not(:disabled) { background: #c82333; }
+        .btn-success { background: #4CAF50; color: #fff; }
+        .btn-success:hover:not(:disabled) { background: #388E3C; }
+        .btn-info { background: #17a2b8; color: #fff; }
+        .btn-info:hover:not(:disabled) { background: #138496; }
+        .btn-outline { background: #fff; color: #2E2E2E; border: 1px solid #ddd; }
+        .btn-outline:hover:not(:disabled) { border-color: #E53935; color: #E53935; }
+        .btn-ghost { background: transparent; color: #666; }
+        .btn-ghost:hover:not(:disabled) { background: #f0f0f0; color: #E53935; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-lg { padding: 13px 24px; font-size: 15.5px; }
+        .btn-block { display: flex; width: 100%; }
+        .icon-btn { width: 32px; height: 32px; padding: 0; border-radius: 6px; font-size: 13px; }
+
+        /* ============================================================
+           SIDEBAR
+           ============================================================ */
+        .sidebar {
+            width: 250px; background: #2E2E2E; color: #fff; padding: 20px 0;
+            height: 100vh; position: fixed; top: 0; left: 0; overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,.1); z-index: 100;
+        }
+        .logo { font-size: 24px; font-weight: 700; color: #E53935; display: flex; align-items: center; padding: 0 20px 20px; border-bottom: 1px solid #444; margin-bottom: 20px; }
+        .logo i { margin-right: 10px; }
+        .nav-menu { list-style: none; }
+        .nav-menu li { margin-bottom: 5px; }
+        .nav-menu a { color: #fff; font-weight: 500; transition: all .3s; padding: 12px 20px; display: flex; align-items: center; border-left: 3px solid transparent; }
+        .nav-menu a:hover { background: #3a3a3a; color: #E53935; }
+        .nav-menu a.active { background: #3a3a3a; color: #E53935; border-left: 3px solid #E53935; }
+        .nav-menu i { margin-right: 10px; width: 20px; text-align: center; }
+        .user-info { padding: 20px; border-top: 1px solid #444; margin-top: 20px; display: flex; align-items: center; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #E53935; display: flex; align-items: center; justify-content: center; margin-right: 10px; color: #fff; font-weight: 700; flex-shrink: 0; }
+        .user-details { flex: 1; min-width: 0; }
+        .user-name { font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-role { font-size: 12px; color: #aaa; }
+
+        /* ============================================================
+           MAIN
+           ============================================================ */
+        .main-content { flex: 1; margin-left: 250px; padding: 20px; min-width: 0; }
+
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 24px; padding-bottom: 15px; border-bottom: 1px solid #eee;
+            gap: 15px; flex-wrap: wrap;
+        }
+        .header-left { display: flex; align-items: center; gap: 14px; }
+        .header-back {
+            width: 38px; height: 38px; border-radius: 8px; background: #fff;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: #555; box-shadow: 0 2px 5px rgba(0,0,0,.05);
+            transition: all .2s; flex-shrink: 0;
+        }
+        .header-back:hover { color: #E53935; transform: translateX(-2px); }
+        .page-title { color: #2E2E2E; font-size: 26px; font-weight: 700; line-height: 1.2; }
+        .page-subtitle { font-size: 13px; color: #888; margin-top: 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .search-box { display: flex; align-items: center; background: #fff; border-radius: 6px; padding: 8px 15px; box-shadow: 0 2px 5px rgba(0,0,0,.05); }
+        .search-box input { border: none; outline: none; padding: 5px; width: 180px; font-size: 14px; }
+        .search-box i { color: #777; }
+
+        /* ============================================================
+           LAYOUT
+           ============================================================ */
+        .row { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+        .col-side, .col-main { min-width: 0; }
+
+        /* ============================================================
+           CARDS
+           ============================================================ */
+        .card { background: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,.05); margin-bottom: 18px; overflow: hidden; }
+        .card:last-child { margin-bottom: 0; }
+        .card-header { background: #FAFAFA; padding: 16px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .card-header h3 { color: #2E2E2E; font-size: 15.5px; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+        .card-header h3 i { color: #E53935; }
+        .card-header .card-header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .card-body { padding: 18px 20px; }
+
+        /* ============================================================
+           INFO GROUP (detalhes do caixa)
+           ============================================================ */
+        .info-list { display: flex; flex-direction: column; }
+        .info-group { padding: 14px 0; border-bottom: 1px dashed #f0f0f0; }
+        .info-group:first-child { padding-top: 0; }
+        .info-group:last-child { border-bottom: none; padding-bottom: 0; }
+        .info-group label { font-weight: 700; color: #999; display: flex; align-items: center; gap: 7px; margin-bottom: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: .7px; }
+        .info-group label i { color: #bbb; font-size: 12px; }
+        .info-group .info-value { margin: 0; color: #2E2E2E; font-weight: 700; font-size: 15px; line-height: 1.4; }
+        .info-group .info-value.text-success { color: #2E7D32; }
+        .info-group .info-value.text-danger { color: #C62828; }
+        .info-group .info-value.text-primary { color: #E53935; font-size: 20px; letter-spacing: -.3px; }
+        .info-group .info-hint { font-size: 11.5px; color: #999; font-weight: 500; margin-top: 2px; }
+
+        /* ============================================================
+           BADGES / STATUS
+           ============================================================ */
+        .status-badge {
+            padding: 5px 12px; border-radius: 20px; font-size: 11.5px;
+            font-weight: 700; display: inline-flex; align-items: center; gap: 6px;
+            text-transform: uppercase; letter-spacing: .4px;
+        }
+        .status-aberto { background: #E8F5E9; color: #2E7D32; }
+        .status-fechado { background: #FFEBEE; color: #C62828; }
+        .status-aberto::before,
+        .status-fechado::before {
+            content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor;
+            animation: pulse 1.6s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+        .status-fechado::before { animation: none; }
+
+        .badge { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: .3px; }
+        .badge-success { background: #E8F5E9; color: #2E7D32; }
+        .badge-danger { background: #FFEBEE; color: #C62828; }
+        .badge-info { background: #E3F2FD; color: #0d47a1; }
+        .badge-neutral { background: #F5F5F5; color: #666; }
+
+        /* ============================================================
+           TABELAS
+           ============================================================ */
+        .table-responsive { overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th {
+            background: #F5F5F5; color: #2E2E2E; text-align: left;
+            padding: 12px 14px; font-weight: 700; font-size: 11.5px;
+            text-transform: uppercase; letter-spacing: .4px;
+            border-bottom: 2px solid #e6e6e6; white-space: nowrap;
+        }
+        .data-table td { padding: 12px 14px; border-bottom: 1px solid #f0f0f0; font-size: 13.5px; vertical-align: middle; }
+        .data-table tbody tr:hover { background: #FAFAFA; }
+        .data-table tbody tr:last-child td { border-bottom: none; }
+        .data-table tfoot td { background: #F9F9F9; font-weight: 700; border-top: 2px solid #ddd; font-size: 13.5px; padding: 14px; }
+
+        /* ============================================================
+           FILTROS DE TABELA
+           ============================================================ */
+        .table-filters {
+            display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+            padding: 12px 20px; background: #FAFAFA; border-bottom: 1px solid #eee;
+        }
+        .table-filters .filter-input {
+            padding: 7px 12px; border: 1px solid #ddd; border-radius: 6px;
+            font-size: 13px; background: #fff; min-width: 140px;
+            transition: border-color .2s;
+        }
+        .table-filters .filter-input:focus { border-color: #E53935; outline: none; }
+        .table-filters .filter-search {
+            flex: 1; min-width: 180px; padding-left: 34px;
+        }
+        .filter-search-wrapper { position: relative; flex: 1; min-width: 180px; }
+        .filter-search-wrapper i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; font-size: 13px; }
+
+        /* ============================================================
+           MOVIMENTOS
+           ============================================================ */
+        .mov-desc { font-weight: 600; color: #2E2E2E; display: block; }
+        .mov-cat { font-size: 11.5px; color: #888; }
+        .mov-valor { font-weight: 700; font-size: 14px; }
+        .mov-valor.entrada { color: #2E7D32; }
+        .mov-valor.saida { color: #C62828; }
+
+        /* ============================================================
+           EMPTY STATE
+           ============================================================ */
+        .empty-state {
+            text-align: center; padding: 50px 20px; color: #999;
+        }
+        .empty-state i { font-size: 44px; color: #ddd; margin-bottom: 12px; display: block; }
+        .empty-state p { font-size: 13.5px; margin-bottom: 4px; color: #666; font-weight: 600; }
+        .empty-state .empty-hint { font-size: 12px; color: #aaa; }
+
+        /* ============================================================
+           TOASTS
+           ============================================================ */
+        #toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            display: flex; align-items: center; gap: 11px;
+            padding: 13px 18px; border-radius: 8px; color: #fff;
+            font-size: 14px; font-weight: 600;
+            box-shadow: 0 8px 22px rgba(0,0,0,.2);
+            animation: toastIn .25s ease; max-width: 380px;
+        }
+        .toast.success { background: #4CAF50; }
+        .toast.error { background: #E53935; }
+        .toast.info { background: #17a2b8; }
+        .toast.warning { background: #FF9800; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* ============================================================
+           MODAL
+           ============================================================ */
+        .modal-backdrop {
+            position: fixed; inset: 0; background: rgba(0,0,0,.55);
+            display: none; align-items: center; justify-content: center;
+            z-index: 2000; padding: 20px;
+            backdrop-filter: blur(2px);
+        }
+        .modal-backdrop.open { display: flex; }
+        .modal {
+            background: #fff; border-radius: 12px; width: 100%; max-width: 500px;
+            box-shadow: 0 20px 50px rgba(0,0,0,.3); overflow: hidden;
+            animation: modalPop .22s ease;
+        }
+        @keyframes modalPop { from { transform: scale(.94) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 22px; background: #FAFAFA; border-bottom: 1px solid #eee;
+        }
+        .modal-header h3 { font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .modal-header h3 i { color: #E53935; }
+        .modal-close { background: none; border: none; font-size: 26px; line-height: 1; cursor: pointer; color: #888; padding: 0 4px; border-radius: 6px; transition: all .15s; }
+        .modal-close:hover { color: #E53935; background: #f5f5f5; }
+        .modal-body { padding: 22px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 0 22px 22px; }
+
+        /* ============================================================
+           FORMULÁRIO
+           ============================================================ */
+        .form-group { margin-bottom: 16px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-label { display: block; margin-bottom: 7px; color: #2E2E2E; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+        .form-label i { color: #999; font-size: 12px; }
+        .form-label .required { color: #E53935; }
+        .form-control {
+            width: 100%; padding: 10px 13px; border: 1px solid #ddd; border-radius: 6px;
+            font-size: 14.5px; transition: all .2s; background: #fff; color: #2E2E2E;
+            font-family: inherit;
+        }
+        .form-control:focus { border-color: #E53935; outline: none; box-shadow: 0 0 0 3px rgba(229,57,53,.08); }
+        select.form-control { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3e%3cpath fill='%23888' d='M6 9L1 4h10z'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* Tipo entrada/saída */
+        .tipo-toggle {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px;
+        }
+        .tipo-toggle label {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 11px; border: 1.5px solid #e6e6e6; border-radius: 8px;
+            cursor: pointer; font-size: 13.5px; font-weight: 700; color: #666;
+            transition: all .2s; background: #fff;
+        }
+        .tipo-toggle label:hover { border-color: #E53935; }
+        .tipo-toggle input { display: none; }
+        .tipo-toggle label i { font-size: 14px; }
+        .tipo-toggle label:has(input[value="entrada"]:checked) {
+            background: #E8F5E9; border-color: #4CAF50; color: #2E7D32;
+        }
+        .tipo-toggle label:has(input[value="saida"]:checked) {
+            background: #FFEBEE; border-color: #E53935; color: #C62828;
+        }
+
+        /* ============================================================
+           RESPONSIVO
+           ============================================================ */
+        @media (max-width: 1100px) {
+            .row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { width: 70px; }
+            .sidebar .logo span, .sidebar .nav-menu span, .sidebar .user-details { display: none; }
+            .sidebar .logo { justify-content: center; padding: 0 10px 20px; }
+            .sidebar .logo i { margin-right: 0; }
+            .sidebar .nav-menu a { justify-content: center; padding: 12px 10px; }
+            .sidebar .nav-menu i { margin-right: 0; }
+            .sidebar .user-info { justify-content: center; padding: 20px 10px; }
+            .main-content { margin-left: 70px; padding: 15px; }
+            .search-box input { width: 140px; }
+            .form-row { grid-template-columns: 1fr; }
+            .page-title { font-size: 20px; }
+            .header-actions { width: 100%; justify-content: flex-start; }
+            .header-actions .btn { flex: 1 1 auto; }
+        }
+        @media (max-width: 576px) {
+            .table-filters { flex-direction: column; align-items: stretch; }
+        }
+
+        /* ============================================================
+           IMPRESSÃO
+           ============================================================ */
+        @media print {
+            @page { size: A4 portrait; margin: 12mm; }
+            html, body { background: #fff !important; display: block !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .sidebar, .header, .no-print, .btn, #toast-container, .modal-backdrop, .table-filters, .card-header .card-header-actions { display: none !important; }
+            .main-content { margin: 0 !important; padding: 0 !important; }
+            .card { box-shadow: none !important; border: 1px solid #ddd !important; border-radius: 4px !important; break-inside: avoid; margin-bottom: 12px; }
+            .row { display: block; }
+            .col-side, .col-main { width: 100%; margin-bottom: 12px; }
+            .data-table th { background: #2E2E2E !important; color: #fff !important; }
+            .status-badge, .badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     SIDEBAR
+     ============================================================ -->
+<div class="sidebar no-print">
+    <div class="logo">
+        <i class="fas fa-globe-americas"></i>
+        <span>BOM MUNDO</span>
+    </div>
+    <ul class="nav-menu">
+        <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> <span>Painel principal</span></a></li>
+        <li><a href="/caixa" class="active"><i class="fas fa-cash-register"></i> <span>Caixas</span></a></li>
+        <li><a href="/vendas"><i class="fas fa-shopping-cart"></i> <span>Vendas</span></a></li>
+        <li><a href="/produtos"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
+        <li><a href="#"><i class="fas fa-users"></i> <span>Clientes</span></a></li>
+        <li><a href="#"><i class="fas fa-chart-bar"></i> <span>Relatórios</span></a></li>
+        <li><a href="#"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+    </ul>
+    <div class="user-info">
+        <div class="user-avatar">JS</div>
+        <div class="user-details">
+            <div class="user-name">João Silva</div>
+            <div class="user-role">Gerente</div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MAIN CONTENT
+     ============================================================ -->
+<div class="main-content">
+
+    <!-- HEADER -->
+    <div class="header no-print">
+        <div class="header-left">
+            <a href="/caixa" class="header-back" title="Voltar para caixas">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="page-title">Caixa #<%= caixa.id %></h1>
+                <div class="page-subtitle">
+                    <span class="status-badge status-<%= caixa.status %>">
+                        <%= caixa.status === 'aberto' ? 'Aberto' : 'Fechado' %>
+                    </span>
+                    <span><i class="fas fa-user"></i> <%= caixa.Funcionario ? caixa.Funcionario.nome : '—' %></span>
+                </div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="globalSearch" placeholder="Pesquisar movimentos...">
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="window.print()">
+                <i class="fas fa-print"></i> Imprimir
+            </button>
+            <% if (caixa.status === 'aberto') { %>
+                <button type="button" class="btn btn-primary btn-sm" onclick="abrirModalMovimento()">
+                    <i class="fas fa-plus"></i> Novo Movimento
+                </button>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- LAYOUT: MAIN (left) + INFO (right) -->
+    <div class="row" style="grid-template-columns: 1fr 360px;">
+
+        <!-- ====================================================
+             COLUNA PRINCIPAL — MOVIMENTOS + VENDAS
+             ==================================================== -->
+        <div class="col-main">
+
+            <!-- MOVIMENTOS -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-exchange-alt"></i> Movimentações do Caixa</h3>
+                    <div class="card-header-actions no-print">
+                        <span style="font-size:12.5px;color:#888;" id="movCount"></span>
+                        <button type="button" class="btn btn-sm btn-outline" onclick="exportarMovimentosCSV()">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                    </div>
+                </div>
+
+                <% if (caixa.MovimentoCaixas && caixa.MovimentoCaixas.length > 0) { %>
+                <!-- FILTROS -->
+                <div class="table-filters no-print">
+                    <div class="filter-search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="movSearch" class="filter-input filter-search" placeholder="Pesquisar por descrição...">
+                    </div>
+                    <select id="movTipoFilter" class="filter-input">
+                        <option value="">Todos os tipos</option>
+                        <option value="entrada">Entradas</option>
+                        <option value="saida">Saídas</option>
+                    </select>
+                    <select id="movCatFilter" class="filter-input">
+                        <option value="">Todas as categorias</option>
+                        <option value="venda">Venda</option>
+                        <option value="despesa">Despesa</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+                <% } %>
+
+                <div class="table-responsive">
+                    <% if (caixa.MovimentoCaixas && caixa.MovimentoCaixas.length > 0) { %>
+                        <table class="data-table" id="tabelaMovimentos">
+                            <thead>
+                                <tr>
+                                    <th>Data/Hora</th>
+                                    <th>Descrição</th>
+                                    <th style="text-align:right;">Valor (Kz)</th>
+                                    <th style="text-align:center;">Tipo</th>
+                                    <th>Categoria</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyMovimentos">
+                                <% caixa.MovimentoCaixas.forEach(mov => {
+                                    const isEntrada = mov.tipo === 'entrada';
+                                    const dt = new Date(mov.data_movimento);
+                                %>
+                                <tr data-tipo="<%= mov.tipo %>" data-categoria="<%= mov.categoria %>">
+                                    <td style="white-space:nowrap;">
+                                        <div style="font-weight:600;"><%= dt.toLocaleDateString('pt-AO') %></div>
+                                        <div style="font-size:11.5px;color:#888;"><%= dt.toLocaleTimeString('pt-AO', {hour:'2-digit',minute:'2-digit'}) %></div>
+                                    </td>
+                                    <td>
+                                        <span class="mov-desc"><%= mov.descricao %></span>
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <span class="mov-valor <%= isEntrada ? 'entrada' : 'saida' %>">
+                                            <%= isEntrada ? '+' : '−' %> <%= Number(mov.valor).toLocaleString('pt-AO', {minimumFractionDigits:2, maximumFractionDigits:2}) %>
+                                        </span>
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <span class="badge <%= isEntrada ? 'badge-success' : 'badge-danger' %>">
+                                            <i class="fas fa-arrow-<%= isEntrada ? 'down' : 'up' %>"></i>
+                                            <%= isEntrada ? 'Entrada' : 'Saída' %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-neutral"><%= mov.categoria %></span>
+                                    </td>
+                                </tr>
+                                <% }); %>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2" style="text-align:right;">Totais do Período</td>
+                                    <td style="text-align:right;">
+                                        <div style="color:#2E7D32;">+ <%= Number(totalEntradas || 0).toLocaleString('pt-AO', {minimumFractionDigits:2}) %></div>
+                                        <div style="color:#C62828;">− <%= Number(totalSaidas || 0).toLocaleString('pt-AO', {minimumFractionDigits:2}) %></div>
+                                    </td>
+                                    <td colspan="2">
+                                        <strong>Saldo: <span style="color:#4CAF50;"><%= Number(saldoAtual || 0).toLocaleString('pt-AO', {minimumFractionDigits:2}) %> Kz</span></strong>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <div id="movEmptyFilter" class="empty-state" style="display:none;">
+                            <i class="fas fa-filter"></i>
+                            <p>Nenhum movimento corresponde aos filtros</p>
+                            <span class="empty-hint">Tente ajustar os critérios de pesquisa</span>
+                        </div>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>Nenhuma movimentação registada</p>
+                            <span class="empty-hint">
+                                <% if (caixa.status === 'aberto') { %>
+                                    Adicione um movimento clicando em "Novo Movimento".
+                                <% } else { %>
+                                    Este caixa foi fechado sem movimentos extra.
+                                <% } %>
+                            </span>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- VENDAS -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-receipt"></i> Vendas Relacionadas</h3>
+                    <div class="card-header-actions no-print">
+                        <% if (caixa.Vendas && caixa.Vendas.length > 0) { %>
+                            <span style="font-size:12.5px;color:#888;"><%= caixa.Vendas.length %> <%= caixa.Vendas.length === 1 ? 'venda' : 'vendas' %></span>
+                            <a href="/vendas" class="btn btn-sm btn-outline">
+                                <i class="fas fa-external-link-alt"></i> Ver todas
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+
+                <% if (caixa.Vendas && caixa.Vendas.length > 0) { %>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Data/Hora</th>
+                                <th style="text-align:right;">Valor (Kz)</th>
+                                <th>Forma Pagamento</th>
+                                <th style="text-align:center;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% caixa.Vendas.forEach(venda => {
+                                const formas = {
+                                    'dinheiro': 'Dinheiro',
+                                    'cartao_debito': 'TPA',
+                                    'Tpa': 'TPA',
+                                    'cartao_credito': 'Cartão Crédito',
+                                    'transferencia': 'Transferência'
+                                };
+                            %>
+                            <tr>
+                                <td><strong>#<%= venda.id %></strong></td>
+                                <td style="white-space:nowrap;">
+                                    <%= new Date(venda.data_venda).toLocaleString('pt-AO') %>
+                                </td>
+                                <td style="text-align:right;font-weight:700;color:#E53935;">
+                                    <%= Number(venda.valor_total).toLocaleString('pt-AO', {minimumFractionDigits:2, maximumFractionDigits:2}) %>
+                                </td>
+                                <td>
+                                    <span class="badge badge-info">
+                                        <i class="fas fa-credit-card"></i>
+                                        <%= formas[venda.forma_pagamento] || venda.forma_pagamento %>
+                                    </span>
+                                </td>
+                                <td style="text-align:center;">
+                                    <a href="/vendas/<%= venda.id %>" class="btn btn-sm btn-outline icon-btn" title="Ver factura">
+                                        <i class="fas fa-file-invoice"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+                <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>Nenhuma venda associada a este caixa</p>
+                    <span class="empty-hint">As vendas realizadas durante este caixa aparecerão aqui</span>
+                </div>
+                <% } %>
+            </div>
+
+        </div>
+
+        <!-- ====================================================
+             COLUNA LATERAL — INFORMAÇÕES DO CAIXA (DIREITA)
+             ==================================================== -->
+        <div class="col-side">
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-info-circle"></i> Informações do Caixa</h3>
+                </div>
+                <div class="card-body">
+                    <div class="info-list">
+
+                        <div class="info-group">
+                            <label><i class="fas fa-circle-dot"></i> Estado</label>
+                            <div class="info-value">
+                                <span class="status-badge status-<%= caixa.status %>">
+                                    <%= caixa.status === 'aberto' ? 'Aberto' : 'Fechado' %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <label><i class="fas fa-hashtag"></i> Identificação</label>
+                            <div class="info-value">Caixa #<%= caixa.id %></div>
+                        </div>
+
+                        <div class="info-group">
+                            <label><i class="fas fa-user"></i> Funcionário Responsável</label>
+                            <div class="info-value"><%= caixa.Funcionario ? caixa.Funcionario.nome : '—' %></div>
+                            <div class="info-hint">Operador do turno</div>
+                        </div>
+
+                        <div class="info-group">
+                            <label><i class="fas fa-calendar-alt"></i> Data de Abertura</label>
+                            <div class="info-value"><%= new Date(caixa.data_abertura).toLocaleString('pt-AO') %></div>
+                        </div>
+
+                        <% if (caixa.data_fecho) { %>
+                        <div class="info-group">
+                            <label><i class="fas fa-calendar-check"></i> Data de Fecho</label>
+                            <div class="info-value"><%= new Date(caixa.data_fecho).toLocaleString('pt-AO') %></div>
+                        </div>
+                        <% } %>
+
+                        <div class="info-group">
+                            <label><i class="fas fa-coins"></i> Valor de Abertura</label>
+                            <div class="info-value">
+                                <%= Number(caixa.valor_abertura || 0).toLocaleString('pt-AO', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %> Kz
+                            </div>
+                        </div>
+
+                        <div class="info-group">
+                            <label><i class="fas fa-wallet"></i> Saldo Atual</label>
+                            <div class="info-value text-success">
+                                <%= Number(caixa.saldo_final || caixa.valor_abertura || 0).toLocaleString('pt-AO', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %> Kz
+                            </div>
+                            <div class="info-hint">Valor disponível em caixa</div>
+                        </div>
+
+                        <% if (caixa.status === 'aberto') { %>
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #f0f0f0;">
+                            <button type="button" class="btn btn-warning btn-block" id="btnFecharCaixa">
+                                <i class="fas fa-lock"></i> Fechar Caixa
+                            </button>
+                            <form id="fecharCaixaForm" action="/caixa/fechar/<%= caixa.id %>" method="POST" style="display:none;"></form>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ============================================================
+     MODAL: NOVO MOVIMENTO
+     ============================================================ -->
+<% if (caixa.status === 'aberto') { %>
+<div class="modal-backdrop no-print" id="movimentoModal" onclick="if (event.target === this) fecharModalMovimento()">
+    <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <h3><i class="fas fa-plus-circle"></i> Novo Movimento</h3>
+            <button class="modal-close" onclick="fecharModalMovimento()" aria-label="Fechar">&times;</button>
+        </div>
+        <form id="adicionar-movimento-form" method="POST" action="/caixa/<%= caixa.id %>/movimento">
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label class="form-label">Tipo de Movimento <span class="required">*</span></label>
+                    <div class="tipo-toggle">
+                        <label>
+                            <input type="radio" name="tipo" value="entrada" checked>
+                            <i class="fas fa-arrow-down"></i>
+                            <span>Entrada</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="tipo" value="saida">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>Saída</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="descricao">
+                        <i class="fas fa-align-left"></i> Descrição <span class="required">*</span>
+                    </label>
+                    <input type="text" id="descricao" name="descricao" class="form-control" placeholder="Ex: Compra de material de escritório" required autofocus>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="valor">
+                            <i class="fas fa-coins"></i> Valor (Kz) <span class="required">*</span>
+                        </label>
+                        <input type="number" id="valor" name="valor" class="form-control" step="0.01" min="0.01" placeholder="0,00" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="categoria">
+                            <i class="fas fa-tag"></i> Categoria <span class="required">*</span>
+                        </label>
+                        <select id="categoria" name="categoria" class="form-control" required>
+                            <option value="venda">Venda</option>
+                            <option value="despesa">Despesa</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="fecharModalMovimento()">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn-primary" id="btnSubmitMovimento">
+                    <i class="fas fa-plus"></i> Adicionar Movimento
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<% } %>
+
+<!-- ============================================================
+     MODAL: CONFIRMAÇÃO (FECHAR CAIXA)
+     ============================================================ -->
+<div class="modal-backdrop no-print" id="confirmModal" onclick="if (event.target === this) fecharModal()">
+    <div class="modal" style="max-width: 440px;">
+        <div class="modal-header">
+            <h3><i class="fas fa-exclamation-triangle" style="color:#FF9800;"></i> <span id="confirmTitle">Confirmar</span></h3>
+            <button class="modal-close" onclick="fecharModal()" aria-label="Fechar">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="confirmMessage" style="font-size:14.5px;color:#555;line-height:1.6;"></p>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+            <button class="btn btn-primary" id="confirmOkBtn">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<!-- TOASTS -->
+<div id="toast-container" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   TOASTS
+   ============================================================ */
+function toast(msg, tipo = 'info', dur = 3200) {
+    const c = document.getElementById('toast-container');
+    const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle' };
+    const t = document.createElement('div');
+    t.className = 'toast ' + tipo;
+    t.innerHTML = '<i class="fas ' + (icons[tipo] || icons.info) + '"></i><span></span>';
+    t.querySelector('span').textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => {
+        t.style.transition = 'all .3s ease';
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(30px)';
+        setTimeout(() => t.remove(), 300);
+    }, dur);
+}
+
+/* ============================================================
+   MODAL DE CONFIRMAÇÃO
+   ============================================================ */
+let confirmCallback = null;
+function confirmar(titulo, mensagem, callback, btnLabel = 'Confirmar', btnClass = 'btn-primary') {
+    document.getElementById('confirmTitle').textContent = titulo;
+    document.getElementById('confirmMessage').textContent = mensagem;
+    const okBtn = document.getElementById('confirmOkBtn');
+    okBtn.innerHTML = btnLabel;
+    okBtn.className = 'btn ' + btnClass;
+    confirmCallback = callback;
+    document.getElementById('confirmModal').classList.add('open');
+    okBtn.onclick = () => {
+        fecharModal();
+        if (confirmCallback) confirmCallback();
+    };
+}
+function fecharModal() {
+    document.getElementById('confirmModal').classList.remove('open');
+    confirmCallback = null;
+}
+
+/* ============================================================
+   MODAL: NOVO MOVIMENTO
+   ============================================================ */
+function abrirModalMovimento() {
+    const modal = document.getElementById('movimentoModal');
+    if (!modal) return;
+    modal.classList.add('open');
+    setTimeout(() => {
+        const desc = document.getElementById('descricao');
+        if (desc) desc.focus();
+    }, 80);
+}
+function fecharModalMovimento() {
+    const modal = document.getElementById('movimentoModal');
+    if (!modal) return;
+    modal.classList.remove('open');
+    const form = document.getElementById('adicionar-movimento-form');
+    if (form) form.reset();
+}
+
+/* ============================================================
+   FECHAR CAIXA
+   ============================================================ */
+const btnFechar = document.getElementById('btnFecharCaixa');
+if (btnFechar) {
+    btnFechar.addEventListener('click', () => {
+        confirmar(
+            'Fechar Caixa',
+            'Tem a certeza que deseja fechar este caixa? Após o fecho, não será possível adicionar movimentos.',
+            () => {
+                btnFechar.disabled = true;
+                btnFechar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A fechar...';
+                document.getElementById('fecharCaixaForm').submit();
+            },
+            'Fechar Caixa',
+            'btn-warning'
+        );
+    });
+}
+
+/* ============================================================
+   FILTROS DE MOVIMENTOS
+   ============================================================ */
+const movSearch = document.getElementById('movSearch');
+const movTipoFilter = document.getElementById('movTipoFilter');
+const movCatFilter = document.getElementById('movCatFilter');
+
+function filtrarMovimentos() {
+    const tbody = document.getElementById('tbodyMovimentos');
+    if (!tbody) return;
+    const termo = (movSearch?.value || '').toLowerCase().trim();
+    const tipo = movTipoFilter?.value || '';
+    const cat = movCatFilter?.value || '';
+
+    let visiveis = 0;
+    tbody.querySelectorAll('tr').forEach(tr => {
+        const desc = (tr.querySelector('.mov-desc')?.textContent || '').toLowerCase();
+        const matchTermo = !termo || desc.includes(termo);
+        const matchTipo = !tipo || tr.dataset.tipo === tipo;
+        const matchCat = !cat || tr.dataset.categoria === cat;
+        const match = matchTermo && matchTipo && matchCat;
+        tr.style.display = match ? '' : 'none';
+        if (match) visiveis++;
+    });
+
+    const emptyFilter = document.getElementById('movEmptyFilter');
+    const tabela = document.getElementById('tabelaMovimentos');
+    if (emptyFilter && tabela) {
+        emptyFilter.style.display = visiveis === 0 ? 'block' : 'none';
+        tabela.style.display = visiveis === 0 ? 'none' : '';
+    }
+
+    const movCount = document.getElementById('movCount');
+    if (movCount) movCount.textContent = visiveis + (visiveis === 1 ? ' movimento' : ' movimentos');
+}
+
+if (movSearch) movSearch.addEventListener('input', filtrarMovimentos);
+if (movTipoFilter) movTipoFilter.addEventListener('change', filtrarMovimentos);
+if (movCatFilter) movCatFilter.addEventListener('change', filtrarMovimentos);
+
+/* ============================================================
+   PESQUISA GLOBAL
+   ============================================================ */
+const globalSearch = document.getElementById('globalSearch');
+if (globalSearch) {
+    globalSearch.addEventListener('input', function () {
+        if (movSearch) {
+            movSearch.value = this.value;
+            filtrarMovimentos();
+        }
+    });
+}
+
+/* ============================================================
+   EXPORTAR MOVIMENTOS PARA CSV
+   ============================================================ */
+function exportarMovimentosCSV() {
+    const tbody = document.getElementById('tbodyMovimentos');
+    if (!tbody || tbody.querySelectorAll('tr').length === 0) {
+        toast('Não há movimentos para exportar.', 'warning');
+        return;
+    }
+
+    const sep = ';';
+    const linhas = [];
+    linhas.push(['BOM MUNDO - MOVIMENTOS DO CAIXA #<%= caixa.id %>']);
+    linhas.push(['Funcionário', '<%= caixa.Funcionario ? caixa.Funcionario.nome : "" %>']);
+    linhas.push(['Data de Abertura', '<%= new Date(caixa.data_abertura).toLocaleString("pt-AO") %>']);
+    linhas.push(['Estado', '<%= caixa.status === "aberto" ? "Aberto" : "Fechado" %>']);
+    linhas.push([]);
+    linhas.push(['Data/Hora', 'Descrição', 'Valor (Kz)', 'Tipo', 'Categoria']);
+
+    tbody.querySelectorAll('tr').forEach(tr => {
+        if (tr.style.display === 'none') return;
+        const celulas = tr.querySelectorAll('td');
+        const dataHora = celulas[0]?.innerText.trim().replace(/\n/g, ' ') || '';
+        const descricao = celulas[1]?.innerText.trim() || '';
+        const valor = celulas[2]?.innerText.trim() || '';
+        const tipo = celulas[3]?.innerText.trim() || '';
+        const categoria = celulas[4]?.innerText.trim() || '';
+        linhas.push([dataHora, descricao, valor, tipo, categoria]);
+    });
+
+    const csv = '\uFEFF' + linhas.map(l => l.map(c => {
+        const s = String(c == null ? '' : c);
+        return /[";\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    }).join(sep)).join('\r\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Movimentos_Caixa_<%= caixa.id %>_' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('CSV exportado com sucesso.', 'success');
+}
+
+/* ============================================================
+   ATALHOS
+   ============================================================ */
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        fecharModal();
+        fecharModalMovimento();
+    }
+    // Ctrl+N ou Alt+N abre modal de novo movimento
+    if ((e.altKey && e.key.toLowerCase() === 'n') && document.getElementById('movimentoModal')) {
+        e.preventDefault();
+        abrirModalMovimento();
+    }
+});
+
+/* ============================================================
+   INICIALIZAÇÃO
+   ============================================================ */
+
+// Contar movimentos inicialmente
+(function() {
+    const rows = document.querySelectorAll('#tbodyMovimentos tr');
+    const movCount = document.getElementById('movCount');
+    if (movCount) movCount.textContent = rows.length + (rows.length === 1 ? ' movimento' : ' movimentos');
+})();
+
+// Animação de entrada das linhas
+document.querySelectorAll('#tbodyMovimentos tr').forEach((tr, i) => {
+    tr.style.opacity = '0';
+    tr.style.transform = 'translateY(6px)';
+    setTimeout(() => {
+        tr.style.transition = 'all .3s ease';
+        tr.style.opacity = '1';
+        tr.style.transform = 'translateY(0)';
+    }, Math.min(i * 25, 400));
+});
+
+// Form submit do movimento — validação + loading
+const movForm = document.getElementById('adicionar-movimento-form');
+if (movForm) {
+    movForm.addEventListener('submit', function (e) {
+        const valor = parseFloat(document.getElementById('valor').value);
+        if (!valor || valor <= 0) {
+            e.preventDefault();
+            toast('Introduza um valor válido maior que zero.', 'error');
+            return;
+        }
+        const btn = document.getElementById('btnSubmitMovimento');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A adicionar...';
+    });
+}
+</script>
+
+</body>
+</html>

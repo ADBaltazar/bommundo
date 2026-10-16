@@ -1,0 +1,2510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendas - Bom Mundo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============================================================
+           RESET / BASE
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #F5F5F5;
+            color: #2E2E2E;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ============================================================
+           BOTÕES
+           ============================================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 9px 16px;
+            border-radius: 5px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            border: none;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .btn:disabled { opacity: .55; cursor: not-allowed; }
+
+        .btn-primary { background-color: #E53935; color: #fff; }
+        .btn-primary:hover:not(:disabled) { background-color: #c62828; }
+
+        .btn-secondary { background-color: #2E2E2E; color: #fff; }
+        .btn-secondary:hover:not(:disabled) { background-color: #1a1a1a; }
+
+        .btn-warning { background-color: #ff9800; color: #fff; }
+        .btn-warning:hover:not(:disabled) { background-color: #f57c00; }
+
+        .btn-danger { background-color: #dc3545; color: #fff; }
+        .btn-danger:hover:not(:disabled) { background-color: #c82333; }
+
+        .btn-success { background-color: #4CAF50; color: #fff; }
+        .btn-success:hover:not(:disabled) { background-color: #388E3C; }
+
+        .btn-info { background-color: #17a2b8; color: #fff; }
+        .btn-info:hover:not(:disabled) { background-color: #138496; }
+
+        .btn-whatsapp { background-color: #25D366; color: #fff; }
+        .btn-whatsapp:hover:not(:disabled) { background-color: #1da851; }
+
+        .btn-outline {
+            background: #fff;
+            color: #2E2E2E;
+            border: 1px solid #ddd;
+        }
+        .btn-outline:hover:not(:disabled) { border-color: #E53935; color: #E53935; }
+
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-lg { padding: 12px 24px; font-size: 16px; }
+        .btn-block { display: flex; width: 100%; }
+
+        /* ============================================================
+           SIDEBAR
+           ============================================================ */
+        .sidebar {
+            width: 250px;
+            background-color: #2E2E2E;
+            color: #fff;
+            padding: 20px 0;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #E53935;
+            display: flex;
+            align-items: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #444;
+            margin-bottom: 20px;
+        }
+
+        .logo i { margin-right: 10px; }
+
+        .nav-menu { list-style: none; }
+        .nav-menu li { margin-bottom: 5px; }
+
+        .nav-menu a {
+            color: #fff;
+            font-weight: 500;
+            transition: all 0.3s;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-menu a:hover { background-color: #3a3a3a; color: #E53935; }
+
+        .nav-menu a.active {
+            background-color: #3a3a3a;
+            color: #E53935;
+            border-left: 3px solid #E53935;
+        }
+
+        .nav-menu i { margin-right: 10px; width: 20px; text-align: center; }
+
+        .user-info {
+            padding: 20px;
+            border-top: 1px solid #444;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #E53935;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            color: #fff;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .user-details { flex: 1; min-width: 0; }
+        .user-name { font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-role { font-size: 12px; color: #aaa; }
+
+        /* ============================================================
+           MAIN CONTENT
+           ============================================================ */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+            min-width: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .page-title { color: #2E2E2E; font-size: 28px; font-weight: 600; }
+
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 5px;
+            padding: 8px 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .search-box input { border: none; outline: none; padding: 5px; width: 200px; }
+        .search-box i { color: #777; }
+
+        .notification {
+            position: relative;
+            background: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #E53935;
+            color: #fff;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ============================================================
+           TABS
+           ============================================================ */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid #e6e6e6;
+            margin-bottom: 22px;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+
+        .tab {
+            background: transparent;
+            border: none;
+            padding: 12px 20px;
+            font-size: 14.5px;
+            font-weight: 600;
+            color: #777;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            transition: all .2s;
+        }
+
+        .tab:hover { color: #E53935; }
+
+        .tab.active {
+            color: #E53935;
+            border-bottom-color: #E53935;
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ============================================================
+           FILTROS
+           ============================================================ */
+        .filters {
+            background: #fff;
+            padding: 18px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 22px;
+        }
+
+        .filters-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #999;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            align-items: end;
+        }
+
+        .form-group { margin-bottom: 0; min-width: 0; }
+
+        .form-label {
+            display: block;
+            margin-bottom: 7px;
+            color: #2E2E2E;
+            font-weight: 500;
+            font-size: 13.5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 13px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14.5px;
+            transition: border-color 0.3s;
+            background: #fff;
+            color: #2E2E2E;
+        }
+
+        .form-control:focus { border-color: #E53935; outline: none; }
+
+        textarea.form-control { resize: vertical; min-height: 100px; }
+
+        select.form-control { cursor: pointer; }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px dashed #eee;
+        }
+
+        .presets {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .preset-chip {
+            background: #F5F5F5;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #555;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .preset-chip:hover { border-color: #E53935; color: #E53935; background: #fff; }
+
+        /* ============================================================
+           TOOLBAR DE RELATÓRIO
+           ============================================================ */
+        .report-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            background: #fff;
+            border-radius: 8px;
+            padding: 14px 18px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 22px;
+        }
+
+        .report-toolbar-info {
+            font-size: 13.5px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .report-toolbar-info strong { color: #2E2E2E; }
+
+        .report-toolbar-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================================
+           CARDS
+           ============================================================ */
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: #F5F5F5;
+            padding: 18px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .card-header h3 {
+            color: #2E2E2E;
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .card-header h3 i { color: #E53935; }
+
+        .card-body { padding: 20px; }
+
+        /* ============================================================
+           SUMMARY / KPI CARDS
+           ============================================================ */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .summary-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 18px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #E53935;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .summary-card .summary-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            color: #999;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .summary-card .summary-value {
+            font-size: 23px;
+            font-weight: 700;
+            color: #2E2E2E;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+
+        .summary-card .summary-sub { font-size: 12.5px; color: #888; }
+
+        .summary-card.green  { border-left-color: #4CAF50; }
+        .summary-card.orange { border-left-color: #FF9800; }
+        .summary-card.blue   { border-left-color: #2196F3; }
+        .summary-card.red    { border-left-color: #E53935; }
+        .summary-card.dark   { border-left-color: #2E2E2E; }
+
+        /* ============================================================
+           TABELAS
+           ============================================================ */
+        .table-responsive { overflow-x: auto; }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
+
+        .data-table th {
+            background-color: #F5F5F5;
+            color: #2E2E2E;
+            text-align: left;
+            padding: 13px 15px;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            border-bottom: 2px solid #e6e6e6;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 13px 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .data-table tbody tr:hover { background-color: #fafafa; }
+        .data-table tbody tr:last-child td { border-bottom: none; }
+
+        .data-table tfoot td {
+            background: #F9F9F9;
+            font-weight: 700;
+            border-top: 2px solid #ddd;
+            font-size: 14.5px;
+        }
+
+        .text-center { text-align: center; }
+        .text-end { text-align: right; }
+        .text-danger { color: #E53935; font-weight: bold; }
+        .text-success { color: #4CAF50; font-weight: bold; }
+        .text-muted { color: #888; }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 46px;
+            color: #ddd;
+            margin-bottom: 14px;
+            display: block;
+        }
+
+        /* ============================================================
+           STATUS BADGES
+           ============================================================ */
+        .status-badge {
+            padding: 5px 11px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 700;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .status-concluida { background-color: #E8F5E9; color: #2E7D32; }
+        .status-pendente  { background-color: #FFF3E0; color: #E65100; }
+        .status-cancelada { background-color: #FFEBEE; color: #C62828; }
+
+        /* ============================================================
+           PAYMENT BREAKDOWN
+           ============================================================ */
+        .pay-list { display: flex; flex-direction: column; gap: 14px; }
+
+        .pay-item {
+            display: grid;
+            grid-template-columns: 170px 1fr 150px;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .pay-item-label {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .pay-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .pay-icon.dinheiro       { background: #4CAF50; }
+        .pay-icon.Tpa            { background: #2196F3; }
+        .pay-icon.transferencia  { background: #FF9800; }
+        .pay-icon.outro          { background: #888; }
+
+        .pay-bar {
+            background: #f0f0f0;
+            border-radius: 20px;
+            height: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .pay-bar-fill {
+            height: 100%;
+            border-radius: 20px;
+            transition: width .5s ease;
+            background: #E53935;
+        }
+
+        .pay-bar-fill.dinheiro      { background: #4CAF50; }
+        .pay-bar-fill.Tpa           { background: #2196F3; }
+        .pay-bar-fill.transferencia { background: #FF9800; }
+        .pay-bar-fill.outro         { background: #888; }
+
+        .pay-item-value { text-align: right; font-weight: 700; font-size: 14.5px; }
+        .pay-item-value small { display: block; font-weight: 500; color: #888; font-size: 12px; }
+
+        /* ============================================================
+           CAIXA INFO
+           ============================================================ */
+        .caixa-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .caixa-status.aberto { background: #E8F5E9; color: #2E7D32; }
+        .caixa-status.fechado { background: #FFEBEE; color: #C62828; }
+
+        .dot {
+            width: 9px; height: 9px; border-radius: 50%;
+            background: currentColor;
+            animation: pulse 1.6s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .35; }
+        }
+
+        .info-list { display: flex; flex-direction: column; gap: 0; }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 11px 0;
+            border-bottom: 1px dashed #eee;
+            font-size: 14px;
+        }
+
+        .info-row:last-child { border-bottom: none; }
+        .info-row .info-key { color: #888; font-weight: 500; }
+        .info-row .info-val { font-weight: 600; text-align: right; }
+
+        /* ============================================================
+           PRINT HEADER (aparece só na impressão / no PDF)
+           ============================================================ */
+        .print-header { display: none; }
+
+        /* ============================================================
+           MODAIS
+           ============================================================ */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal-backdrop.open { display: flex; }
+
+        .modal {
+            background: #fff;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .3);
+            overflow: hidden;
+            animation: modalPop .2s ease;
+            margin: auto;
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(.95); opacity: 0; }
+            to   { transform: scale(1);   opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            background: #F5F5F5;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h3 { font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .modal-header h3 i { color: #E53935; }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 26px;
+            line-height: 1;
+            cursor: pointer;
+            color: #888;
+            padding: 0 4px;
+        }
+
+        .modal-close:hover { color: #E53935; }
+
+        .modal-body { padding: 20px; }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 0 20px 20px;
+        }
+
+        .modal-preview {
+            background: #F9F9F9;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            padding: 12px 14px;
+            font-size: 12.5px;
+            color: #555;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: 'Consolas', monospace;
+            margin-top: 6px;
+        }
+
+        .checkbox-inline {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 14px;
+            color: #2E2E2E;
+            cursor: pointer;
+        }
+
+        .checkbox-inline input { width: 16px; height: 16px; accent-color: #E53935; }
+
+        /* ============================================================
+           TOASTS
+           ============================================================ */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 14px 18px;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, .2);
+            animation: toastIn .25s ease;
+            max-width: 380px;
+        }
+
+        .toast.success { background: #4CAF50; }
+        .toast.error   { background: #E53935; }
+        .toast.info    { background: #17a2b8; }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ============================================================
+           RESPONSIVO
+           ============================================================ */
+        @media (max-width: 992px) {
+            .pay-item { grid-template-columns: 140px 1fr 120px; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 70px; }
+
+            .sidebar .logo span,
+            .sidebar .nav-menu span,
+            .sidebar .user-details { display: none; }
+
+            .sidebar .logo { justify-content: center; padding: 0 10px 20px; }
+            .sidebar .logo i { margin-right: 0; }
+            .sidebar .nav-menu a { justify-content: center; padding: 12px 10px; }
+            .sidebar .nav-menu i { margin-right: 0; }
+            .sidebar .user-info { justify-content: center; padding: 20px 10px; }
+
+            .main-content { margin-left: 70px; padding: 15px; }
+            .search-box input { width: 140px; }
+
+            .report-toolbar { flex-direction: column; align-items: stretch; }
+            .report-toolbar-actions { justify-content: stretch; }
+            .report-toolbar-actions .btn { flex: 1 1 auto; }
+
+            .pay-item { grid-template-columns: 1fr; gap: 6px; }
+            .pay-item-value { text-align: left; }
+
+            .summary-card .summary-value { font-size: 20px; }
+        }
+
+        @media (max-width: 576px) {
+            .header { flex-direction: column; align-items: flex-start; gap: 14px; }
+            .header-actions { width: 100%; justify-content: space-between; }
+            .search-box { flex: 1; }
+            .page-title { font-size: 22px; }
+            .tab { padding: 11px 14px; font-size: 13.5px; }
+        }
+
+        /* ============================================================
+           IMPRESSÃO
+           ============================================================ */
+        @media print {
+            @page { size: A4 portrait; margin: 12mm; }
+
+            html, body {
+                background: #fff !important;
+                display: block !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .sidebar,
+            .header,
+            .tabs,
+            .filters,
+            .report-toolbar,
+            .no-print,
+            .modal-backdrop,
+            #toast-container,
+            .summary-card .no-print {
+                display: none !important;
+            }
+
+            .main-content {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .tab-panel { display: none !important; }
+            .tab-panel.active { display: block !important; }
+
+            .card,
+            .summary-card {
+                box-shadow: none !important;
+                border: 1px solid #e6e6e6 !important;
+                border-radius: 4px !important;
+                break-inside: avoid;
+            }
+
+            .summary-card { border-left-width: 4px !important; }
+
+            .data-table th {
+                background: #2E2E2E !important;
+                color: #fff !important;
+                border-bottom: none !important;
+            }
+
+            .data-table tr:hover { background: transparent !important; }
+
+            .status-badge,
+            .pay-bar-fill,
+            .pay-icon,
+            .caixa-status {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .print-header {
+                display: block !important;
+                border-bottom: 2px solid #E53935;
+                padding-bottom: 14px;
+                margin-bottom: 20px;
+            }
+
+            .print-header h1 {
+                font-size: 20px;
+                color: #E53935;
+                margin-bottom: 4px;
+            }
+
+            .print-header p { font-size: 12px; color: #666; margin: 0; }
+            .print-header .ph-meta {
+                display: flex;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 10px;
+                font-size: 12px;
+                color: #444;
+            }
+
+            .print-footer {
+                display: block !important;
+                margin-top: 26px;
+                padding-top: 12px;
+                border-top: 1px dashed #bbb;
+                font-size: 11px;
+                color: #777;
+                text-align: center;
+            }
+
+            .btn { display: none !important; }
+        }
+
+        .print-footer { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================
+         SIDEBAR
+         ============================================================ -->
+    <div class="sidebar no-print">
+        <div class="logo">
+            <i class="fas fa-globe-americas"></i>
+            <span>BOM MUNDO</span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="/dashboard" class="nav-link <%= currentPath.startsWith('/dashboard') ? 'active' : '' %>"><i class="fas fa-tachometer-alt"></i> <span>Painel principal</span></a></li>
+            <li><a href="/caixa" class="nav-link <%= currentPath.startsWith('/caixa') ? 'active' : '' %>"><i class="fas fa-cash-register"></i> <span>Caixas</span></a></li>
+            <li><a href="/vendas" class="nav-link <%= currentPath.startsWith('/vendas') ? 'active' : '' %>"><i class="fas fa-shopping-cart"></i> <span>Vendas</span></a></li>
+            <li><a href="/produtos" class="nav-link <%= currentPath.startsWith('/produtos') ? 'active' : '' %>"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
+            <li><a href="#"><i class="fas fa-users"></i> <span>Clientes</span></a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> <span>Relatórios</span></a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+        </ul>
+
+        <div class="user-info">
+            <div class="user-avatar">JS</div>
+            <div class="user-details">
+                <div class="user-name"><%= utilizador %></div>
+                <div class="user-role">Operador de Caixa</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MAIN CONTENT
+         ============================================================ -->
+    <div class="main-content">
+
+        <div class="header no-print">
+            <h1 class="page-title" id="page-title">Painel de vendas</h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Pesquisar vendas...">
+                </div>
+                <div class="notification" id="notificationBtn">
+                    <i class="fas fa-bell"></i>
+                    <div class="notification-badge">3</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-success" id="success-alert" style="display: none; background:#E8F5E9; color:#2E7D32; padding:15px; border-radius:5px; border-left:4px solid #4CAF50; margin-bottom:20px;">
+            <i class="fas fa-check-circle"></i> Venda realizada com sucesso!
+        </div>
+
+        <!-- ========================================================
+             TABS
+             ======================================================== -->
+        <div class="tabs no-print" role="tablist">
+            <button class="tab active" data-tab="vendas" role="tab">
+                <i class="fas fa-list"></i> Vendas
+            </button>
+            <button class="tab" data-tab="caixa" role="tab">
+                <i class="fas fa-cash-register"></i> Relatório de Caixa
+            </button>
+            <button class="tab" data-tab="relatorio" role="tab">
+                <i class="fas fa-chart-line"></i> Relatório de Vendas
+            </button>
+            <button class="tab" data-tab="pagamentos" role="tab">
+                <i class="fas fa-credit-card"></i> Métodos de Pagamento
+            </button>
+        </div>
+
+        <!-- ========================================================
+             FILTROS (partilhados)
+             ======================================================== -->
+        <div class="filters no-print">
+            <div class="filters-title"><i class="fas fa-filter"></i> Filtros</div>
+
+            <div class="presets">
+                <button class="preset-chip" data-preset="hoje">Hoje</button>
+                <button class="preset-chip" data-preset="ontem">Ontem</button>
+                <button class="preset-chip" data-preset="semana">Esta semana</button>
+                <button class="preset-chip" data-preset="mes">Este mês</button>
+                <button class="preset-chip" data-preset="ano">Este ano</button>
+                <button class="preset-chip" data-preset="todos">Todo o período</button>
+            </div>
+
+            <div class="filter-grid">
+                <div class="form-group">
+                    <label class="form-label" for="dataInicio">Data início</label>
+                    <input type="date" id="dataInicio" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="dataFim">Data fim</label>
+                    <input type="date" id="dataFim" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="filtroForma">Forma de pagamento</label>
+                    <select id="filtroForma" class="form-control">
+                        <option value="">Todas</option>
+                        <option value="dinheiro">Dinheiro</option>
+                        <option value="Tpa">TPA (Multicaixa)</option>
+                        <option value="transferencia">Transferência</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="filtroStatus">Estado</label>
+                    <select id="filtroStatus" class="form-control">
+                        <option value="">Todos</option>
+                        <option value="concluida">Concluída</option>
+                        <option value="pendente">Pendente</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="btn btn-primary" onclick="aplicarFiltros()">
+                    <i class="fas fa-check"></i> Aplicar filtros
+                </button>
+                <button class="btn btn-outline" onclick="limparFiltros()">
+                    <i class="fas fa-eraser"></i> Limpar
+                </button>
+            </div>
+        </div>
+
+        <!-- ========================================================
+             PAINEL: LISTA DE VENDAS
+             ======================================================== -->
+        <div class="tab-panel active" id="panel-vendas">
+
+            <div class="page-header no-print" style="display:flex; justify-content:space-between; align-items:center; gap:15px; flex-wrap:wrap; margin-bottom:20px;">
+                <h2 style="font-size:20px; font-weight:600; display:flex; align-items:center; gap:9px;">
+                    <i class="fas fa-receipt" style="color:#E53935;"></i> Histórico de Vendas
+                </h2>
+                <a class="btn btn-primary" href="/vendas/nova">
+                    <i class="fas fa-plus"></i> Nova Venda
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-list"></i> Vendas registadas</h3>
+                    <span class="text-muted" id="vendasCountLabel" style="font-size:13px;"></span>
+                </div>
+                <div class="card-body" style="padding:0;">
+                    <div class="table-responsive">
+                        <table class="data-table" id="tabelaVendas">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Data / Hora</th>
+                                    <th>Valor Total</th>
+                                    <th>Forma Pagamento</th>
+                                    <th>Estado</th>
+                                    <th class="no-print">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyVendas">
+                                <!-- Preenchido via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================
+             PAINEL: RELATÓRIO DE CAIXA
+             ======================================================== -->
+        <div class="tab-panel" id="panel-caixa">
+
+            <div class="report-toolbar no-print">
+                <div class="report-toolbar-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Período: <strong id="caixaPeriodoLabel">—</strong></span>
+                </div>
+                <div class="report-toolbar-actions">
+                    <button class="btn btn-outline btn-sm" onclick="imprimirRelatorio()"><i class="fas fa-print"></i> Imprimir</button>
+                    <button class="btn btn-warning btn-sm" onclick="baixarPDF('caixa')"><i class="fas fa-file-pdf"></i> PDF</button>
+                    <button class="btn btn-info btn-sm" onclick="baixarCSV('caixa')"><i class="fas fa-file-csv"></i> CSV</button>
+                    <button class="btn btn-whatsapp btn-sm" onclick="abrirModalWhatsApp('caixa')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                    <button class="btn btn-success btn-sm" onclick="abrirModalEmail('caixa')"><i class="fas fa-envelope"></i> Email</button>
+                </div>
+            </div>
+
+            <div id="caixaReport">
+                <!-- Print header -->
+                <div class="print-header">
+                    <h1><i class="fas fa-globe-americas"></i> BOM MUNDO — Relatório de Caixa</h1>
+                    <p>Comércio Geral e Prestação de Serviços · NIF 5000000000 · Luanda, Angola</p>
+                    <div class="ph-meta">
+                        <span>Período: <strong id="phCaixaPeriodo">—</strong></span>
+                        <span>Emitido em: <strong id="phCaixaEmitido">—</strong></span>
+                        <span>Operador: <strong><%= utilizador %></strong></span>
+                    </div>
+                </div>
+
+                <!-- Estado do caixa -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cash-register"></i> Estado do Caixa</h3>
+                        <span id="caixaStatusBadge"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-list" id="caixaInfoList"></div>
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="summary-grid" id="caixaSummary"></div>
+
+                <!-- Vendas do caixa -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-list-ol"></i> Vendas do Caixa</h3>
+                        <span class="text-muted" id="caixaVendasCount" style="font-size:13px;"></span>
+                    </div>
+                    <div class="card-body" style="padding:0;">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Data / Hora</th>
+                                        <th>Forma Pagamento</th>
+                                        <th>Estado</th>
+                                        <th class="text-end">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="caixaTbody"></tbody>
+                                <tfoot id="caixaTfoot"></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="print-footer">
+                    Documento gerado pelo sistema Bom Mundo — <span id="phCaixaFooterData"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================
+             PAINEL: RELATÓRIO DE VENDAS
+             ======================================================== -->
+        <div class="tab-panel" id="panel-relatorio">
+
+            <div class="report-toolbar no-print">
+                <div class="report-toolbar-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Período: <strong id="relPeriodoLabel">—</strong></span>
+                </div>
+                <div class="report-toolbar-actions">
+                    <button class="btn btn-outline btn-sm" onclick="imprimirRelatorio()"><i class="fas fa-print"></i> Imprimir</button>
+                    <button class="btn btn-warning btn-sm" onclick="baixarPDF('relatorio')"><i class="fas fa-file-pdf"></i> PDF</button>
+                    <button class="btn btn-info btn-sm" onclick="baixarCSV('relatorio')"><i class="fas fa-file-csv"></i> CSV</button>
+                    <button class="btn btn-whatsapp btn-sm" onclick="abrirModalWhatsApp('relatorio')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                    <button class="btn btn-success btn-sm" onclick="abrirModalEmail('relatorio')"><i class="fas fa-envelope"></i> Email</button>
+                </div>
+            </div>
+
+            <div id="relatorioReport">
+                <div class="print-header">
+                    <h1><i class="fas fa-globe-americas"></i> BOM MUNDO — Relatório de Vendas</h1>
+                    <p>Comércio Geral e Prestação de Serviços · NIF 5000000000 · Luanda, Angola</p>
+                    <div class="ph-meta">
+                        <span>Período: <strong id="phRelPeriodo">—</strong></span>
+                        <span>Emitido em: <strong id="phRelEmitido">—</strong></span>
+                        <span>Operador: <strong><%= utilizador %></strong></span>
+                    </div>
+                </div>
+
+                <div class="summary-grid" id="relSummary"></div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-table"></i> Detalhe das Vendas</h3>
+                        <span class="text-muted" id="relVendasCount" style="font-size:13px;"></span>
+                    </div>
+                    <div class="card-body" style="padding:0;">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Data / Hora</th>
+                                        <th>Funcionário</th>
+                                        <th>Forma Pagamento</th>
+                                        <th>Estado</th>
+                                        <th class="text-end">Desconto</th>
+                                        <th class="text-end">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="relTbody"></tbody>
+                                <tfoot id="relTfoot"></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-box-open"></i> Produtos Vendidos</h3>
+                    </div>
+                    <div class="card-body" style="padding:0;">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th class="text-center">Qtd. Vendida</th>
+                                        <th class="text-end">Receita</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="relProdutosTbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="print-footer">
+                    Documento gerado pelo sistema Bom Mundo — <span id="phRelFooterData"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================
+             PAINEL: MÉTODOS DE PAGAMENTO
+             ======================================================== -->
+        <div class="tab-panel" id="panel-pagamentos">
+
+            <div class="report-toolbar no-print">
+                <div class="report-toolbar-info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Período: <strong id="pagPeriodoLabel">—</strong></span>
+                </div>
+                <div class="report-toolbar-actions">
+                    <button class="btn btn-outline btn-sm" onclick="imprimirRelatorio()"><i class="fas fa-print"></i> Imprimir</button>
+                    <button class="btn btn-warning btn-sm" onclick="baixarPDF('pagamentos')"><i class="fas fa-file-pdf"></i> PDF</button>
+                    <button class="btn btn-info btn-sm" onclick="baixarCSV('pagamentos')"><i class="fas fa-file-csv"></i> CSV</button>
+                    <button class="btn btn-whatsapp btn-sm" onclick="abrirModalWhatsApp('pagamentos')"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                    <button class="btn btn-success btn-sm" onclick="abrirModalEmail('pagamentos')"><i class="fas fa-envelope"></i> Email</button>
+                </div>
+            </div>
+
+            <div id="pagamentosReport">
+                <div class="print-header">
+                    <h1><i class="fas fa-globe-americas"></i> BOM MUNDO — Métodos de Pagamento</h1>
+                    <p>Comércio Geral e Prestação de Serviços · NIF 5000000000 · Luanda, Angola</p>
+                    <div class="ph-meta">
+                        <span>Período: <strong id="phPagPeriodo">—</strong></span>
+                        <span>Emitido em: <strong id="phPagEmitido">—</strong></span>
+                        <span>Operador: <strong><%= utilizador %></strong></span>
+                    </div>
+                </div>
+
+                <div class="summary-grid" id="pagSummary"></div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-pie"></i> Distribuição por Método</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="pay-list" id="pagList"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-table"></i> Detalhe por Método</h3>
+                    </div>
+                    <div class="card-body" style="padding:0;">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Método</th>
+                                        <th class="text-center">Nº Transações</th>
+                                        <th class="text-end">Total (Kz)</th>
+                                        <th class="text-end">% do Total</th>
+                                        <th class="text-end">Ticket Médio</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pagTbody"></tbody>
+                                <tfoot id="pagTfoot"></tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="print-footer">
+                    Documento gerado pelo sistema Bom Mundo — <span id="phPagFooterData"></span>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /main-content -->
+
+    <!-- ============================================================
+         MODAL: EMAIL
+         ============================================================ -->
+    <div class="modal-backdrop no-print" id="emailModal" onclick="if (event.target === this) fecharModalEmail()">
+        <div class="modal" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <h3><i class="fas fa-envelope"></i> Enviar Relatório por Email</h3>
+                <button type="button" class="modal-close" onclick="fecharModalEmail()" aria-label="Fechar">&times;</button>
+            </div>
+
+            <form id="emailForm" onsubmit="enviarEmailForm(event)">
+                <div class="modal-body">
+                    <div class="form-group" style="margin-bottom:16px;">
+                        <label class="form-label" for="emailDestinatario">Email do destinatário *</label>
+                        <input type="email" class="form-control" id="emailDestinatario"
+                               placeholder="cliente@email.com" required autocomplete="email">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:16px;">
+                        <label class="form-label" for="emailAssunto">Assunto</label>
+                        <input type="text" class="form-control" id="emailAssunto">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:16px;">
+                        <label class="form-label" for="emailMensagem">Mensagem</label>
+                        <textarea class="form-control" id="emailMensagem" style="min-height:90px;"></textarea>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="checkbox-inline" for="emailAnexoPdf">
+                            <input type="checkbox" id="emailAnexoPdf" checked>
+                            Anexar relatório em PDF
+                        </label>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalEmail()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnEnviarEmailConfirmar">
+                        <i class="fas fa-paper-plane"></i> Enviar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL: WHATSAPP
+         ============================================================ -->
+    <div class="modal-backdrop no-print" id="whatsappModal" onclick="if (event.target === this) fecharModalWhatsApp()">
+        <div class="modal" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <h3><i class="fab fa-whatsapp" style="color:#25D366;"></i> Enviar Relatório por WhatsApp</h3>
+                <button type="button" class="modal-close" onclick="fecharModalWhatsApp()" aria-label="Fechar">&times;</button>
+            </div>
+
+            <form id="whatsappForm" onsubmit="enviarWhatsAppForm(event)">
+                <div class="modal-body">
+                    <div class="form-group" style="margin-bottom:16px;">
+                        <label class="form-label" for="whatsappNumero">Número (com indicativo, ex.: 244923000000)</label>
+                        <input type="tel" class="form-control" id="whatsappNumero"
+                               placeholder="244923000000" autocomplete="tel">
+                        <small class="text-muted" style="font-size:12px;">Deixe vazio para escolher o contacto no WhatsApp.</small>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label class="form-label">Pré-visualização da mensagem</label>
+                        <div class="modal-preview" id="whatsappPreview"></div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="fecharModalWhatsApp()">Cancelar</button>
+                    <button type="submit" class="btn btn-whatsapp">
+                        <i class="fab fa-whatsapp"></i> Abrir WhatsApp
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Container de notificações -->
+    <div id="toast-container" class="no-print" aria-live="polite"></div>
+
+    <!-- Biblioteca de geração de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- ============================================================
+         DADOS (injetados pelo servidor)
+         ============================================================ -->
+    <script>
+        window.__VENDAS__ = <%- JSON.stringify(
+            (vendas || []).map(function (v) {
+                return {
+                    id: v.id,
+                    data_venda: v.data_venda,
+                    valor_total: Number(v.valor_total || 0),
+                    desconto: Number(v.desconto || 0),
+                    forma_pagamento: v.forma_pagamento,
+                    status: v.status,
+                    caixa_id: v.caixa_id,
+                    funcionario: v.Funcionario ? v.Funcionario.nome : '',
+                    itens: (v.ItemVendas || []).map(function (i) {
+                        return {
+                            nome: i.Produto ? i.Produto.nome : '',
+                            quantidade: Number(i.quantidade || 0),
+                            preco_unitario: Number(i.preco_unitario || 0),
+                            subtotal: Number(i.subtotal || 0)
+                        };
+                    })
+                };
+            })
+        ) %>;
+
+        window.__CAIXA__ = <%- JSON.stringify(EstadoCaixa || {}) %>;
+        window.__UTILIZADOR__ = '<%= utilizador %>';
+    </script>
+
+    <!-- ============================================================
+         APLICAÇÃO
+         ============================================================ -->
+    <script>
+        /* ============================================================
+           CONSTANTES / ESTADO
+           ============================================================ */
+        const VENDAS = Array.isArray(window.__VENDAS__) ? window.__VENDAS__ : [];
+        const CAIXA = window.__CAIXA__ || {};
+        const UTILIZADOR = window.__UTILIZADOR__ || 'Operador';
+
+        const FORMAS = {
+            'dinheiro': 'Dinheiro',
+            'Tpa': 'TPA (Multicaixa)',
+            'transferencia': 'Transferência'
+        };
+
+        const FORMAS_ICON = {
+            'dinheiro': 'fa-money-bill-wave',
+            'Tpa': 'fa-credit-card',
+            'transferencia': 'fa-university'
+        };
+
+        const STATUS = {
+            'pendente': 'Pendente',
+            'concluida': 'Concluída',
+            'cancelada': 'Cancelada'
+        };
+
+        let filtros = {
+            dataInicio: '',
+            dataFim: '',
+            forma: '',
+            status: ''
+        };
+
+        let tabAtiva = 'vendas';
+        let canalEnvio = 'relatorio'; // qual relatório está a ser enviado
+
+        /* ============================================================
+           UTILITÁRIOS
+           ============================================================ */
+        function formatKz(valor) {
+            const n = Number(valor || 0);
+            return n.toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Kz';
+        }
+
+        function formatDataHora(iso) {
+            const d = new Date(iso);
+            if (isNaN(d.getTime())) return '—';
+            return d.toLocaleString('pt-AO', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        function formatDataCurta(iso) {
+            const d = new Date(iso);
+            if (isNaN(d.getTime())) return '—';
+            return d.toLocaleDateString('pt-AO');
+        }
+
+        function escaparHtml(txt) {
+            const div = document.createElement('div');
+            div.textContent = txt == null ? '' : String(txt);
+            return div.innerHTML;
+        }
+
+        function mostrarToast(mensagem, tipo = 'info', duracao = 3800) {
+            const container = document.getElementById('toast-container');
+            if (!container) { alert(mensagem); return; }
+
+            const icones = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + tipo;
+            toast.innerHTML = '<i class="fas ' + (icones[tipo] || icones.info) + '"></i><span></span>';
+            toast.querySelector('span').textContent = mensagem;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.transition = 'all .3s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(30px)';
+                setTimeout(() => toast.remove(), 300);
+            }, duracao);
+        }
+
+        function alternarLoading(botao, ativo, texto) {
+            if (!botao) return;
+            if (ativo) {
+                if (!botao.dataset.htmlOriginal) botao.dataset.htmlOriginal = botao.innerHTML;
+                botao.disabled = true;
+                botao.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (texto || 'A processar...');
+            } else {
+                botao.disabled = false;
+                if (botao.dataset.htmlOriginal) botao.innerHTML = botao.dataset.htmlOriginal;
+            }
+        }
+
+        function hojeISO() {
+            const d = new Date();
+            return d.getFullYear() + '-' +
+                String(d.getMonth() + 1).padStart(2, '0') + '-' +
+                String(d.getDate()).padStart(2, '0');
+        }
+
+        /* ============================================================
+           FILTRAGEM
+           ============================================================ */
+        function vendasFiltradas() {
+            return VENDAS.filter(v => {
+                const d = new Date(v.data_venda);
+
+                if (filtros.dataInicio) {
+                    const ini = new Date(filtros.dataInicio + 'T00:00:00');
+                    if (d < ini) return false;
+                }
+                if (filtros.dataFim) {
+                    const fim = new Date(filtros.dataFim + 'T23:59:59');
+                    if (d > fim) return false;
+                }
+                if (filtros.forma && v.forma_pagamento !== filtros.forma) return false;
+                if (filtros.status && v.status !== filtros.status) return false;
+
+                return true;
+            }).sort((a, b) => new Date(b.data_venda) - new Date(a.data_venda));
+        }
+
+        function textoPeriodo() {
+            const ini = filtros.dataInicio ? formatDataCurta(filtros.dataInicio + 'T00:00:00') : 'Início';
+            const fim = filtros.dataFim ? formatDataCurta(filtros.dataFim + 'T00:00:00') : 'Hoje';
+            if (!filtros.dataInicio && !filtros.dataFim) return 'Todo o período';
+            return ini + ' a ' + fim;
+        }
+
+        function aplicarFiltros() {
+            filtros.dataInicio = document.getElementById('dataInicio').value;
+            filtros.dataFim = document.getElementById('dataFim').value;
+            filtros.forma = document.getElementById('filtroForma').value;
+            filtros.status = document.getElementById('filtroStatus').value;
+
+            renderTudo();
+            mostrarToast('Filtros aplicados.', 'info', 2200);
+        }
+
+        function limparFiltros() {
+            document.getElementById('dataInicio').value = '';
+            document.getElementById('dataFim').value = '';
+            document.getElementById('filtroForma').value = '';
+            document.getElementById('filtroStatus').value = '';
+
+            filtros = { dataInicio: '', dataFim: '', forma: '', status: '' };
+            renderTudo();
+            mostrarToast('Filtros limpos.', 'info', 2000);
+        }
+
+        function aplicarPreset(preset) {
+            const hoje = new Date();
+            let ini = null, fim = null;
+
+            const setIni = (d) => {
+                ini = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            };
+            const setFim = (d) => {
+                fim = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            };
+
+            if (preset === 'hoje') {
+                setIni(hoje); setFim(hoje);
+            } else if (preset === 'ontem') {
+                const o = new Date(hoje); o.setDate(o.getDate() - 1);
+                setIni(o); setFim(o);
+            } else if (preset === 'semana') {
+                const d = new Date(hoje);
+                const dia = d.getDay(); // 0=Dom
+                const diff = (dia === 0 ? 6 : dia - 1);
+                const seg = new Date(d); seg.setDate(d.getDate() - diff);
+                setIni(seg); setFim(hoje);
+            } else if (preset === 'mes') {
+                const primeiro = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+                setIni(primeiro); setFim(hoje);
+            } else if (preset === 'ano') {
+                const primeiro = new Date(hoje.getFullYear(), 0, 1);
+                setIni(primeiro); setFim(hoje);
+            } else {
+                // todos
+                document.getElementById('dataInicio').value = '';
+                document.getElementById('dataFim').value = '';
+                filtros.dataInicio = '';
+                filtros.dataFim = '';
+                renderTudo();
+                return;
+            }
+
+            document.getElementById('dataInicio').value = ini;
+            document.getElementById('dataFim').value = fim;
+            filtros.dataInicio = ini;
+            filtros.dataFim = fim;
+            renderTudo();
+        }
+
+        /* ============================================================
+           AGREGAÇÕES
+           ============================================================ */
+        function calcularResumo(lista) {
+            const resumo = {
+                total: 0,
+                desconto: 0,
+                totalLiquido: 0,
+                count: 0,
+                porForma: {},
+                porStatus: { concluida: 0, pendente: 0, cancelada: 0 },
+                produtos: {}
+            };
+
+            lista.forEach(v => {
+                const total = Number(v.valor_total || 0);
+                const desc = Number(v.desconto || 0);
+
+                resumo.total += total;
+                resumo.desconto += desc;
+                resumo.totalLiquido += Math.max(0, total - desc);
+                resumo.count += 1;
+
+                const forma = v.forma_pagamento || 'outro';
+                if (!resumo.porForma[forma]) {
+                    resumo.porForma[forma] = { count: 0, total: 0, liquido: 0 };
+                }
+                resumo.porForma[forma].count += 1;
+                resumo.porForma[forma].total += total;
+                resumo.porForma[forma].liquido += Math.max(0, total - desc);
+
+                if (resumo.porStatus[v.status] !== undefined) {
+                    resumo.porStatus[v.status] += 1;
+                }
+
+                (v.itens || []).forEach(item => {
+                    const nome = item.nome || '—';
+                    if (!resumo.produtos[nome]) {
+                        resumo.produtos[nome] = { qtd: 0, receita: 0 };
+                    }
+                    resumo.produtos[nome].qtd += Number(item.quantidade || 0);
+                    resumo.produtos[nome].receita += Number(item.subtotal || 0);
+                });
+            });
+
+            resumo.ticketMedio = resumo.count ? resumo.totalLiquido / resumo.count : 0;
+            return resumo;
+        }
+
+        /* ============================================================
+           RENDER: TABELA DE VENDAS
+           ============================================================ */
+        function renderVendas() {
+            const tbody = document.getElementById('tbodyVendas');
+            const lista = vendasFiltradas();
+
+            document.getElementById('vendasCountLabel').textContent =
+                lista.length + (lista.length === 1 ? ' venda' : ' vendas');
+
+            if (!lista.length) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center empty-state">
+                            <i class="fas fa-inbox"></i>
+                            Nenhuma venda encontrada para os filtros aplicados.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            tbody.innerHTML = lista.map(v => {
+                const cancelada = v.status === 'cancelada';
+                const liquido = Math.max(0, Number(v.valor_total) - Number(v.desconto));
+
+                return `
+                    <tr>
+                        <td><strong>#${v.id}</strong></td>
+                        <td>${escaparHtml(formatDataHora(v.data_venda))}</td>
+                        <td><strong>${formatKz(liquido)}</strong></td>
+                        <td>${escaparHtml(FORMAS[v.forma_pagamento] || v.forma_pagamento || '—')}</td>
+                        <td>
+                            <span class="status-badge status-${escaparHtml(v.status || 'pendente')}">
+                                ${escaparHtml(STATUS[v.status] || v.status || '—')}
+                            </span>
+                        </td>
+                        <td class="no-print">
+                            <a href="/vendas/${v.id}" class="btn btn-sm btn-info" title="Ver detalhes">
+                                <i class="fas fa-file-invoice"></i>
+                            </a>
+                            <a href="/vendas/cancelar/${v.id}"
+                               class="btn btn-sm btn-danger"
+                               title="Cancelar venda"
+                               ${cancelada ? 'style="pointer-events:none;opacity:.5;"' : ''}
+                               onclick="return confirm('Tem a certeza que deseja cancelar a venda #${v.id}?');">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </td>
+                    </tr>`;
+            }).join('');
+        }
+
+        /* ============================================================
+           RENDER: RELATÓRIO DE CAIXA
+           ============================================================ */
+        function renderCaixa() {
+            const lista = vendasFiltradas();
+            const resumo = calcularResumo(lista);
+
+            // Período
+            document.getElementById('caixaPeriodoLabel').textContent = textoPeriodo();
+            document.getElementById('phCaixaPeriodo').textContent = textoPeriodo();
+            document.getElementById('phCaixaEmitido').textContent = new Date().toLocaleString('pt-AO');
+            document.getElementById('phCaixaFooterData').textContent = new Date().toLocaleString('pt-AO');
+
+            // Estado do caixa
+            const caixaAberto = CAIXA.status === 'aberto';
+            document.getElementById('caixaStatusBadge').innerHTML = caixaAberto
+                ? '<span class="caixa-status aberto"><span class="dot"></span> ABERTO</span>'
+                : '<span class="caixa-status fechado"><span class="dot"></span> FECHADO</span>';
+
+            const infoLinhas = [
+                ['Operador', UTILIZADOR],
+                ['Caixa', CAIXA.id ? ('#00' + CAIXA.id) : '—'],
+                ['Estado', caixaAberto ? 'Aberto' : 'Fechado'],
+                ['Abertura', CAIXA.data_abertura ? formatDataHora(CAIXA.data_abertura) : '—'],
+                ['Fecho', CAIXA.data_fecho ? formatDataHora(CAIXA.data_fecho) : '—'],
+                ['Nº de vendas no período', String(resumo.count)]
+            ];
+
+            document.getElementById('caixaInfoList').innerHTML = infoLinhas.map(([k, v]) => `
+                <div class="info-row">
+                    <span class="info-key">${escaparHtml(k)}</span>
+                    <span class="info-val">${escaparHtml(v)}</span>
+                </div>
+            `).join('');
+
+            // KPIs
+            const dinheiro = resumo.porForma['dinheiro'] || { total: 0, count: 0 };
+            const tpa = resumo.porForma['Tpa'] || { total: 0, count: 0 };
+            const transf = resumo.porForma['transferencia'] || { total: 0, count: 0 };
+
+            document.getElementById('caixaSummary').innerHTML = `
+                <div class="summary-card dark">
+                    <span class="summary-label"><i class="fas fa-coins"></i> Total do Caixa</span>
+                    <span class="summary-value">${formatKz(resumo.totalLiquido)}</span>
+                    <span class="summary-sub">${resumo.count} transações · ticket médio ${formatKz(resumo.ticketMedio)}</span>
+                </div>
+                <div class="summary-card green">
+                    <span class="summary-label"><i class="fas fa-money-bill-wave"></i> Dinheiro</span>
+                    <span class="summary-value">${formatKz(dinheiro.total)}</span>
+                    <span class="summary-sub">${dinheiro.count} vendas</span>
+                </div>
+                <div class="summary-card blue">
+                    <span class="summary-label"><i class="fas fa-credit-card"></i> TPA (Multicaixa)</span>
+                    <span class="summary-value">${formatKz(tpa.total)}</span>
+                    <span class="summary-sub">${tpa.count} vendas</span>
+                </div>
+                <div class="summary-card orange">
+                    <span class="summary-label"><i class="fas fa-university"></i> Transferência</span>
+                    <span class="summary-value">${formatKz(transf.total)}</span>
+                    <span class="summary-sub">${transf.count} vendas</span>
+                </div>
+                <div class="summary-card red">
+                    <span class="summary-label"><i class="fas fa-tags"></i> Descontos</span>
+                    <span class="summary-value">${formatKz(resumo.desconto)}</span>
+                    <span class="summary-sub">Total concedido</span>
+                </div>
+            `;
+
+            // Tabela de vendas do caixa
+            document.getElementById('caixaVendasCount').textContent =
+                lista.length + (lista.length === 1 ? ' venda' : ' vendas');
+
+            const tbody = document.getElementById('caixaTbody');
+            if (!lista.length) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center empty-state"><i class="fas fa-inbox"></i>Sem vendas no período.</td></tr>`;
+                document.getElementById('caixaTfoot').innerHTML = '';
+                return;
+            }
+
+            tbody.innerHTML = lista.map((v, i) => {
+                const liquido = Math.max(0, Number(v.valor_total) - Number(v.desconto));
+                return `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${escaparHtml(formatDataHora(v.data_venda))}</td>
+                        <td>${escaparHtml(FORMAS[v.forma_pagamento] || v.forma_pagamento || '—')}</td>
+                        <td>
+                            <span class="status-badge status-${escaparHtml(v.status || 'pendente')}">
+                                ${escaparHtml(STATUS[v.status] || v.status || '—')}
+                            </span>
+                        </td>
+                        <td class="text-end">${formatKz(liquido)}</td>
+                    </tr>`;
+            }).join('');
+
+            document.getElementById('caixaTfoot').innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-end">TOTAL GERAL</td>
+                    <td class="text-end">${formatKz(resumo.totalLiquido)}</td>
+                </tr>`;
+        }
+
+        /* ============================================================
+           RENDER: RELATÓRIO DE VENDAS
+           ============================================================ */
+        function renderRelatorio() {
+            const lista = vendasFiltradas();
+            const resumo = calcularResumo(lista);
+
+            document.getElementById('relPeriodoLabel').textContent = textoPeriodo();
+            document.getElementById('phRelPeriodo').textContent = textoPeriodo();
+            document.getElementById('phRelEmitido').textContent = new Date().toLocaleString('pt-AO');
+            document.getElementById('phRelFooterData').textContent = new Date().toLocaleString('pt-AO');
+
+            // KPIs
+            document.getElementById('relSummary').innerHTML = `
+                <div class="summary-card dark">
+                    <span class="summary-label"><i class="fas fa-sack-dollar"></i> Total Bruto</span>
+                    <span class="summary-value">${formatKz(resumo.total)}</span>
+                    <span class="summary-sub">${resumo.count} vendas no período</span>
+                </div>
+                <div class="summary-card green">
+                    <span class="summary-label"><i class="fas fa-check-circle"></i> Total Líquido</span>
+                    <span class="summary-value">${formatKz(resumo.totalLiquido)}</span>
+                    <span class="summary-sub">Após descontos</span>
+                </div>
+                <div class="summary-card red">
+                    <span class="summary-label"><i class="fas fa-tags"></i> Descontos</span>
+                    <span class="summary-value">${formatKz(resumo.desconto)}</span>
+                    <span class="summary-sub">Total concedido</span>
+                </div>
+                <div class="summary-card orange">
+                    <span class="summary-label"><i class="fas fa-receipt"></i> Ticket Médio</span>
+                    <span class="summary-value">${formatKz(resumo.ticketMedio)}</span>
+                    <span class="summary-sub">Por venda</span>
+                </div>
+                <div class="summary-card blue">
+                    <span class="summary-label"><i class="fas fa-hourglass-half"></i> Pendentes</span>
+                    <span class="summary-value">${resumo.porStatus.pendente}</span>
+                    <span class="summary-sub">Vendas por concluir</span>
+                </div>
+                <div class="summary-card green">
+                    <span class="summary-label"><i class="fas fa-circle-check"></i> Concluídas</span>
+                    <span class="summary-value">${resumo.porStatus.concluida}</span>
+                    <span class="summary-sub">Vendas finalizadas</span>
+                </div>
+            `;
+
+            // Tabela detalhada
+            document.getElementById('relVendasCount').textContent =
+                lista.length + (lista.length === 1 ? ' venda' : ' vendas');
+
+            const tbody = document.getElementById('relTbody');
+            if (!lista.length) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center empty-state"><i class="fas fa-inbox"></i>Sem vendas no período.</td></tr>`;
+                document.getElementById('relTfoot').innerHTML = '';
+            } else {
+                tbody.innerHTML = lista.map((v, i) => {
+                    const liquido = Math.max(0, Number(v.valor_total) - Number(v.desconto));
+                    return `
+                        <tr>
+                            <td>${i + 1}</td>
+                            <td>${escaparHtml(formatDataHora(v.data_venda))}</td>
+                            <td>${escaparHtml(v.funcionario || '—')}</td>
+                            <td>${escaparHtml(FORMAS[v.forma_pagamento] || v.forma_pagamento || '—')}</td>
+                            <td>
+                                <span class="status-badge status-${escaparHtml(v.status || 'pendente')}">
+                                    ${escaparHtml(STATUS[v.status] || v.status || '—')}
+                                </span>
+                            </td>
+                            <td class="text-end text-danger">${v.desconto > 0 ? '- ' + formatKz(v.desconto) : '—'}</td>
+                            <td class="text-end"><strong>${formatKz(liquido)}</strong></td>
+                        </tr>`;
+                }).join('');
+
+                document.getElementById('relTfoot').innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-end">TOTAL GERAL</td>
+                        <td class="text-end">${formatKz(resumo.totalLiquido)}</td>
+                    </tr>`;
+            }
+
+            // Produtos vendidos
+            const produtos = Object.entries(resumo.produtos)
+                .map(([nome, dados]) => ({ nome, ...dados }))
+                .sort((a, b) => b.receita - a.receita);
+
+            const produtosTbody = document.getElementById('relProdutosTbody');
+            if (!produtos.length) {
+                produtosTbody.innerHTML = `<tr><td colspan="3" class="text-center empty-state"><i class="fas fa-box-open"></i>Sem produtos no período.</td></tr>`;
+            } else {
+                produtosTbody.innerHTML = produtos.map(p => `
+                    <tr>
+                        <td>${escaparHtml(p.nome)}</td>
+                        <td class="text-center">${p.qtd}</td>
+                        <td class="text-end">${formatKz(p.receita)}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        /* ============================================================
+           RENDER: MÉTODOS DE PAGAMENTO
+           ============================================================ */
+        function renderPagamentos() {
+            const lista = vendasFiltradas();
+            const resumo = calcularResumo(lista);
+
+            document.getElementById('pagPeriodoLabel').textContent = textoPeriodo();
+            document.getElementById('phPagPeriodo').textContent = textoPeriodo();
+            document.getElementById('phPagEmitido').textContent = new Date().toLocaleString('pt-AO');
+            document.getElementById('phPagFooterData').textContent = new Date().toLocaleString('pt-AO');
+
+            // Constrói lista de métodos
+            const metodos = Object.entries(resumo.porForma)
+                .map(([chave, dados]) => ({
+                    chave,
+                    nome: FORMAS[chave] || chave,
+                    ...dados
+                }))
+                .sort((a, b) => b.total - a.total);
+
+            const totalGeral = metodos.reduce((s, m) => s + m.total, 0);
+
+            // KPI
+            const metodoPrincipal = metodos[0];
+            document.getElementById('pagSummary').innerHTML = `
+                <div class="summary-card dark">
+                    <span class="summary-label"><i class="fas fa-coins"></i> Total Recebido</span>
+                    <span class="summary-value">${formatKz(totalGeral)}</span>
+                    <span class="summary-sub">${resumo.count} transações</span>
+                </div>
+                <div class="summary-card blue">
+                    <span class="summary-label"><i class="fas fa-star"></i> Método Principal</span>
+                    <span class="summary-value" style="font-size:18px;">${metodoPrincipal ? escaparHtml(metodoPrincipal.nome) : '—'}</span>
+                    <span class="summary-sub">${metodoPrincipal ? formatKz(metodoPrincipal.total) + ' · ' + ((metodoPrincipal.total / totalGeral) * 100).toFixed(1) + '%' : 'Sem dados'}</span>
+                </div>
+                <div class="summary-card orange">
+                    <span class="summary-label"><i class="fas fa-receipt"></i> Ticket Médio</span>
+                    <span class="summary-value">${formatKz(resumo.ticketMedio)}</span>
+                    <span class="summary-sub">Por venda</span>
+                </div>
+                <div class="summary-card green">
+                    <span class="summary-label"><i class="fas fa-check-circle"></i> Total Líquido</span>
+                    <span class="summary-value">${formatKz(resumo.totalLiquido)}</span>
+                    <span class="summary-sub">Após descontos</span>
+                </div>
+            `;
+
+            // Barras
+            if (!metodos.length) {
+                document.getElementById('pagList').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-credit-card"></i>
+                        Sem dados de pagamentos no período.
+                    </div>`;
+            } else {
+                document.getElementById('pagList').innerHTML = metodos.map(m => {
+                    const pct = totalGeral > 0 ? (m.total / totalGeral) * 100 : 0;
+                    const icon = FORMAS_ICON[m.chave] || 'fa-money-bill';
+                    const iconClass = ['dinheiro', 'Tpa', 'transferencia'].includes(m.chave) ? m.chave : 'outro';
+                    return `
+                        <div class="pay-item">
+                            <div class="pay-item-label">
+                                <span class="pay-icon ${iconClass}"><i class="fas ${icon}"></i></span>
+                                ${escaparHtml(m.nome)}
+                            </div>
+                            <div class="pay-bar">
+                                <div class="pay-bar-fill ${iconClass}" style="width:${pct.toFixed(2)}%;"></div>
+                            </div>
+                            <div class="pay-item-value">
+                                ${formatKz(m.total)}
+                                <small>${pct.toFixed(1)}% · ${m.count} vendas</small>
+                            </div>
+                        </div>`;
+                }).join('');
+            }
+
+            // Tabela detalhada
+            const tbody = document.getElementById('pagTbody');
+            if (!metodos.length) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center empty-state"><i class="fas fa-inbox"></i>Sem dados.</td></tr>`;
+                document.getElementById('pagTfoot').innerHTML = '';
+            } else {
+                tbody.innerHTML = metodos.map(m => {
+                    const pct = totalGeral > 0 ? (m.total / totalGeral) * 100 : 0;
+                    const ticket = m.count > 0 ? m.total / m.count : 0;
+                    return `
+                        <tr>
+                            <td><strong>${escaparHtml(m.nome)}</strong></td>
+                            <td class="text-center">${m.count}</td>
+                            <td class="text-end">${formatKz(m.total)}</td>
+                            <td class="text-end">${pct.toFixed(1)}%</td>
+                            <td class="text-end">${formatKz(ticket)}</td>
+                        </tr>`;
+                }).join('');
+
+                document.getElementById('pagTfoot').innerHTML = `
+                    <tr>
+                        <td>TOTAL</td>
+                        <td class="text-center">${resumo.count}</td>
+                        <td class="text-end">${formatKz(totalGeral)}</td>
+                        <td class="text-end">100%</td>
+                        <td class="text-end">${formatKz(resumo.ticketMedio)}</td>
+                    </tr>`;
+            }
+        }
+
+        /* ============================================================
+           RENDER GLOBAL
+           ============================================================ */
+        function renderTudo() {
+            renderVendas();
+            renderCaixa();
+            renderRelatorio();
+            renderPagamentos();
+        }
+
+        /* ============================================================
+           TABS
+           ============================================================ */
+        function mudarTab(nome) {
+            tabAtiva = nome;
+            document.querySelectorAll('.tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === nome);
+            });
+            document.querySelectorAll('.tab-panel').forEach(p => {
+                p.classList.toggle('active', p.id === 'panel-' + nome);
+            });
+        }
+
+        /* ============================================================
+           IMPRESSÃO
+           ============================================================ */
+        function imprimirRelatorio() {
+            const titulos = {
+                vendas: 'Vendas',
+                caixa: 'Relatório de Caixa',
+                relatorio: 'Relatório de Vendas',
+                pagamentos: 'Métodos de Pagamento'
+            };
+            const tituloOriginal = document.title;
+            document.title = 'Bom Mundo - ' + (titulos[tabAtiva] || 'Relatório');
+            window.print();
+            document.title = tituloOriginal;
+        }
+
+        /* ============================================================
+           PDF
+           ============================================================ */
+        function elementoDoRelatorio(tipo) {
+            const mapa = {
+                caixa: 'caixaReport',
+                relatorio: 'relatorioReport',
+                pagamentos: 'pagamentosReport'
+            };
+            return document.getElementById(mapa[tipo] || 'relatorioReport');
+        }
+
+        function construirPdf(tipo) {
+            const elemento = elementoDoRelatorio(tipo);
+            const nomes = {
+                caixa: 'Relatorio_Caixa',
+                relatorio: 'Relatorio_Vendas',
+                pagamentos: 'Metodos_Pagamento'
+            };
+            const nomeBase = nomes[tipo] || 'Relatorio';
+            const data = new Date().toISOString().slice(0, 10);
+
+            return html2pdf().set({
+                margin: [10, 10, 12, 10],
+                filename: nomeBase + '_' + data + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    scrollX: 0,
+                    scrollY: 0
+                },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['css', 'legacy'] }
+            }).from(elemento);
+        }
+
+        async function baixarPDF(tipo) {
+            if (typeof html2pdf === 'undefined') {
+                mostrarToast('Gerador de PDF não carregado. Verifique a ligação à internet.', 'error');
+                return;
+            }
+
+            const botoes = document.querySelectorAll('[onclick*="baixarPDF"]');
+            botoes.forEach(b => alternarLoading(b, true, 'A gerar...'));
+
+            try {
+                await construirPdf(tipo).save();
+                mostrarToast('PDF gerado com sucesso!', 'success');
+            } catch (erro) {
+                console.error('Erro ao gerar PDF:', erro);
+                mostrarToast('Não foi possível gerar o PDF.', 'error');
+            } finally {
+                botoes.forEach(b => alternarLoading(b, false));
+            }
+        }
+
+        /* ============================================================
+           CSV
+           ============================================================ */
+        function baixarCSV(tipo) {
+            const lista = vendasFiltradas();
+            const resumo = calcularResumo(lista);
+            let linhas = [];
+            let nome = '';
+
+            const sep = ';';
+
+            if (tipo === 'caixa') {
+                nome = 'Relatorio_Caixa';
+                linhas.push(['BOM MUNDO - RELATÓRIO DE CAIXA']);
+                linhas.push(['Período', textoPeriodo()]);
+                linhas.push(['Operador', UTILIZADOR]);
+                linhas.push(['Caixa', CAIXA.id ? ('#00' + CAIXA.id) : '—']);
+                linhas.push(['Estado do caixa', CAIXA.status === 'aberto' ? 'Aberto' : 'Fechado']);
+                linhas.push([]);
+                linhas.push(['Resumo']);
+                linhas.push(['Total líquido', resumo.totalLiquido.toFixed(2)]);
+                linhas.push(['Total bruto', resumo.total.toFixed(2)]);
+                linhas.push(['Descontos', resumo.desconto.toFixed(2)]);
+                linhas.push(['Nº vendas', resumo.count]);
+                linhas.push(['Ticket médio', resumo.ticketMedio.toFixed(2)]);
+                linhas.push([]);
+                linhas.push(['#', 'Data/Hora', 'Forma Pagamento', 'Estado', 'Total (Kz)']);
+                lista.forEach((v, i) => {
+                    linhas.push([
+                        i + 1,
+                        formatDataHora(v.data_venda),
+                        FORMAS[v.forma_pagamento] || v.forma_pagamento || '',
+                        STATUS[v.status] || v.status || '',
+                        Math.max(0, v.valor_total - v.desconto).toFixed(2)
+                    ]);
+                });
+            } else if (tipo === 'pagamentos') {
+                nome = 'Metodos_Pagamento';
+                const totalGeral = Object.values(resumo.porForma).reduce((s, m) => s + m.total, 0);
+
+                linhas.push(['BOM MUNDO - MÉTODOS DE PAGAMENTO']);
+                linhas.push(['Período', textoPeriodo()]);
+                linhas.push(['Operador', UTILIZADOR]);
+                linhas.push([]);
+                linhas.push(['Método', 'Nº Transações', 'Total (Kz)', '% do Total', 'Ticket Médio (Kz)']);
+                Object.entries(resumo.porForma).forEach(([chave, dados]) => {
+                    const pct = totalGeral > 0 ? (dados.total / totalGeral) * 100 : 0;
+                    const ticket = dados.count > 0 ? dados.total / dados.count : 0;
+                    linhas.push([
+                        FORMAS[chave] || chave,
+                        dados.count,
+                        dados.total.toFixed(2),
+                        pct.toFixed(1) + '%',
+                        ticket.toFixed(2)
+                    ]);
+                });
+                linhas.push([]);
+                linhas.push(['TOTAL', resumo.count, totalGeral.toFixed(2), '100%', resumo.ticketMedio.toFixed(2)]);
+            } else {
+                nome = 'Relatorio_Vendas';
+                linhas.push(['BOM MUNDO - RELATÓRIO DE VENDAS']);
+                linhas.push(['Período', textoPeriodo()]);
+                linhas.push(['Operador', UTILIZADOR]);
+                linhas.push([]);
+                linhas.push(['Resumo']);
+                linhas.push(['Total bruto', resumo.total.toFixed(2)]);
+                linhas.push(['Total líquido', resumo.totalLiquido.toFixed(2)]);
+                linhas.push(['Descontos', resumo.desconto.toFixed(2)]);
+                linhas.push(['Nº vendas', resumo.count]);
+                linhas.push(['Ticket médio', resumo.ticketMedio.toFixed(2)]);
+                linhas.push([]);
+                linhas.push(['#', 'Data/Hora', 'Funcionário', 'Forma Pagamento', 'Estado', 'Desconto (Kz)', 'Total (Kz)']);
+                lista.forEach((v, i) => {
+                    linhas.push([
+                        i + 1,
+                        formatDataHora(v.data_venda),
+                        v.funcionario || '',
+                        FORMAS[v.forma_pagamento] || v.forma_pagamento || '',
+                        STATUS[v.status] || v.status || '',
+                        Number(v.desconto || 0).toFixed(2),
+                        Math.max(0, v.valor_total - v.desconto).toFixed(2)
+                    ]);
+                });
+                linhas.push([]);
+                linhas.push(['Produtos Vendidos']);
+                linhas.push(['Produto', 'Qtd', 'Receita (Kz)']);
+                Object.entries(resumo.produtos)
+                    .sort((a, b) => b[1].receita - a[1].receita)
+                    .forEach(([nomeProd, d]) => {
+                        linhas.push([nomeProd, d.qtd, d.receita.toFixed(2)]);
+                    });
+            }
+
+            const csv = '\uFEFF' + linhas.map(l =>
+                l.map(c => {
+                    const s = String(c == null ? '' : c);
+                    return /[";\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+                }).join(sep)
+            ).join('\r\n');
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nome + '_' + new Date().toISOString().slice(0, 10) + '.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            mostrarToast('Ficheiro CSV descarregado.', 'success');
+        }
+
+        /* ============================================================
+           MENSAGEM DE TEXTO (WhatsApp / Email)
+           ============================================================ */
+        function construirMensagem(tipo) {
+            const lista = vendasFiltradas();
+            const resumo = calcularResumo(lista);
+            const periodo = textoPeriodo();
+            const dataEmissao = new Date().toLocaleString('pt-AO');
+
+            let titulo = '';
+            if (tipo === 'caixa') titulo = 'RELATÓRIO DE CAIXA';
+            else if (tipo === 'pagamentos') titulo = 'MÉTODOS DE PAGAMENTO';
+            else titulo = 'RELATÓRIO DE VENDAS';
+
+            let texto = '';
+            texto += '*BOM MUNDO* — ' + titulo + '\n';
+            texto += 'Período: ' + periodo + '\n';
+            texto += 'Operador: ' + UTILIZADOR + '\n';
+            texto += 'Emitido em: ' + dataEmissao + '\n';
+            texto += '--------------------------------\n';
+
+            if (tipo === 'caixa') {
+                texto += '*Total líquido:* ' + formatKz(resumo.totalLiquido) + '\n';
+                texto += '*Total bruto:* ' + formatKz(resumo.total) + '\n';
+                texto += '*Descontos:* ' + formatKz(resumo.desconto) + '\n';
+                texto += '*Nº de vendas:* ' + resumo.count + '\n';
+                texto += '*Ticket médio:* ' + formatKz(resumo.ticketMedio) + '\n';
+                texto += '--------------------------------\n';
+                texto += '*Por método de pagamento:*\n';
+                Object.entries(resumo.porForma).forEach(([chave, d]) => {
+                    texto += '• ' + (FORMAS[chave] || chave) + ': ' + formatKz(d.total) + ' (' + d.count + ')\n';
+                });
+            } else if (tipo === 'pagamentos') {
+                const totalGeral = Object.values(resumo.porForma).reduce((s, m) => s + m.total, 0);
+                texto += '*Total recebido:* ' + formatKz(totalGeral) + '\n';
+                texto += '*Nº de transações:* ' + resumo.count + '\n';
+                texto += '*Ticket médio:* ' + formatKz(resumo.ticketMedio) + '\n';
+                texto += '--------------------------------\n';
+                Object.entries(resumo.porForma)
+                    .sort((a, b) => b[1].total - a[1].total)
+                    .forEach(([chave, d]) => {
+                        const pct = totalGeral > 0 ? (d.total / totalGeral) * 100 : 0;
+                        texto += '• ' + (FORMAS[chave] || chave) + ': ' + formatKz(d.total) +
+                            ' (' + pct.toFixed(1) + '%, ' + d.count + ' vendas)\n';
+                    });
+            } else {
+                texto += '*Total bruto:* ' + formatKz(resumo.total) + '\n';
+                texto += '*Total líquido:* ' + formatKz(resumo.totalLiquido) + '\n';
+                texto += '*Descontos:* ' + formatKz(resumo.desconto) + '\n';
+                texto += '*Nº de vendas:* ' + resumo.count + '\n';
+                texto += '*Ticket médio:* ' + formatKz(resumo.ticketMedio) + '\n';
+                texto += '--------------------------------\n';
+                texto += '*Top produtos:*\n';
+                Object.entries(resumo.produtos)
+                    .sort((a, b) => b[1].receita - a[1].receita)
+                    .slice(0, 5)
+                    .forEach(([nome, d]) => {
+                        texto += '• ' + nome + ': ' + d.qtd + ' un · ' + formatKz(d.receita) + '\n';
+                    });
+            }
+
+            texto += '--------------------------------\n';
+            texto += 'Sistema Bom Mundo';
+            return texto;
+        }
+
+        /* ============================================================
+           WHATSAPP
+           ============================================================ */
+        function abrirModalWhatsApp(tipo) {
+            canalEnvio = tipo;
+            document.getElementById('whatsappPreview').textContent = construirMensagem(tipo);
+            document.getElementById('whatsappNumero').value = '';
+            document.getElementById('whatsappModal').classList.add('open');
+            setTimeout(() => document.getElementById('whatsappNumero').focus(), 50);
+        }
+
+        function fecharModalWhatsApp() {
+            document.getElementById('whatsappModal').classList.remove('open');
+        }
+
+        function enviarWhatsAppForm(evento) {
+            evento.preventDefault();
+
+            const numero = document.getElementById('whatsappNumero').value.replace(/\D/g, '');
+            const mensagem = document.getElementById('whatsappPreview').textContent;
+
+            const url = numero
+                ? 'https://wa.me/' + numero + '?text=' + encodeURIComponent(mensagem)
+                : 'https://wa.me/?text=' + encodeURIComponent(mensagem);
+
+            window.open(url, '_blank');
+            fecharModalWhatsApp();
+            mostrarToast('WhatsApp aberto com o relatório.', 'success');
+        }
+
+        /* ============================================================
+           EMAIL
+           ============================================================ */
+        function abrirModalEmail(tipo) {
+            canalEnvio = tipo;
+
+            const assuntos = {
+                caixa: 'Relatório de Caixa - Bom Mundo',
+                relatorio: 'Relatório de Vendas - Bom Mundo',
+                pagamentos: 'Métodos de Pagamento - Bom Mundo'
+            };
+
+            document.getElementById('emailAssunto').value = assuntos[tipo] || 'Relatório - Bom Mundo';
+            document.getElementById('emailMensagem').value = construirMensagem(tipo);
+            document.getElementById('emailDestinatario').value = '';
+            document.getElementById('emailAnexoPdf').checked = true;
+            document.getElementById('emailModal').classList.add('open');
+            setTimeout(() => document.getElementById('emailDestinatario').focus(), 50);
+        }
+
+        function fecharModalEmail() {
+            document.getElementById('emailModal').classList.remove('open');
+            const form = document.getElementById('emailForm');
+            if (form) form.reset();
+        }
+
+        function pdfParaBase64(tipo) {
+            return construirPdf(tipo)
+                .outputPdf('datauristring')
+                .then((dataUri) => {
+                    const i = dataUri.indexOf(',');
+                    return i >= 0 ? dataUri.slice(i + 1) : dataUri;
+                });
+        }
+
+        async function enviarEmailForm(evento) {
+            evento.preventDefault();
+
+            const destinatario = document.getElementById('emailDestinatario').value.trim();
+            const assunto = document.getElementById('emailAssunto').value.trim();
+            const mensagem = document.getElementById('emailMensagem').value.trim();
+            const anexarPdf = document.getElementById('emailAnexoPdf').checked;
+            const btn = document.getElementById('btnEnviarEmailConfirmar');
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(destinatario)) {
+                mostrarToast('Introduza um endereço de email válido.', 'error');
+                return;
+            }
+
+            alternarLoading(btn, true, 'A enviar...');
+
+            try {
+                const payload = {
+                    email: destinatario,
+                    assunto: assunto,
+                    mensagem: mensagem,
+                    tipoRelatorio: canalEnvio,
+                    periodo: textoPeriodo(),
+                    anexarPdf: anexarPdf
+                };
+
+                if (anexarPdf) {
+                    payload.pdfNome = 'Relatorio_' + canalEnvio + '_' + new Date().toISOString().slice(0, 10) + '.pdf';
+                    payload.pdfBase64 = await pdfParaBase64(canalEnvio);
+                }
+
+                const resposta = await fetch('/vendas/relatorio/enviar-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                let dados = {};
+                try { dados = await resposta.json(); } catch (e) { /* resposta sem JSON */ }
+
+                if (!resposta.ok) {
+                    throw new Error(dados.erro || 'Falha ao enviar o email (HTTP ' + resposta.status + ').');
+                }
+
+                mostrarToast('Relatório enviado para ' + destinatario, 'success');
+                fecharModalEmail();
+
+            } catch (erro) {
+                console.error('Erro ao enviar email:', erro);
+                mostrarToast(erro.message || 'Não foi possível enviar o relatório por email.', 'error');
+            } finally {
+                alternarLoading(btn, false);
+            }
+        }
+
+        /* ============================================================
+           INICIALIZAÇÃO
+           ============================================================ */
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Tabs
+            document.querySelectorAll('.tab').forEach(t => {
+                t.addEventListener('click', () => mudarTab(t.dataset.tab));
+            });
+
+            // Presets
+            document.querySelectorAll('.preset-chip').forEach(chip => {
+                chip.addEventListener('click', () => aplicarPreset(chip.dataset.preset));
+            });
+
+            // Pesquisa livre (filtra a tabela de vendas)
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function (e) {
+                    const termo = e.target.value.toLowerCase().trim();
+                    const linhas = document.querySelectorAll('#tbodyVendas tr');
+
+                    linhas.forEach(tr => {
+                        if (tr.querySelector('.empty-state')) return;
+                        const texto = tr.textContent.toLowerCase();
+                        tr.style.display = (!termo || texto.includes(termo)) ? '' : 'none';
+                    });
+                });
+            }
+
+            // Notificações
+            const notification = document.getElementById('notificationBtn');
+            if (notification) {
+                notification.addEventListener('click', () => {
+                    mostrarToast('Você tem 3 notificações não lidas.', 'info');
+                });
+            }
+
+            // Fechar modais com ESC
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    fecharModalEmail();
+                    fecharModalWhatsApp();
+                }
+            });
+
+            // Atalhos: Ctrl+P (imprimir) e Ctrl+Shift+S (guardar PDF do relatório ativo)
+            document.addEventListener('keydown', function (e) {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+                    // deixa o browser tratar, mas garante o título
+                }
+                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 's') {
+                    e.preventDefault();
+                    if (tabAtiva !== 'vendas') baixarPDF(tabAtiva);
+                }
+            });
+
+            // Render inicial
+            renderTudo();
+        });
+    </script>
+</body>
+</html>

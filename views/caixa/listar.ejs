@@ -1,880 +1,788 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão de Caixas - Bom Mundo</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Reset e configurações gerais */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #F5F5F5;
-            color: #2E2E2E;
-            line-height: 1.6;
-            display: flex;
-            min-height: 100vh;
-        }
-        
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 5px;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            font-size: 14px;
-        }
-        
-        .btn-primary {
-            background-color: #E53935;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: #c62828;
-        }
-        
-        .btn-secondary {
-            background-color: #2E2E2E;
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #1a1a1a;
-        }
-        
-        .btn-warning {
-            background-color: #ff9800;
-            color: white;
-        }
-        
-        .btn-warning:hover {
-            background-color: #f57c00;
-        }
-        
-        .btn-danger {
-            background-color: #dc3545;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-        
-        .btn-success {
-            background-color: #4CAF50;
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background-color: #388E3C;
-        }
-        
-        .btn-info {
-            background-color: #17a2b8;
-            color: white;
-        }
-        
-        .btn-info:hover {
-            background-color: #138496;
-        }
-        
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-        
-        .btn-lg {
-            padding: 12px 24px;
-            font-size: 16px;
-        }
-        
-        .btn-block {
-            display: block;
-            width: 100%;
-        }
-        
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background-color: #2E2E2E;
-            color: white;
-            padding: 20px 0;
-            height: 100vh;
-            position: fixed;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #E53935;
-            display: flex;
-            align-items: center;
-            padding: 0 20px 20px;
-            border-bottom: 1px solid #444;
-            margin-bottom: 20px;
-        }
-        
-        .logo i {
-            margin-right: 10px;
-        }
-        
-        .nav-menu {
-            list-style: none;
-        }
-        
-        .nav-menu li {
-            margin-bottom: 5px;
-        }
-        
-        .nav-menu a {
-            color: white;
-            font-weight: 500;
-            transition: all 0.3s;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            border-left: 3px solid transparent;
-        }
-        
-        .nav-menu a:hover {
-            background-color: #3a3a3a;
-            color: #E53935;
-        }
-        
-        .nav-menu a.active {
-            background-color: #3a3a3a;
-            color: #E53935;
-            border-left: 3px solid #E53935;
-        }
-        
-        .nav-menu i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-        
-        .user-info {
-            padding: 20px;
-            border-top: 1px solid #444;
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #E53935;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            color: white;
-            font-weight: bold;
-        }
-        
-        .user-details {
-            flex: 1;
-        }
-        
-        .user-name {
-            font-weight: 600;
-            margin-bottom: 3px;
-        }
-        
-        .user-role {
-            font-size: 12px;
-            color: #aaa;
-        }
-        
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 250px;
-            padding: 20px;
-        }
-        
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .page-title {
-            color: #2E2E2E;
-            font-size: 28px;
-            font-weight: 600;
-        }
-        
-        .header-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .search-box {
-            display: flex;
-            align-items: center;
-            background: white;
-            border-radius: 5px;
-            padding: 8px 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        
-        .search-box input {
-            border: none;
-            outline: none;
-            padding: 5px;
-            width: 200px;
-        }
-        
-        .search-box i {
-            color: #777;
-        }
-        
-        .notification {
-            position: relative;
-            background: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            cursor: pointer;
-        }
-        
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #E53935;
-            color: white;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        /* Page Header */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        
-        .page-header h2 {
-            color: #2E2E2E;
-            font-size: 24px;
-            font-weight: 600;
-        }
-        
-        /* Card Styles */
-        .card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-        
-        .card-header {
-            background-color: #F5F5F5;
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .card-header h3 {
-            color: #2E2E2E;
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0;
-        }
-        
-        .card-body {
-            padding: 20px;
-        }
-        
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: #2E2E2E;
-            font-weight: 500;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        
-        .form-control:focus {
-            border-color: #E53935;
-            outline: none;
-        }
-        
-        textarea.form-control {
-            resize: vertical;
-            min-height: 100px;
-        }
-        
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -10px;
-        }
-        
-        .col-md-4, .col-md-6, .col-md-8 {
-            padding: 0 10px;
-        }
-        
-        .col-md-4 {
-            flex: 0 0 33.333333%;
-        }
-        
-        .col-md-6 {
-            flex: 0 0 50%;
-        }
-        
-        .col-md-8 {
-            flex: 0 0 66.666667%;
-        }
-        
-        .justify-content-center {
-            justify-content: center;
-        }
-        
-        /* Table Styles */
-        .table-responsive {
-            overflow-x: auto;
-        }
-        
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-        
-        .data-table th {
-            background-color: #F5F5F5;
-            color: #2E2E2E;
-            text-align: left;
-            padding: 15px;
-            font-weight: 600;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .data-table td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .data-table tr:hover {
-            background-color: #f9f9f9;
-        }
-        
-        .data-table tr:last-child td {
-            border-bottom: none;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .text-end {
-            text-align: right;
-        }
-        
-        .text-danger {
-            color: #E53935;
-            font-weight: bold;
-        }
-        
-        .text-success {
-            color: #4CAF50;
-            font-weight: bold;
-        }
-        
-        /* Status Badges */
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-        
-        .status-aberto {
-            background-color: #E8F5E9;
-            color: #4CAF50;
-        }
-        
-        .status-fechado {
-            background-color: #FFEBEE;
-            color: #E53935;
-        }
-        
-        .badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        
-        .badge-success {
-            background-color: #E8F5E9;
-            color: #4CAF50;
-        }
-        
-        .badge-danger {
-            background-color: #FFEBEE;
-            color: #E53935;
-        }
-        
-        /* Alert Styles */
-        .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid;
-        }
-        
-        .alert-success {
-            background-color: #E8F5E9;
-            color: #2E7D32;
-            border-left-color: #4CAF50;
-        }
-        
-        .alert-warning {
-            background-color: #FFF3E0;
-            color: #856404;
-            border-left-color: #FF9800;
-        }
-        
-        .alert-info {
-            background-color: #E3F2FD;
-            color: #0d47a1;
-            border-left-color: #2196F3;
-        }
-        
-        .alert-danger {
-            background-color: #FFEBEE;
-            color: #C62828;
-            border-left-color: #E53935;
-        }
-        
-        /* Filters */
-        .filters {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-        }
-        
-        .filter-form {
-            display: flex;
-            align-items: end;
-            gap: 15px;
-        }
-        
-        .filter-form .form-group {
-            margin-bottom: 0;
-        }
-        
-        /* Info Group */
-        .info-group {
-            margin-bottom: 15px;
-        }
-        
-        .info-group label {
-            font-weight: 600;
-            color: #2E2E2E;
-            display: block;
-            margin-bottom: 5px;
-        }
-        
-        .info-group p {
-            margin: 0;
-            color: #666;
-        }
-        
-        .form-text {
-            font-size: 12px;
-            color: #6c757d;
-            margin-top: 5px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 70px;
-            }
-            
-            .sidebar .logo span, 
-            .sidebar .nav-menu span,
-            .sidebar .user-details {
-                display: none;
-            }
-            
-            .sidebar .logo {
-                justify-content: center;
-                padding: 0 10px 20px;
-            }
-            
-            .sidebar .logo i {
-                margin-right: 0;
-            }
-            
-            .sidebar .nav-menu a {
-                justify-content: center;
-                padding: 12px 10px;
-            }
-            
-            .sidebar .nav-menu i {
-                margin-right: 0;
-            }
-            
-            .sidebar .user-info {
-                justify-content: center;
-                padding: 20px 10px;
-            }
-            
-            .main-content {
-                margin-left: 70px;
-            }
-            
-            .search-box input {
-                width: 150px;
-            }
-            
-            .col-md-4, .col-md-6, .col-md-8 {
-                flex: 0 0 100%;
-            }
-            
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .filter-form {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .header-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            .search-box {
-                flex: 1;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caixas — Bom Mundo</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root{
+    --primary:#E53935;--primary-dark:#c62828;--primary-soft:#FFF3F3;
+    --dark:#2E2E2E;--dark-2:#3a3a3a;
+    --success:#4CAF50;--success-dark:#388E3C;--success-soft:#E8F5E9;
+    --warning:#FF9800;--warning-dark:#F57C00;--warning-soft:#FFF3E0;
+    --info:#2196F3;--info-dark:#1976D2;--info-soft:#E3F2FD;
+    --bg:#F5F6F8;--card:#fff;--border:#e6e8ec;--border-strong:#d0d4dc;
+    --text:#1f2328;--text-soft:#4a5058;--muted:#8b939f;
+    --shadow-sm:0 1px 3px rgba(0,0,0,.05);
+    --shadow:0 4px 12px rgba(0,0,0,.06);
+    --shadow-lg:0 12px 32px rgba(0,0,0,.12);
+    --radius:10px;--radius-sm:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+body{background:var(--bg);color:var(--text);line-height:1.5;display:flex;min-height:100vh;font-size:14px}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 16px;border-radius:var(--radius-sm);font-weight:600;font-size:13.5px;border:1px solid transparent;transition:all .18s;white-space:nowrap}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover:not(:disabled){background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 4px 10px rgba(229,57,53,.3)}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover:not(:disabled){background:var(--success-dark);transform:translateY(-1px);box-shadow:0 4px 10px rgba(76,175,80,.3)}
+.btn-warning{background:var(--warning);color:#fff}
+.btn-warning:hover:not(:disabled){background:var(--warning-dark);transform:translateY(-1px);box-shadow:0 4px 10px rgba(255,152,0,.3)}
+.btn-outline{background:#fff;color:var(--text);border-color:var(--border-strong)}
+.btn-outline:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+.btn-sm{padding:6px 11px;font-size:12px}
+.btn-icon{width:34px;height:34px;padding:0;border-radius:6px}
+
+.sidebar{width:240px;background:var(--dark);color:#fff;padding:18px 0;height:100vh;position:fixed;top:0;left:0;overflow-y:auto;box-shadow:2px 0 12px rgba(0,0,0,.06);z-index:100}
+.logo{font-size:22px;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:10px;padding:0 20px 18px;border-bottom:1px solid #444;margin-bottom:14px;letter-spacing:.5px}
+.logo i{font-size:24px}
+.nav-menu{list-style:none}
+.nav-menu li{margin-bottom:2px}
+.nav-menu a{color:#d5d9df;font-weight:500;padding:11px 20px;display:flex;align-items:center;gap:12px;border-left:3px solid transparent;transition:all .18s;font-size:14px}
+.nav-menu a:hover{background:var(--dark-2);color:#fff}
+.nav-menu a.active{background:var(--dark-2);color:#fff;border-left-color:var(--primary);font-weight:600}
+.nav-menu a.active i{color:var(--primary)}
+.nav-menu i{width:20px;text-align:center;font-size:15px}
+.user-info{padding:16px 20px;border-top:1px solid #444;margin-top:18px;display:flex;align-items:center;gap:11px}
+.user-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;flex-shrink:0}
+.user-details{min-width:0;flex:1}
+.user-name{font-weight:600;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:11.5px;color:#9aa1ab}
+
+.main-content{flex:1;margin-left:240px;padding:18px 22px;min-width:0;display:flex;flex-direction:column;gap:16px}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.topbar-left h1{font-size:22px;font-weight:700;letter-spacing:-.3px}
+.topbar-left .page-subtitle{font-size:12.5px;color:var(--muted);margin-top:2px}
+.topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+/* ============================================================
+   PAINEL: CAIXA EM OPERAÇÃO
+   ============================================================ */
+.caixa-ativo-panel{
+    background:linear-gradient(135deg,#ffffff 0%,#fafbfc 100%);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:relative;
+}
+.caixa-ativo-panel::before{
+    content:'';
+    position:absolute;top:0;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,var(--success),#66BB6A);
+}
+.caixa-ativo-header{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:16px 20px;gap:14px;flex-wrap:wrap;
+    border-bottom:1px solid var(--border);
+    background:#fff;
+}
+.caixa-ativo-header-left{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.caixa-ativo-badge{
+    display:inline-flex;align-items:center;gap:7px;
+    background:var(--success-soft);color:var(--success-dark);
+    font-size:11.5px;font-weight:700;padding:5px 12px;border-radius:20px;
+    text-transform:uppercase;letter-spacing:.5px;
+}
+.caixa-ativo-badge::before{
+    content:'';width:8px;height:8px;border-radius:50%;
+    background:var(--success-dark);animation:pulse 1.6s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.caixa-ativo-title{font-size:15.5px;font-weight:700;color:var(--text)}
+.caixa-ativo-title span{color:var(--muted);font-weight:500;font-size:12.5px;margin-left:8px}
+.caixa-ativo-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+.caixa-ativo-kpis{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:12px;
+    padding:16px 20px;
+    background:#fafbfc;
+}
+.mini-kpi{
+    background:#fff;border:1px solid var(--border);border-radius:8px;
+    padding:14px 16px;display:flex;flex-direction:column;gap:4px;
+    position:relative;overflow:hidden;transition:all .2s;
+}
+.mini-kpi:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.mini-kpi::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--primary)}
+.mini-kpi.green::before{background:var(--success)}
+.mini-kpi.orange::before{background:var(--warning)}
+.mini-kpi.blue::before{background:var(--info)}
+.mini-kpi.dark::before{background:var(--dark)}
+.mini-kpi-label{
+    font-size:10.5px;text-transform:uppercase;letter-spacing:.8px;
+    color:var(--muted);font-weight:700;
+    display:flex;align-items:center;gap:6px;
+}
+.mini-kpi-label i{color:#c0c5cc}
+.mini-kpi.green .mini-kpi-label i{color:var(--success)}
+.mini-kpi.orange .mini-kpi-label i{color:var(--warning)}
+.mini-kpi.blue .mini-kpi-label i{color:var(--info)}
+.mini-kpi-value{
+    font-size:20px;font-weight:800;color:var(--text);
+    letter-spacing:-.5px;line-height:1.15;margin:2px 0;
+}
+.mini-kpi-value.green{color:var(--success-dark)}
+.mini-kpi-value.red{color:#c62828}
+.mini-kpi-sub{font-size:11.5px;color:var(--muted)}
+
+/* Card */
+.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+.card-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fafbfc;flex-wrap:wrap}
+.card-head h3{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:9px}
+.card-head h3 i{color:var(--primary)}
+
+.filter-bar{padding:12px 14px;border-bottom:1px solid var(--border);background:#fafbfc;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.filter-group{display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--border-strong);border-radius:6px;padding:6px 11px;transition:border .15s}
+.filter-group:focus-within{border-color:var(--primary)}
+.filter-group i{color:var(--muted);font-size:12px}
+.filter-group input,.filter-group select{border:none;outline:none;font-size:12.5px;background:transparent;font-family:inherit;color:var(--text);min-width:120px}
+.filter-bar .spacer{flex:1}
+
+/* Tabela */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:#f5f6f8;color:var(--text-soft);text-align:left;padding:11px 14px;font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1.5px solid var(--border);white-space:nowrap}
+tbody td{padding:13px 14px;border-bottom:1px solid #f0f2f5;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:not(.expanded-row):hover{background:#fafbfc}
+.text-end{text-align:right}
+.text-center{text-align:center}
+.text-danger{color:var(--primary);font-weight:700}
+.text-success{color:var(--success-dark);font-weight:700}
+.text-muted{color:var(--muted)}
+
+/* Expandir linhas */
+.row-expand-btn{
+    width:28px;height:28px;border-radius:6px;border:1px solid transparent;
+    background:transparent;color:var(--muted);
+    display:inline-flex;align-items:center;justify-content:center;
+    transition:all .18s;font-size:12px;
+}
+.row-expand-btn:hover{background:#f0f2f5;color:var(--primary);border-color:var(--border)}
+.row-expand-btn i{transition:transform .22s}
+tr.row-open .row-expand-btn i{transform:rotate(90deg)}
+tr.row-open .row-expand-btn{color:var(--primary);background:var(--primary-soft)}
+
+.expanded-row td{padding:0!important;background:#FAFBFC;border-bottom:2px solid var(--primary)!important}
+.expanded-content{padding:16px 22px 20px;animation:expandDown .22s ease}
+@keyframes expandDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+
+.expanded-title{
+    font-size:13px;font-weight:700;color:var(--text);
+    display:flex;align-items:center;gap:9px;margin-bottom:12px;
+}
+.expanded-title i{color:var(--primary)}
+.count-badge{
+    background:var(--primary);color:#fff;font-size:11px;font-weight:700;
+    padding:2px 9px;border-radius:12px;margin-left:4px;
+}
+.count-badge.neutral{background:#e4e7ec;color:var(--text-soft)}
+
+.mini-sales-table{
+    width:100%;border-collapse:collapse;background:#fff;
+    border:1px solid var(--border);border-radius:6px;overflow:hidden;font-size:13px;
+}
+.mini-sales-table th{
+    background:#F5F6F8;padding:9px 12px;font-size:11px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.4px;color:var(--text-soft);
+    text-align:left;border-bottom:1px solid var(--border);
+}
+.mini-sales-table td{padding:9px 12px;border-bottom:1px solid #f0f2f5;font-size:13px}
+.mini-sales-table tr:last-child td{border-bottom:none}
+
+.no-sales{
+    text-align:center;padding:24px 16px;color:var(--muted);
+    font-size:13px;background:#fff;border:1px dashed var(--border);
+    border-radius:6px;
+}
+.no-sales i{display:block;font-size:28px;color:#d0d4dc;margin-bottom:8px}
+
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:12px;font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.badge-success{background:var(--success-soft);color:var(--success-dark)}
+.badge-danger{background:#FFEBEE;color:#c62828}
+.badge-info{background:var(--info-soft);color:var(--info-dark)}
+.badge-neutral{background:#e4e7ec;color:var(--text-soft)}
+.badge i{font-size:10px}
+
+.id-tag{display:inline-flex;align-items:center;gap:5px;background:#f0f2f5;color:var(--text-soft);font-size:12px;font-weight:700;padding:3px 10px;border-radius:12px;font-family:Consolas,monospace}
+.func-cell{display:flex;align-items:center;gap:10px}
+.func-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.func-nome{font-weight:600;font-size:13px;color:var(--text)}
+
+.row-actions{display:inline-flex;gap:5px;align-items:center;justify-content:center}
+
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+.empty i{font-size:52px;color:#d0d4dc;margin-bottom:14px;display:block}
+.empty h4{font-size:16px;color:var(--text-soft);margin-bottom:6px;font-weight:600}
+.empty p{font-size:13px;margin-bottom:16px}
+
+.pag-bar{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 16px;border-top:1px solid var(--border);background:#fafbfc;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+.pag-controls{display:flex;gap:4px}
+.pag-btn{min-width:32px;height:32px;padding:0 10px;border:1px solid var(--border-strong);background:#fff;border-radius:6px;font-size:12.5px;font-weight:700;color:var(--text-soft);display:inline-flex;align-items:center;justify-content:center;transition:all .15s}
+.pag-btn:hover:not(:disabled){border-color:var(--primary);color:var(--primary)}
+.pag-btn.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.pag-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px;backdrop-filter:blur(2px)}
+.modal-backdrop.open{display:flex}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:480px;box-shadow:0 20px 50px rgba(0,0,0,.3);overflow:hidden;animation:modalPop .22s ease}
+@keyframes modalPop{from{transform:scale(.94) translateY(8px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;background:#FAFAFA;border-bottom:1px solid #eee}
+.modal-header h3{font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px}
+.modal-header h3 i{color:var(--warning)}
+.modal-close{background:none;border:none;font-size:26px;line-height:1;cursor:pointer;color:#888;padding:0 4px;border-radius:6px;transition:all .15s}
+.modal-close:hover{color:var(--primary);background:#f5f5f5}
+.modal-body{padding:22px}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;padding:0 22px 22px}
+.form-group{margin-bottom:16px}
+.form-group:last-child{margin-bottom:0}
+.form-label{display:block;margin-bottom:7px;color:var(--text);font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px}
+.form-label i{color:var(--muted);font-size:12px}
+.form-label .required{color:var(--primary)}
+.form-control{width:100%;padding:11px 13px;border:1px solid #ddd;border-radius:6px;font-size:14.5px;transition:all .2s;background:#fff;color:var(--text);font-family:inherit}
+.form-control:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px rgba(229,57,53,.08)}
+.alert-modal{display:flex;gap:12px;padding:12px 14px;border-radius:8px;font-size:13px;line-height:1.5;margin-bottom:18px;background:var(--warning-soft);color:#856404;border-left:3px solid var(--warning)}
+.alert-modal i{font-size:16px;flex-shrink:0;margin-top:2px}
+.alert-modal strong{color:#5c4408}
+.caixa-detalhes-modal{background:#FAFAFA;border:1px solid #eee;border-radius:8px;padding:12px 14px;margin-bottom:18px;display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12.5px}
+.caixa-detalhes-modal .det-label{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+.caixa-detalhes-modal .det-valor{color:var(--text);font-weight:700;margin-top:2px}
+
+@media(max-width:900px){
+    .sidebar{width:64px}
+    .sidebar .logo span,.sidebar .nav-menu span,.sidebar .user-details{display:none}
+    .sidebar .logo{justify-content:center;padding:0 8px 16px}
+    .sidebar .logo i{margin:0}
+    .sidebar .nav-menu a{justify-content:center;padding:12px 8px}
+    .sidebar .user-info{justify-content:center;padding:14px 8px}
+    .main-content{margin-left:64px;padding:14px}
+}
+@media(max-width:600px){
+    .caixa-ativo-kpis{grid-template-columns:1fr}
+    .filter-bar{flex-direction:column;align-items:stretch}
+    .filter-group{width:100%}
+    .filter-group input,.filter-group select{width:100%}
+    .caixa-detalhes-modal{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo">
-            <i class="fas fa-globe-americas"></i>
-            <span>BOM MUNDO</span>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fas fa-globe-americas"></i><span>BOM MUNDO</span></div>
+    <ul class="nav-menu">
+        <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Painel principal</span></a></li>
+        <li><a href="/caixa" class="active"><i class="fas fa-cash-register"></i><span>Caixas</span></a></li>
+        <li><a href="/vendas"><i class="fas fa-shopping-cart"></i><span>Vendas</span></a></li>
+        <li><a href="/produtos"><i class="fas fa-boxes"></i><span>Estoque</span></a></li>
+        <li><a href="#"><i class="fas fa-users"></i><span>Clientes</span></a></li>
+        <li><a href="#"><i class="fas fa-chart-bar"></i><span>Relatórios</span></a></li>
+        <li><a href="#"><i class="fas fa-cog"></i><span>Configurações</span></a></li>
+    </ul>
+    <div class="user-info">
+        <div class="user-avatar">JS</div>
+        <div class="user-details">
+            <div class="user-name"><%= locals.utilizador || 'Operador' %></div>
+            <div class="user-role">Gerente</div>
         </div>
-        
-        <ul class="nav-menu">
-            <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i> <span>Painel principal</span></a></li>
-            <li><a href="/caixa"   class="active" class="nav-link <%= currentPath.startsWith('/caixa') ? 'active' : '' %>"><i class="fas fa-cash-register"></i> <span>Caixas</span></a></li>
-            <li><a href="/vendas" class="nav-link <%= currentPath.startsWith('/vendas') ? '' : '' %>"><i class="fas fa-shopping-cart"></i> <span>Vendas</span></a></li>
-            <li><a href="/produtos" class="nav-link <%= currentPath.startsWith('/produtos') ? 'active' : '' %>"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
-            <li><a href="#"><i class="fas fa-users"></i> <span>Clientes</span></a></li>
-            <li><a href="#"><i class="fas fa-chart-bar"></i> <span>Relatórios</span></a></li>
-            <li><a href="#"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
-        </ul>
-         
+    </div>
+</aside>
+
+<main class="main-content">
+
+    <div class="topbar">
+        <div class="topbar-left">
+            <h1>Gestão de Caixas</h1>
+            <div class="page-subtitle">Controle de aberturas, fechos e movimentos</div>
+        </div>
+        <div class="topbar-right">
+            <a href="/vendas/nova" class="btn btn-success">
+                <i class="fas fa-shopping-cart"></i> Nova Venda
+            </a>
+            <a href="/caixa/abrir" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Abrir Novo Caixa
+            </a>
+        </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="header">
-            <h1 class="page-title" id="page-title"> Painel de controle de Caixas</h1>
-            <div class="header-actions">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Pesquisar caixas...">
+    <%
+        const listaCaixas = (typeof caixas !== 'undefined' && Array.isArray(caixas)) ? caixas : [];
+        const fmt = n => Number(n||0).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' Kz';
+
+        const caixaAtivo = listaCaixas.find(c => c.status === 'aberto') || null;
+        let ativoSaldo = 0, ativoEntradas = 0, ativoSaidas = 0;
+        let ativoCountEntradas = 0, ativoCountSaidas = 0;
+        let ativoVendasCount = 0, ativoVendasTotal = 0;
+
+        if (caixaAtivo) {
+            const movs = caixaAtivo.MovimentoCaixas || [];
+            movs.forEach(m => {
+                const v = Number(m.valor || 0);
+                if (m.tipo === 'entrada') { ativoEntradas += v; ativoCountEntradas++; }
+                else { ativoSaidas += v; ativoCountSaidas++; }
+            });
+            const vendasArr = Array.isArray(caixaAtivo.Vendas) ? caixaAtivo.Vendas : [];
+            ativoVendasCount = vendasArr.length;
+            ativoVendasTotal = vendasArr.reduce((s, v) => s + Number(v.valor_total || 0), 0);
+            ativoSaldo = Number(caixaAtivo.saldo_final || (Number(caixaAtivo.valor_abertura || 0) + ativoEntradas - ativoSaidas));
+        }
+    %>
+
+    <!-- ============================================================
+         PAINEL: CAIXA EM OPERAÇÃO
+         ============================================================ -->
+    <% if (caixaAtivo) { %>
+    <section class="caixa-ativo-panel">
+        <div class="caixa-ativo-header">
+            <div class="caixa-ativo-header-left">
+                <span class="caixa-ativo-badge"><i class="fas fa-lock-open"></i> Em Operação</span>
+                <div class="caixa-ativo-title">
+                    Caixa #<%= caixaAtivo.id %>
+                    <span>· <%= caixaAtivo.Funcionario?.nome || '—' %></span>
                 </div>
-                <div class="notification">
-                    <i class="fas fa-bell"></i>
-                    <div class="notification-badge">2</div>
-                </div>
+            </div>
+            <div class="caixa-ativo-actions">
+                <a href="/caixa/<%= caixaAtivo.id %>" class="btn btn-outline btn-sm">
+                    <i class="fas fa-eye"></i> Ver Detalhes
+                </a>
+                <button type="button" class="btn btn-warning btn-sm" 
+                        onclick="abrirModalFecharCaixa(<%= caixaAtivo.id %>, '<%= (caixaAtivo.Funcionario?.nome || '').replace(/'/g, "\\'") %>', '<%= fmt(ativoSaldo) %>')">
+                    <i class="fas fa-lock"></i> Fechar Caixa
+                </button>
             </div>
         </div>
 
-        <!-- Alertas -->
-        <div class="alert alert-success" id="success-alert" style="display: none;">
-            <i class="fas fa-check-circle"></i> Operação realizada com sucesso!
+        <div class="caixa-ativo-kpis">
+            <div class="mini-kpi dark">
+                <span class="mini-kpi-label"><i class="fas fa-wallet"></i> Saldo Atual</span>
+                <span class="mini-kpi-value"><%= fmt(ativoSaldo) %></span>
+                <span class="mini-kpi-sub">Após todos os movimentos</span>
+            </div>
+            <div class="mini-kpi green">
+                <span class="mini-kpi-label"><i class="fas fa-arrow-down"></i> Entradas</span>
+                <span class="mini-kpi-value green"><%= fmt(ativoEntradas) %></span>
+                <span class="mini-kpi-sub"><%= ativoCountEntradas %> <%= ativoCountEntradas === 1 ? 'movimento' : 'movimentos' %></span>
+            </div>
+            <div class="mini-kpi orange">
+                <span class="mini-kpi-label"><i class="fas fa-arrow-up"></i> Saídas</span>
+                <span class="mini-kpi-value <%= ativoSaidas > 0 ? 'red' : '' %>"><%= fmt(ativoSaidas) %></span>
+                <span class="mini-kpi-sub"><%= ativoCountSaidas %> <%= ativoCountSaidas === 1 ? 'movimento' : 'movimentos' %></span>
+            </div>
+            <div class="mini-kpi blue">
+                <span class="mini-kpi-label"><i class="fas fa-shopping-cart"></i> Vendas</span>
+                <span class="mini-kpi-value"><%= ativoVendasCount %></span>
+                <span class="mini-kpi-sub">Total vendido: <%= fmt(ativoVendasTotal) %></span>
+            </div>
+        </div>
+    </section>
+    <% } %>
+
+    <!-- ============================================================
+         LISTA DE CAIXAS
+         ============================================================ -->
+    <div class="card">
+        <div class="card-head">
+            <h3><i class="fas fa-list"></i> Todos os Caixas</h3>
+            <span class="text-muted" style="font-size:12px;" id="contadorLabel"><%= listaCaixas.length %> registos</span>
         </div>
 
-        <!-- Conteúdo da Página (será alterado dinamicamente) -->
-        <div id="page-content">
-            <!-- Conteúdo inicial: Lista de Caixas -->
-            <div class="page-header">
-                <h2>  </h2>
-                <button class="btn btn-primary" onclick="showAbrirCaixa()">
-                    <i class="fas fa-plus"></i> Abrir Caixa
+        <% if (listaCaixas.length === 0) { %>
+            <div class="empty">
+                <i class="fas fa-cash-register"></i>
+                <h4>Nenhum caixa registado</h4>
+                <p>Comece por abrir o primeiro caixa para iniciar as operações.</p>
+                <a href="/caixa/abrir" class="btn btn-primary"><i class="fas fa-plus"></i> Abrir Novo Caixa</a>
+            </div>
+        <% } else { %>
+
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="filtroTexto" placeholder="Pesquisar por ID ou funcionário...">
+                </div>
+                <div class="filter-group">
+                    <i class="fas fa-filter"></i>
+                    <select id="filtroStatus">
+                        <option value="">Todos os estados</option>
+                        <option value="aberto">Abertos</option>
+                        <option value="fechado">Fechados</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <i class="fas fa-calendar"></i>
+                    <input type="date" id="filtroData">
+                </div>
+                <div class="spacer"></div>
+                <button class="btn btn-outline btn-sm" onclick="limparFiltros()">
+                    <i class="fas fa-eraser"></i> Limpar
                 </button>
             </div>
 
-            <div class="filters">
-                <form method="GET" class="filter-form">
-                    <div class="form-group">
-                        <label for="status" class="form-label">Filtrar por status:</label>
-                        <select id="status" name="status" class="form-control">
-                            <option value="todos">Todos</option>
-                            <option value="aberto">Abertos</option>
-                            <option value="fechado">Fechados</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
-                </form>
+            <div class="table-wrap">
+                <table id="tabelaCaixas">
+                    <thead>
+                        <tr>
+                            <th style="width:42px;"></th>
+                            <th style="width:80px;">ID</th>
+                            <th>Funcionário</th>
+                            <th style="width:150px;">Abertura</th>
+                            <th style="width:150px;">Fecho</th>
+                            <th class="text-end" style="width:120px;">Valor Inicial</th>
+                            <th class="text-end" style="width:120px;">Saldo Atual</th>
+                            <th class="text-center" style="width:105px;">Estado</th>
+                            <th class="text-center" style="width:80px;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyCaixas">
+                        <% listaCaixas.forEach(c => {
+                            const iniciais = (c.Funcionario?.nome || '??').split(' ').map(p => p[0]).slice(0,2).join('').toUpperCase();
+                            const dataAb = c.data_abertura ? new Date(c.data_abertura).toLocaleString('pt-AO',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+                            const dataFe = c.data_fecho ? new Date(c.data_fecho).toLocaleString('pt-AO',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+                            const isAberto = c.status === 'aberto';
+                            const nomeFuncSafe = (c.Funcionario?.nome || '').replace(/'/g, "\\'");
+                            const saldoFmt = fmt(c.saldo_final || c.valor_abertura);
+                            const vendasArr = Array.isArray(c.Vendas) ? c.Vendas : [];
+                            const vendasCount = vendasArr.length;
+                            const formasPgto = {
+                                'dinheiro': 'Dinheiro',
+                                'cartao_debito': 'TPA',
+                                'Tpa': 'TPA',
+                                'cartao_credito': 'Cartão Crédito',
+                                'transferencia': 'Transferência'
+                            };
+                        %>
+                        <tr data-id="<%= c.id %>" data-status="<%= c.status %>" data-funcionario="<%= (c.Funcionario?.nome || '').toLowerCase() %>" data-data="<%= c.data_abertura || '' %>">
+                            <td class="text-center" style="padding-left:10px;">
+                                <button type="button" class="row-expand-btn" onclick="toggleRow(<%= c.id %>)" title="Ver vendas">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </td>
+                            <td><span class="id-tag"><i class="fas fa-hashtag"></i><%= c.id %></span></td>
+                            <td>
+                                <div class="func-cell">
+                                    <span class="func-avatar"><%= iniciais %></span>
+                                    <span class="func-nome"><%= c.Funcionario?.nome || '—' %></span>
+                                </div>
+                            </td>
+                            <td><%= dataAb %></td>
+                            <td><%= dataFe %></td>
+                            <td class="text-end"><%= fmt(c.valor_abertura) %></td>
+                            <td class="text-end <%= isAberto ? 'text-success' : '' %>">
+                                <strong><%= saldoFmt %></strong>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge <%= isAberto ? 'badge-success' : 'badge-danger' %>">
+                                    <i class="fas <%= isAberto ? 'fa-lock-open' : 'fa-lock' %>"></i>
+                                    <%= isAberto ? 'Aberto' : 'Fechado' %>
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <a href="/caixa/<%= c.id %>" class="btn btn-outline btn-sm btn-icon" title="Ver detalhes">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr class="expanded-row" data-for="<%= c.id %>" style="display:none;">
+                            <td colspan="9">
+                                <div class="expanded-content">
+                                    <div class="expanded-title">
+                                        <i class="fas fa-receipt"></i>
+                                        Vendas do Caixa #<%= c.id %>
+                                        <span class="count-badge <%= vendasCount === 0 ? 'neutral' : '' %>"><%= vendasCount %></span>
+                                    </div>
+
+                                    <% if (vendasCount > 0) { %>
+                                        <table class="mini-sales-table">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:70px;">#</th>
+                                                    <th style="width:170px;">Data / Hora</th>
+                                                    <th>Forma de Pagamento</th>
+                                                    <th class="text-end" style="width:140px;">Valor</th>
+                                                    <th style="width:80px;"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% vendasArr.forEach(v => { %>
+                                                    <tr>
+                                                        <td><strong>#<%= v.id %></strong></td>
+                                                        <td><%= new Date(v.data_venda).toLocaleString('pt-AO') %></td>
+                                                        <td>
+                                                            <span class="badge badge-info">
+                                                                <i class="fas fa-credit-card"></i>
+                                                                <%= formasPgto[v.forma_pagamento] || v.forma_pagamento %>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-end"><strong style="color:#E53935;"><%= fmt(v.valor_total) %></strong></td>
+                                                        <td>
+                                                            <a href="/vendas/<%= v.id %>" class="btn btn-outline btn-sm btn-icon" title="Ver factura">
+                                                                <i class="fas fa-file-invoice"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                <% }); %>
+                                            </tbody>
+                                        </table>
+                                    <% } else { %>
+                                        <div class="no-sales">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            Nenhuma venda registada neste caixa.
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
             </div>
 
-            <div class="card">
-                <div class="card-header">
-                    <h3>Histórico de Caixas</h3>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Data Abertura</th>
-                                    <th>Data Fechamento</th>
-                                    <th>Funcionário</th>
-                                    <th>Valor Abertura</th>
-                                    <th>Saldo Final</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <% if (caixas.length > 0) { %>
-                                    <% caixas.forEach(caixa => { %>
-                                    <tr>
-                                        <td><%= caixa.id %></td>
-                                        <td><%= new Date(caixa.data_abertura).toLocaleDateString('pt-BR') %></td>
-                                        <td><%= caixa.data_fechamento ? new Date(caixa.data_fechamento).toLocaleDateString('pt-BR') : '-' %></td>
-                                        <td><%= caixa.Funcionario.nome %></td>
-                                        <td><%= caixa.valor_abertura %> Kz</td>
-                                        <td><%= caixa.saldo_final ? caixa.saldo_final : '-' %> Kz</td>
-                                        <td>
-                                            <span class="status-badge status-<%= caixa.status %>">
-                                                <%= caixa.status === 'aberto' ? 'Aberto' : 'Fechado' %>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <a href="/caixa/<%= caixa.id %>" class="btn btn-sm btn-info" onclick="S_showDetalhesCaixa()">
-                                                <i class="fas fa-eye"></i> Detalhes
-                                            </a>
-                                            <% if (caixa.status === 'aberto') { %>
-                                                <form action="/caixa/fechar/<%= caixa.id %>" method="POST" style="display: inline;">
-                                                    <button type="submit" class="btn btn-sm btn-warning">
-                                                        <i class="fas fa-lock"></i> Fechar
-                                                    </button>
-                                                </form>
-                                            <% } %>
-                                        </td>
-                                    </tr>
-                                    <% }) %>
-                                <% } else { %>
-                                    <tr>
-                                        <td colspan="8" class="text-center">Nenhum caixa encontrado</td>
-                                    </tr>
-                                <% } %>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="empty" id="emptyFiltro" style="display:none;">
+                <i class="fas fa-search-minus"></i>
+                <h4>Nenhum resultado</h4>
+                <p>Ajuste os filtros para encontrar o caixa pretendido.</p>
             </div>
-        </div>
+
+            <div class="pag-bar">
+                <span id="pagInfo">—</span>
+                <div class="pag-controls" id="pagControls"></div>
+            </div>
+        <% } %>
     </div>
+</main>
 
-    <!-- Templates para as diferentes páginas -->
-    
-    <!-- Template: Abrir Caixa -->
-    <template id="abrir-caixa-template">
-        <div class="page-header">
-            <h2>Abertura de caixa</h2>
-            <a href="/caixa" class="btn btn-secondary" onclick="showCaixaList()">
-                <i class="fas fa-arrow-left"></i> Voltar
-            </a>
+<!-- MODAL: FECHAR CAIXA -->
+<div class="modal-backdrop" id="fecharCaixaModal" onclick="if (event.target === this) fecharModalFechar()">
+    <div class="modal" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <h3><i class="fas fa-lock"></i> Confirmar Fecho de Caixa</h3>
+            <button type="button" class="modal-close" onclick="fecharModalFechar()" aria-label="Fechar">&times;</button>
         </div>
 
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Informações abertura do Caixa</h3>
+        <form id="fecharCaixaForm" method="POST" action="">
+            <div class="modal-body">
+                <div class="alert-modal">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <strong>Operação sensível.</strong> Para fechar o caixa é necessário confirmar a senha do
+                        <b>operador que abriu o caixa</b> ou de um <b>administrador</b>.
                     </div>
-                    <div class="card-body">
-                        <form id="abrir-caixa-formss" method="POST" action="/caixa/abrir">
-                            <div class="form-group">
-                                <label for="valor_abertura" class="form-label">Valor de abertura (Kz):</label>
-                                <input type="number" id="valor_abertura" name="valor_abertura" class="form-control" 
-                                    step="0.01" min="0" value="0" required>
-                                <small class="form-text text-muted">Informe o valor em dinheiro disponível no caixa</small>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <i class="fas fa-lock-open"></i> Abrir Caixa
-                            </button>
-                        </form>
+                </div>
+
+                <div class="caixa-detalhes-modal">
+                    <div>
+                        <div class="det-label">Caixa</div>
+                        <div class="det-valor" id="modalFecharCaixaId">#—</div>
+                    </div>
+                    <div>
+                        <div class="det-label">Operador</div>
+                        <div class="det-valor" id="modalFecharOperador">—</div>
+                    </div>
+                    <div style="grid-column:1/-1;">
+                        <div class="det-label">Saldo Atual</div>
+                        <div class="det-valor text-success" id="modalFecharSaldo">—</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="senhaFechar">
+                        <i class="fas fa-key"></i> Senha de Confirmação <span class="required">*</span>
+                    </label>
+                    <input type="password" id="senhaFechar" name="senha" class="form-control"
+                           placeholder="Introduza a sua senha" autocomplete="current-password" required>
+                    <div style="font-size:11.5px;color:var(--muted);margin-top:6px;">
+                        <i class="fas fa-info-circle"></i>
+                        A senha será validada pelo sistema antes de efetivar o fecho.
                     </div>
                 </div>
             </div>
-        </div>
-    </template>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="fecharModalFechar()">Cancelar</button>
+                <button type="submit" class="btn btn-warning" id="btnConfirmarFecho">
+                    <i class="fas fa-lock"></i> Confirmar Fecho
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
-    <script>
-        // Funções para navegação entre páginas
-        function showCaixaList() {
-            document.getElementById('page-title').textContent = 'Controle de Caixa';
-            document.getElementById('page-content').innerHTML = document.querySelector('#page-content').innerHTML;
+<script>
+/* ============================================================
+   MODAL: FECHAR CAIXA
+   ============================================================ */
+function abrirModalFecharCaixa(caixaId, operador, saldo) {
+    const modal = document.getElementById('fecharCaixaModal');
+    const form = document.getElementById('fecharCaixaForm');
+    const inputSenha = document.getElementById('senhaFechar');
+
+    document.getElementById('modalFecharCaixaId').textContent = '#' + caixaId;
+    document.getElementById('modalFecharOperador').textContent = operador || '—';
+    document.getElementById('modalFecharSaldo').textContent = saldo || '—';
+
+    form.action = '/caixa/fechar/' + caixaId;
+
+    if (inputSenha) {
+        inputSenha.value = '';
+        setTimeout(() => inputSenha.focus(), 100);
+    }
+
+    const btn = document.getElementById('btnConfirmarFecho');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-lock"></i> Confirmar Fecho';
+
+    modal.classList.add('open');
+}
+
+function fecharModalFechar() {
+    document.getElementById('fecharCaixaModal').classList.remove('open');
+    const inputSenha = document.getElementById('senhaFechar');
+    if (inputSenha) inputSenha.value = '';
+}
+
+const formFechar = document.getElementById('fecharCaixaForm');
+if (formFechar) {
+    formFechar.addEventListener('submit', function (e) {
+        const senha = document.getElementById('senhaFechar').value.trim();
+        if (!senha) {
+            e.preventDefault();
+            document.getElementById('senhaFechar').focus();
+            return;
         }
+        const btn = document.getElementById('btnConfirmarFecho');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A validar...';
+    });
+}
 
-        function showAbrirCaixa() {
-            document.getElementById('page-title').textContent = 'Abrir Caixa';
-            const template = document.getElementById('abrir-caixa-template');
-            document.getElementById('page-content').innerHTML = template.innerHTML;
-            
-            // Inicializar funcionalidades do formulário
-            document.getElementById('abrir-caixa-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Simular sucesso
-                document.getElementById('success-alert').textContent = 'Caixa aberto com sucesso!';
-                document.getElementById('success-alert').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('success-alert').style.display = 'none';
-                    showCaixaList();
-                }, 3000);
-            });
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') fecharModalFechar();
+});
+
+/* ============================================================
+   TOGGLE ROW (expandir vendas do caixa)
+   ============================================================ */
+function toggleRow(id) {
+    const main = document.querySelector(`tr[data-id="${id}"]:not(.expanded-row)`);
+    const expanded = document.querySelector(`tr.expanded-row[data-for="${id}"]`);
+    if (!main || !expanded) return;
+
+    const isOpen = main.classList.toggle('row-open');
+    expanded.style.display = isOpen ? '' : 'none';
+}
+
+/* ============================================================
+   FILTROS + PAGINAÇÃO
+   ============================================================ */
+const state = { page: 1, perPage: 10, texto: '', status: '', data: '' };
+
+function getLinhas(){
+    return [...document.querySelectorAll('#tbodyCaixas tr:not(.expanded-row)')];
+}
+
+function aplicarFiltros(){
+    let visiveis = 0;
+    getLinhas().forEach(tr => {
+        const id = tr.dataset.id;
+        const func = tr.dataset.funcionario || '';
+        const status = tr.dataset.status;
+        const dataIso = tr.dataset.data ? tr.dataset.data.slice(0,10) : '';
+
+        const okTexto = !state.texto || id.includes(state.texto) || func.includes(state.texto);
+        const okStatus = !state.status || status === state.status;
+        const okData = !state.data || dataIso === state.data;
+
+        const match = okTexto && okStatus && okData;
+        tr.dataset.visivel = match ? '1' : '0';
+        if (match) visiveis++;
+
+        // Sincroniza expanded-row
+        const expanded = document.querySelector(`tr.expanded-row[data-for="${id}"]`);
+        if (expanded && !match) expanded.style.display = 'none';
+    });
+    return visiveis;
+}
+
+function renderPaginacao(totalVisivel){
+    const totalPag = Math.max(1, Math.ceil(totalVisivel / state.perPage));
+    if(state.page > totalPag) state.page = totalPag;
+
+    const visiveis = getLinhas().filter(tr => tr.dataset.visivel === '1');
+    visiveis.forEach((tr, i) => {
+        const dentro = (i >= (state.page-1)*state.perPage) && (i < state.page*state.perPage);
+        tr.style.display = dentro ? '' : 'none';
+
+        const expanded = document.querySelector(`tr.expanded-row[data-for="${tr.dataset.id}"]`);
+        if (expanded) {
+            const isOpen = tr.classList.contains('row-open');
+            expanded.style.display = (dentro && isOpen) ? '' : 'none';
         }
+    });
 
-        function showDetalhesCaixa() {
-            document.getElementById('page-title').textContent = 'Detalhes do Caixa';
-            const template = document.getElementById('detalhes-caixa-template');
-            document.getElementById('page-content').innerHTML = template.innerHTML;
-            
-            // Inicializar funcionalidades dos formulários
-            document.getElementById('fechar-caixa-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                if (confirm('Tem certeza que deseja fechar este caixa?')) {
-                    // Simular sucesso
-                    document.getElementById('success-alert').textContent = 'Caixa fechado com sucesso!';
-                    document.getElementById('success-alert').style.display = 'block';
-                    setTimeout(() => {
-                        document.getElementById('success-alert').style.display = 'none';
-                        showCaixaList();
-                    }, 3000);
-                }
-            });
-            
-            document.getElementById('adicionar-movimento-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Simular sucesso
-                document.getElementById('success-alert').textContent = 'Movimento adicionado com sucesso!';
-                document.getElementById('success-alert').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('success-alert').style.display = 'none';
-                    // Limpar formulário
-                    document.getElementById('adicionar-movimento-form').reset();
-                }, 3000);
-            });
+    const ini = totalVisivel === 0 ? 0 : (state.page - 1) * state.perPage + 1;
+    const fim = Math.min(state.page * state.perPage, totalVisivel);
+    const info = document.getElementById('pagInfo');
+    if(info) info.textContent = totalVisivel === 0 ? 'Sem resultados' : `Mostrando ${ini}–${fim} de ${totalVisivel}`;
+
+    const c = document.getElementById('pagControls');
+    if(!c) return;
+    if(totalPag <= 1){ c.innerHTML = ''; return; }
+
+    const btns = [];
+    btns.push(`<button class="pag-btn" ${state.page===1?'disabled':''} data-go="${state.page-1}"><i class="fas fa-chevron-left"></i></button>`);
+    for(let p=1; p<=totalPag; p++){
+        if(p === 1 || p === totalPag || Math.abs(p - state.page) <= 1){
+            btns.push(`<button class="pag-btn ${p===state.page?'active':''}" data-go="${p}">${p}</button>`);
+        } else if(Math.abs(p - state.page) === 2){
+            btns.push(`<span style="padding:0 4px;color:#aaa;">…</span>`);
         }
+    }
+    btns.push(`<button class="pag-btn" ${state.page===totalPag?'disabled':''} data-go="${state.page+1}"><i class="fas fa-chevron-right"></i></button>`);
+    c.innerHTML = btns.join('');
 
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            // Ativar/desativar itens do menu
-            const menuItems = document.querySelectorAll('.nav-menu a');
-            menuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    menuItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-            
-            // Simular notificações
-            const notification = document.querySelector('.notification');
-            notification.addEventListener('click', function() {
-                alert('Você tem 2 caixas abertos que precisam de atenção');
-            });
-            
-            // Filtro de status
-            document.getElementById('status').addEventListener('change', function() {
-                // Simulação de filtro - em uma aplicação real, isso faria uma requisição ao servidor
-                const status = this.value;
-                const rows = document.querySelectorAll('.data-table tbody tr');
-                
-                rows.forEach(row => {
-                    if (status === 'todos') {
-                        row.style.display = '';
-                    } else {
-                        const statusCell = row.querySelector('.status-badge');
-                        if (statusCell) {
-                            const rowStatus = statusCell.classList.contains('status-aberto') ? 'aberto' : 'fechado';
-                            row.style.display = rowStatus === status ? '' : 'none';
-                        }
-                    }
-                });
-            });
+    c.querySelectorAll('[data-go]').forEach(b => {
+        b.addEventListener('click', () => {
+            if(b.disabled) return;
+            state.page = parseInt(b.dataset.go, 10);
+            renderPaginacao(aplicarFiltros());
         });
-    </script>
+    });
+}
+
+function limparFiltros(){
+    state.texto = ''; state.status = ''; state.data = ''; state.page = 1;
+    document.getElementById('filtroTexto').value = '';
+    document.getElementById('filtroStatus').value = '';
+    document.getElementById('filtroData').value = '';
+    renderLista();
+}
+
+function renderLista(){
+    const total = aplicarFiltros();
+    renderPaginacao(total);
+    const empty = document.getElementById('emptyFiltro');
+    const tabela = document.getElementById('tabelaCaixas');
+    const pag = document.querySelector('.pag-bar');
+    if(empty) empty.style.display = total === 0 ? 'block' : 'none';
+    if(tabela) tabela.style.display = total === 0 ? 'none' : '';
+    if(pag) pag.style.display = total === 0 ? 'none' : 'flex';
+    const cont = document.getElementById('contadorLabel');
+    if(cont) cont.textContent = total + ' de ' + getLinhas().length + ' registos';
+}
+
+document.getElementById('filtroTexto')?.addEventListener('input', e => { state.texto = e.target.value.toLowerCase().trim(); state.page = 1; renderLista(); });
+document.getElementById('filtroStatus')?.addEventListener('change', e => { state.status = e.target.value; state.page = 1; renderLista(); });
+document.getElementById('filtroData')?.addEventListener('change', e => { state.data = e.target.value; state.page = 1; renderLista(); });
+
+if(getLinhas().length) renderLista();
+</script>
 </body>
 </html>

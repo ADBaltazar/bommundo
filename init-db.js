@@ -16,7 +16,7 @@ async function initDatabase() {
     
     await Usuario.create({
       nome: 'Adriano',
-      email: 'com',
+      email: 'adriano@loja.com',
       senha: '0000',
       tipo: 'admin'
     });
@@ -35,7 +35,7 @@ async function initDatabase() {
     console.error('Erro ao inicializar banco:', error);
   } finally {
     await sequelize.close();
-  }adriano@loja.
+  }
 }
 
 initDatabase();

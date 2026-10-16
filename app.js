@@ -27,7 +27,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
-
+ 
 // Configuração de sessão
 app.use(session({
   secret: process.env.SESSION_SECRET || 'sistema-gestao-secret',
