@@ -36,7 +36,7 @@ router.post('/login', async (req, res) => {
     };
     
     req.session.success_msg = 'Login realizado com sucesso';
-    
+
     res.redirect('/dashboard');
   } catch (error) {
     console.error('Erro no login:', error);

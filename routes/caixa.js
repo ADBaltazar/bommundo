@@ -47,13 +47,13 @@ router.get('/', authRequired, async (req, res) => {
 // Abrir caixa - formulário
 router.get('/abrir', authRequired, async (req, res) => {
   console.log({message:'estou na rota principal para abrir o caixa'})
-
+  console.log(`${req.session.user.funcionarioId}`)
   try {
     // Verificar se já existe caixa aberto para este funcionário
     const caixaAberto = await Caixa.findOne({
       where: { 
         status: 'aberto', 
-        funcionario_id:1 // req.session.user.funcionarioId 
+        funcionario_id:req.session.user.id // req.session.user.funcionarioId 
       }
     });
     
@@ -84,7 +84,7 @@ router.post('/abrir', authRequired, async (req, res) => {
     const caixaAberto = await Caixa.findOne({
       where: { 
         status: 'aberto', 
-        funcionario_id: 1 //req.session.user.funcionarioId 
+        funcionario_id: req.session.user.id//req.session.user.funcionarioId 
       }
     });
     

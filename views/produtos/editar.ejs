@@ -6,250 +6,753 @@
   );
   const prod = (typeof produto !== 'undefined' && produto) ? produto : {};
   const cat = prod.categoria || '';
+
+  /* ─── Armazéns: prepara a estrutura para transferência ─── */
+  const _armazens = (typeof armazens !== 'undefined' && Array.isArray(armazens) && armazens.length > 0)
+    ? armazens
+    : [{ id: 1, nome: 'Armazém Principal' }];
+  const _armazemAtualId = (prod.armazem_id != null) ? prod.armazem_id : _armazens[0].id;
+  const _armazemAtualObj = _armazens.find(a => String(a.id) === String(_armazemAtualId)) || _armazens[0];
+  const _armazemAtualNome = _armazemAtualObj.nome;
+  const _armazensDestino = _armazens.filter(a => String(a.id) !== String(_armazemAtualId));
+  const _temMultiplosArmazens = _armazensDestino.length > 0;
 %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Editar Produto - Bom Mundo</title>
+<title>Editar Produto — Bom Mundo</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root{
-    --primary:#E53935;--primary-dark:#c62828;--primary-soft:#FFF5F5;--primary-line:#FFCDD2;
-    --dark:#2E2E2E;--dark-2:#3a3a3a;--dark-soft:#F2F4F7;
-    --success:#4CAF50;--success-dark:#2E7D32;--success-soft:#E8F5E9;--success-line:#C8E6C9;
-    --warning:#FF9800;--warning-dark:#E65100;--warning-soft:#FFF8E1;
-    --info:#2196F3;--info-dark:#1565C0;--info-soft:#E3F2FD;
-    --bg:#F5F6F8;--card:#fff;--border:#e6e8ec;--border-strong:#d0d4dc;
-    --text:#1f2328;--text-soft:#4a5058;--muted:#8b939f;--muted-2:#b0b7c0;
-    --shadow-sm:0 1px 3px rgba(0,0,0,.05);
-    --shadow:0 4px 12px rgba(0,0,0,.06);
-    --shadow-lg:0 12px 32px rgba(0,0,0,.12);
-    --radius:10px;--radius-sm:6px;
-    --sidebar-w:220px;
-}
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
-body{background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh;font-size:14px}
-a{text-decoration:none;color:inherit}
-button{font-family:inherit;cursor:pointer}
-input,select,textarea{font-family:inherit}
+:root {
+  --primary:        #E53935;
+  --primary-dark:   #c62828;
+  --primary-soft:   #FFF5F5;
+  --primary-line:   #FFCDD2;
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 16px;border-radius:var(--radius-sm);font-weight:600;font-size:13.5px;border:1px solid transparent;transition:all .18s;white-space:nowrap}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover:not(:disabled){background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 4px 10px rgba(229,57,53,.25)}
-.btn-outline{background:#fff;color:var(--text);border-color:var(--border-strong)}
-.btn-outline:hover:not(:disabled){border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
-.btn-danger{background:var(--primary);color:#fff}
-.btn-danger:hover:not(:disabled){background:var(--primary-dark)}
-.btn-ghost{background:transparent;color:var(--text-soft)}
-.btn-ghost:hover:not(:disabled){background:var(--dark-soft);color:var(--text)}
-.btn-sm{padding:6px 11px;font-size:12px}
-.btn-block{display:flex;width:100%}
+  --dark:           #2E2E2E;
+  --dark-2:         #3a3a3a;
 
-.sidebar{
-    width:var(--sidebar-w);background:var(--dark);color:#fff;padding:18px 0;
-    height:100vh;position:fixed;top:0;left:0;overflow-y:auto;z-index:100;
-    transition:width .2s ease;
-}
-.logo{font-size:20px;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:9px;padding:0 18px 16px;border-bottom:1px solid #444;margin-bottom:12px;letter-spacing:.5px}
-.logo i{font-size:22px}
-.nav-menu{list-style:none}
-.nav-menu li{margin-bottom:2px}
-.nav-menu a{color:#d5d9df;font-weight:500;padding:10px 18px;display:flex;align-items:center;gap:11px;border-left:3px solid transparent;transition:all .18s;font-size:13.5px}
-.nav-menu a:hover{background:var(--dark-2);color:#fff}
-.nav-menu a.active{background:var(--dark-2);color:#fff;border-left-color:var(--primary);font-weight:600}
-.nav-menu a.active i{color:var(--primary)}
-.nav-menu i{width:18px;text-align:center;font-size:14px}
-.user-info{padding:14px 18px;border-top:1px solid #444;margin-top:16px;display:flex;align-items:center;gap:10px}
-.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;flex-shrink:0}
-.user-details{min-width:0;flex:1}
-.user-name{font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-role{font-size:11px;color:#9aa1ab}
+  --success:        #4CAF50;
+  --success-dark:   #2E7D32;
+  --warning:        #FF9800;
+  --warning-dark:   #E65100;
+  --info:           #2196F3;
 
-/* MAIN CENTRADO */
-.main-content{
-    margin-left:var(--sidebar-w);
-    min-height:100vh;
-    padding:22px 24px 40px;
-    display:flex;
-    justify-content:center;
-    transition:margin-left .2s ease;
-}
-.page-container{
-    width:100%;
-    max-width:1240px;
-    margin:0 auto;
-    display:flex;
-    flex-direction:column;
-    gap:16px;
+  --bg:             #F5F6F8;
+  --surface:        #FFFFFF;
+  --surface-subtle: #FAFBFC;
+  --border:         #e6e8ec;
+  --border-strong:  #d0d4dc;
+  --fg:             #1f2328;
+  --fg-soft:        #4a5058;
+  --fg-muted:       #8b939f;
+  --fg-placeholder: #b0b7c0;
+
+  --success-soft:   #E8F5E9;
+  --danger-soft:    #FFEBEE;
+  --warning-soft:   #FFF8E1;
+
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px;
+
+  --sidebar-w: 220px;
+  --radius: 4px;
+
+  color-scheme: light;
 }
 
-/* TOPBAR */
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
-.topbar-left{display:flex;align-items:center;gap:14px;min-width:0}
-.topbar-back{
-    width:40px;height:40px;border-radius:var(--radius-sm);background:#fff;
-    display:inline-flex;align-items:center;justify-content:center;
-    color:var(--text-soft);box-shadow:var(--shadow-sm);border:1px solid var(--border);
-    transition:all .18s;flex-shrink:0;
-}
-.topbar-back:hover{color:var(--primary);border-color:var(--primary);transform:translateX(-2px)}
-.topbar-left h1{font-size:22px;font-weight:700;letter-spacing:-.3px;line-height:1.2}
-.topbar-left .page-subtitle{font-size:12.5px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.topbar-left .page-subtitle .id-tag{
-    display:inline-flex;align-items:center;gap:5px;
-    background:#fff;border:1px solid var(--border-strong);border-radius:12px;
-    padding:2px 10px;font-size:11.5px;font-weight:700;
-    color:var(--text-soft);font-family:Consolas,monospace;
-}
-.topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
 
-/* LAYOUT */
-.grid-layout{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 380px;
-    gap:18px;
-    align-items:start;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--fg); color: var(--surface); }
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
-/* CARDS */
-.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
-.card-head{padding:14px 20px;border-bottom:1px solid var(--border);background:#fafbfc;display:flex;align-items:center;gap:10px}
-.card-head h3{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:9px}
-.card-head h3 i{color:var(--primary)}
-.card-head .head-desc{font-size:11.5px;color:var(--muted);margin-left:auto;font-weight:500}
-.card-body{padding:22px 24px}
-
-/* FORM */
-.form-group{margin-bottom:18px}
-.form-group:last-child{margin-bottom:0}
-.form-label{display:flex;align-items:center;gap:6px;margin-bottom:7px;color:var(--text);font-weight:700;font-size:12.5px}
-.form-label i{color:var(--muted);font-size:11px}
-.form-label .required{color:var(--primary)}
-.form-label .optional{color:var(--muted);font-weight:500;font-size:11px;margin-left:2px}
-.form-control{
-    width:100%;padding:11px 14px;border:1.5px solid var(--border-strong);
-    border-radius:6px;font-size:14px;transition:all .18s;
-    background:#fff;color:var(--text);font-family:inherit;
-}
-.form-control:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px rgba(229,57,53,.08)}
-.form-control::placeholder{color:var(--muted-2)}
-textarea.form-control{resize:vertical;min-height:76px;line-height:1.5}
-select.form-control{
-    cursor:pointer;appearance:none;
-    background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3e%3cpath fill='%23888' d='M6 9L1 4h10z'/%3e%3c/svg%3e");
-    background-repeat:no-repeat;background-position:right 14px center;
-    padding-right:36px;
-}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.form-hint{font-size:11.5px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:5px}
-.form-hint i{color:var(--info);font-size:11px}
-
-.input-money{position:relative}
-.input-money input{padding-right:44px;text-align:right;font-weight:600}
-.input-money::after{
-    content:'Kz';position:absolute;right:14px;top:50%;transform:translateY(-50%);
-    font-size:11px;font-weight:700;color:var(--muted);pointer-events:none;
-    text-transform:uppercase;letter-spacing:.3px;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-/* PAINEL LATERAL */
-.side-panel{position:sticky;top:22px;display:flex;flex-direction:column;gap:14px}
+/* ---------- Botões ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+  white-space: nowrap;
+}
+.btn i { font-size: 11px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
 
-.preview-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-.preview-head{
-    padding:16px 20px;
-    background:linear-gradient(135deg,var(--dark) 0%,var(--dark-2) 100%);
-    color:#fff;
-}
-.preview-head .label{
-    font-size:10.5px;text-transform:uppercase;letter-spacing:1.2px;
-    color:rgba(255,255,255,.55);font-weight:700;
-    display:flex;align-items:center;gap:7px;margin-bottom:6px;
-}
-.preview-head .label i{color:rgba(255,255,255,.7)}
-.preview-head .value{font-size:17px;font-weight:800;line-height:1.25;word-break:break-word}
-.preview-body{padding:16px 20px}
-.preview-row{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:8px 0;font-size:13px;border-bottom:1px dashed var(--border);gap:12px;
-}
-.preview-row:last-child{border-bottom:none;font-weight:700;padding-top:12px;margin-top:4px;border-top:2px solid var(--dark)}
-.preview-row .key{color:var(--text-soft);display:flex;align-items:center;gap:6px;flex-shrink:0}
-.preview-row .key i{color:var(--muted);font-size:11px;width:14px}
-.preview-row .val{color:var(--text);font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
-.preview-row .val.green{color:var(--success-dark)}
-.preview-row .val.red{color:var(--primary-dark)}
-.preview-row .val.muted{color:var(--muted);font-weight:500}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
+.btn-primary:active:not(:disabled) { background: var(--primary-dark); }
+.btn-primary i { color: #fff; }
 
-/* Danger zone */
-.danger-zone{
-    background:#fff;border:1.5px solid var(--primary-line);
-    border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow-sm);
+.btn-outline { background: var(--surface); color: var(--fg); border-color: var(--border-strong); }
+.btn-outline:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.btn-outline:hover:not(:disabled) i { color: var(--primary); }
+.btn-outline:active:not(:disabled) { background: var(--surface-subtle); }
+.btn-outline i { color: var(--fg-soft); }
+
+.btn-outline.is-danger {
+  color: var(--primary-dark);
+  border-color: var(--primary-line);
 }
-.danger-zone .title{
-    font-size:11px;text-transform:uppercase;letter-spacing:.9px;
-    color:var(--primary-dark);font-weight:700;margin-bottom:8px;
-    display:flex;align-items:center;gap:6px;
+.btn-outline.is-danger i { color: var(--primary); }
+.btn-outline.is-danger:hover:not(:disabled) {
+  background: var(--danger-soft);
+  border-color: var(--primary);
 }
-.danger-zone .desc{
-    font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5;
+.btn-outline.is-danger:active:not(:disabled) {
+  background: var(--primary-soft);
 }
 
-/* MODAL */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px;backdrop-filter:blur(3px);overflow-y:auto}
-.modal-backdrop.open{display:flex}
-.modal{background:#fff;border-radius:12px;width:100%;max-width:440px;box-shadow:0 20px 50px rgba(0,0,0,.3);overflow:hidden;animation:modalPop .22s ease;margin:auto}
-@keyframes modalPop{from{transform:scale(.94) translateY(8px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
-.modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#FAFBFC;border-bottom:1px solid var(--border)}
-.modal-header h3{font-size:16px;font-weight:700;display:flex;align-items:center;gap:9px}
-.modal-close{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--muted);padding:0 4px;border-radius:6px;transition:all .15s}
-.modal-close:hover{color:var(--primary);background:var(--dark-soft)}
-.modal-body{padding:20px}
-.modal-actions{display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--border);background:#FAFBFC}
+.btn-block { display: flex; width: 100%; }
 
-/* TOASTS */
-#toast-container{position:fixed;top:20px;right:20px;z-index:3000;display:flex;flex-direction:column;gap:10px}
-.toast{display:flex;align-items:center;gap:11px;padding:12px 16px;border-radius:8px;color:#fff;font-size:13.5px;font-weight:600;box-shadow:0 8px 22px rgba(0,0,0,.2);animation:toastIn .25s ease;max-width:360px}
-.toast.success{background:var(--success)}
-.toast.error{background:var(--primary)}
-.toast.info{background:var(--info)}
-.toast.warning{background:var(--warning)}
-@keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+/* ---------- kbd ---------- */
+kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 5px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  background: var(--surface);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  line-height: 1;
+  min-width: 16px;
+  height: 16px;
+}
 
-/* RESPONSIVO */
-@media(max-width:1180px){
-    .grid-layout{grid-template-columns:1fr 340px;gap:16px}
+/* ---------- Sidebar ---------- */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--dark);
+  color: #fff;
+  padding: var(--s-5) 0;
+  height: 100vh;
+  position: fixed;
+  inset: 0 auto 0 0;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
 }
-@media(max-width:1000px){
-    .grid-layout{grid-template-columns:1fr}
-    .side-panel{position:static}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: .5px;
+  padding: 0 var(--s-5) var(--s-5);
+  border-bottom: 1px solid #2a2a2a;
+  margin-bottom: var(--s-4);
 }
-@media(max-width:900px){
-    :root{--sidebar-w:60px}
-    .sidebar .logo span,.sidebar .nav-menu span,.sidebar .user-details{display:none}
-    .sidebar .logo{justify-content:center;padding:0 8px 14px}
-    .sidebar .logo i{margin:0}
-    .sidebar .nav-menu a{justify-content:center;padding:11px 8px}
-    .sidebar .user-info{justify-content:center;padding:12px 8px}
-    .main-content{padding:16px 16px 32px}
+.logo i { color: var(--primary); font-size: 15px; }
+
+.nav-menu { list-style: none; flex: 1; }
+.nav-menu a {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-5);
+  font-size: 13px;
+  font-weight: 500;
+  color: #d5d9df;
+  border-left: 3px solid transparent;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
 }
-@media(max-width:600px){
-    .main-content{padding:12px 12px 28px}
-    .card-body{padding:18px 16px}
-    .form-row{grid-template-columns:1fr;gap:0}
-    .form-row .form-group{margin-bottom:18px}
-    .topbar-left h1{font-size:18px}
-    .topbar-right .btn span{display:none}
-    .preview-head .value{font-size:15px}
+.nav-menu a:hover { background: var(--dark-2); color: var(--primary); }
+.nav-menu a:hover i { color: var(--primary); }
+.nav-menu a.active {
+  background: var(--dark-2);
+  color: var(--primary);
+  border-left-color: var(--primary);
+}
+.nav-menu a.active i { color: var(--primary); }
+.nav-menu a:focus-visible { outline-color: #fff; }
+.nav-menu i {
+  width: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  transition: color .2s ease;
+}
+
+.user-info {
+  padding: var(--s-4) var(--s-5) 0;
+  border-top: 1px solid #2a2a2a;
+  margin-top: var(--s-4);
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.user-details { min-width: 0; flex: 1; }
+.user-name { font-size: 13px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 12px; color: #888; }
+
+/* ---------- Main ---------- */
+.main-content {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+  padding: var(--s-5);
+  display: flex;
+  justify-content: center;
+}
+.page-container {
+  width: 100%;
+  max-width: 1180px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.print-header { display: none; }
+
+/* ---------- Topbar ---------- */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-width: 0;
+}
+.topbar-back {
+  width: 36px; height: 36px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-soft);
+  transition: color .15s, border-color .15s;
+  flex-shrink: 0;
+}
+.topbar-back:hover { color: var(--primary); border-color: var(--primary); }
+.topbar-back:active { background: var(--surface-subtle); }
+.topbar-left h1 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -.005em;
+  line-height: 1.2;
+}
+.topbar-left .page-subtitle {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+.topbar-left .page-subtitle .sep { color: var(--border); }
+.topbar-left .page-subtitle .hint { display: inline-flex; align-items: center; gap: 4px; }
+
+.id-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 7px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--fg-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Layout 2 colunas ---------- */
+.grid-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: var(--s-4);
+  align-items: start;
+}
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: var(--s-4);
+}
+.card:last-child { margin-bottom: 0; }
+.card-head {
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.card-head h3 {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.card-head h3 i { color: var(--primary); font-size: 13px; }
+.card-body { padding: var(--s-4); }
+
+/* Card de risco (eliminação) */
+.danger-card .card-head h3,
+.danger-card .card-head h3 i { color: var(--primary-dark); }
+.card-desc {
+  font-size: 12px;
+  color: var(--fg-muted);
+  line-height: 1.5;
+  margin-bottom: var(--s-3);
+}
+
+/* Card de transferência (futuro) */
+.transfer-card .card-head h3,
+.transfer-card .card-head h3 i { color: var(--fg); }
+.badge-soft {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  margin-left: var(--s-2);
+}
+
+/* ---------- Formulário ---------- */
+.form-group { display: flex; flex-direction: column; gap: var(--s-1); margin-bottom: var(--s-3); }
+.form-group:last-child { margin-bottom: 0; }
+.form-label {
+  font-size: 12px;
+  color: var(--fg);
+  font-weight: 500;
+}
+.form-label .required { color: var(--primary); margin-left: 2px; }
+.form-label .optional { color: var(--fg-muted); font-weight: 400; font-size: 11px; margin-left: 4px; }
+.form-control {
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--fg);
+  caret-color: var(--primary);
+  transition: border-color .15s;
+}
+.form-control::placeholder { color: var(--fg-placeholder); }
+.form-control:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: var(--primary);
+}
+.form-control:read-only,
+.form-control:disabled {
+  background: var(--surface-subtle);
+  color: var(--fg-soft);
+}
+textarea.form-control { resize: vertical; min-height: 76px; line-height: 1.5; }
+select.form-control {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3e%3cpath fill='%238b939f' d='M6 9L1 4h10z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+}
+.form-hint {
+  font-size: 11px;
+  color: var(--fg-muted);
+  margin-top: var(--s-1);
+}
+.form-hint.is-warning { color: var(--warning-dark); font-weight: 500; }
+
+.input-money { position: relative; }
+.input-money input { padding-right: 36px; text-align: right; font-variant-numeric: tabular-nums; }
+.input-money::after {
+  content: 'Kz';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  pointer-events: none;
+}
+
+/* ---------- Form actions (abaixo do form) ---------- */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-top: var(--s-4);
+}
+
+/* ---------- Painel lateral ---------- */
+.side-panel {
+  position: sticky;
+  top: var(--s-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.preview-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.preview-head {
+  padding: var(--s-3) var(--s-4);
+  background: var(--dark);
+  color: #fff;
+}
+.preview-head .label {
+  font-size: 11px;
+  color: rgba(255,255,255,.6);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: var(--s-1);
+}
+.preview-head .value {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  word-break: break-word;
+  min-height: 1.3em;
+}
+.preview-body { padding: var(--s-3) var(--s-4); }
+
+.preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+}
+.preview-row:last-child { border-bottom: none; }
+.preview-row .key { color: var(--fg-muted); flex-shrink: 0; font-size: 12px; }
+.preview-row .val { color: var(--fg); font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
+.preview-row .val.green  { color: var(--success-dark); font-weight: 600; }
+.preview-row .val.red    { color: var(--primary-dark); font-weight: 600; }
+.preview-row .val.muted  { color: var(--fg-muted); font-weight: 400; }
+
+.preview-row.total {
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--fg);
+  margin-top: var(--s-1);
+}
+.preview-row.total .key { color: var(--fg); font-weight: 500; }
+.preview-row.total .val { color: var(--fg); font-weight: 600; }
+
+.preview-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  margin: 0 var(--s-4) var(--s-3);
+  background: var(--warning-soft);
+  border-left: 3px solid var(--warning);
+  border-radius: var(--radius);
+  font-size: 11px;
+  color: var(--warning-dark);
+  line-height: 1.4;
+}
+.preview-warning i { font-size: 11px; margin-top: 1px; flex-shrink: 0; }
+
+/* ---------- Modal ---------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--s-4);
+  overflow-y: auto;
+}
+.modal-backdrop.open { display: flex; animation: fadeIn .15s ease; }
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  overflow: hidden;
+  margin: auto;
+  border-top: 3px solid var(--primary);
+}
+#transferirModal .modal { border-top-color: var(--info); }
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--s-4);
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h3 { font-size: 14px; font-weight: 600; }
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--fg-muted);
+  padding: 0 var(--s-1);
+  transition: color .15s;
+}
+.modal-close:hover { color: var(--fg); }
+.modal-body { padding: var(--s-4); display: flex; flex-direction: column; gap: var(--s-3); }
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-top: 1px solid var(--border);
+  background: var(--surface-subtle);
+}
+
+.notice {
+  display: flex;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border-left: 3px solid var(--warning);
+  background: var(--surface);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--fg);
+  line-height: 1.5;
+}
+.notice i { color: var(--warning); font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.notice strong { color: var(--fg); font-weight: 500; }
+
+.notice.is-info {
+  border-left-color: var(--info);
+  font-size: 12px;
+}
+.notice.is-info i { color: var(--info); }
+
+/* ---------- Toast ---------- */
+#toast-container {
+  position: fixed;
+  top: var(--s-4);
+  right: var(--s-4);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--fg-muted);
+  color: var(--fg);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  animation: fadeIn .15s ease;
+  max-width: 360px;
+}
+.toast i { font-size: 12px; flex-shrink: 0; }
+.toast.success { border-left-color: var(--success); }
+.toast.success i { color: var(--success); }
+.toast.error { border-left-color: var(--primary); }
+.toast.error i { color: var(--primary); }
+.toast.info { border-left-color: var(--info); }
+.toast.info i { color: var(--info); }
+.toast.warning { border-left-color: var(--warning); }
+.toast.warning i { color: var(--warning); }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 1000px) {
+  .grid-layout { grid-template-columns: 1fr; }
+  .side-panel { position: static; }
+}
+
+@media (max-width: 900px) {
+  :root { --sidebar-w: 60px; }
+  .sidebar .logo span,
+  .sidebar .nav-menu a span,
+  .sidebar .user-details { display: none; }
+  .sidebar .logo { justify-content: center; padding: 0 0 var(--s-5); gap: 0; }
+  .sidebar .nav-menu a { justify-content: center; padding: var(--s-3); }
+  .sidebar .user-info { justify-content: center; padding: var(--s-3) 0 0; }
+  .main-content { padding: var(--s-3); }
+}
+
+@media (max-width: 600px) {
+  .main-content { padding: var(--s-2); }
+  .card-body { padding: var(--s-3); }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .form-row .form-group { margin-bottom: var(--s-3); }
+  .topbar-left h1 { font-size: 18px; }
+  .preview-head .value { font-size: 15px; }
+  .page-subtitle .hint { display: none; }
+  .form-actions { flex-direction: column-reverse; }
+  .form-actions .btn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Impressão ---------- */
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+
+  html, body {
+    background: #fff !important;
+    display: block !important;
+    font-size: 10pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sidebar, #toast-container, .topbar-back, kbd,
+  .form-actions, .danger-card, .transfer-card,
+  .modal-backdrop, .preview-warning { display: none !important; }
+  .main-content { margin: 0 !important; padding: 0 !important; }
+  .page-container { max-width: 100%; gap: 12pt; }
+
+  .print-header {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20pt;
+    padding-bottom: 8pt;
+    margin-bottom: 12pt;
+    border-bottom: 2pt solid var(--dark);
+    flex-wrap: wrap;
+  }
+  .print-brand-name { font-size: 16pt; font-weight: 700; letter-spacing: .5pt; }
+  .print-brand-sub { font-size: 9pt; color: #555; line-height: 1.4; }
+  .print-meta { text-align: right; font-size: 9pt; line-height: 1.5; color: #333; }
+  .print-meta strong { color: #000; }
+
+  .topbar {
+    border-bottom: 1pt solid #999;
+    padding-bottom: 6pt;
+    margin-bottom: 10pt;
+  }
+  .topbar-left h1 { font-size: 14pt; }
+  .topbar-left .page-subtitle { font-size: 9pt; color: #555; }
+
+  .grid-layout { display: block; }
+  .side-panel { margin-top: 12pt; position: static; }
+
+  .card {
+    box-shadow: none !important;
+    border: 1pt solid #999 !important;
+    border-radius: 0 !important;
+    break-inside: avoid;
+    margin-bottom: 12pt;
+  }
+  .card-head {
+    background: #f5f5f5 !important;
+    border-bottom: 1pt solid #999 !important;
+  }
+  .form-control {
+    border: 1pt solid #999 !important;
+    background: #fff !important;
+  }
+
+  .preview-head {
+    background: var(--dark) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .preview-row .val.green { color: var(--success-dark) !important; }
+  .preview-row .val.red { color: var(--primary-dark) !important; }
 }
 </style>
 </head>
 <body>
 
-<aside class="sidebar">
+<aside class="sidebar no-print">
     <div class="logo"><i class="fas fa-globe-americas"></i><span>BOM MUNDO</span></div>
     <ul class="nav-menu">
         <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Painel</span></a></li>
@@ -261,7 +764,7 @@ select.form-control{
         <li><a href="#"><i class="fas fa-cog"></i><span>Config.</span></a></li>
     </ul>
     <div class="user-info">
-        <div class="user-avatar"><%= operadorNome.substring(0,2).toUpperCase() %></div>
+        <div class="user-avatar"><%= operadorNome.substring(0, 2).toUpperCase() %></div>
         <div class="user-details">
             <div class="user-name"><%= operadorNome %></div>
             <div class="user-role">Gerente</div>
@@ -272,25 +775,36 @@ select.form-control{
 <main class="main-content">
     <div class="page-container">
 
+        <!-- Print header -->
+        <div class="print-header">
+            <div>
+                <div class="print-brand-name">BOM MUNDO</div>
+                <div class="print-brand-sub">Comércio Geral e Prestação de Serviços</div>
+                <div class="print-brand-sub">NIF: 5000000000 · Luanda, Angola</div>
+            </div>
+            <div class="print-meta">
+                <div><strong>Formulário:</strong> Editar produto #<%= prod.id || '—' %></div>
+                <div><strong>Emitido:</strong> <span id="printEmitido">—</span></div>
+                <div><strong>Operador:</strong> <%= operadorNome %></div>
+            </div>
+        </div>
+
         <!-- TOPBAR -->
         <div class="topbar">
             <div class="topbar-left">
-                <a href="/produtos" class="topbar-back" title="Voltar"><i class="fas fa-arrow-left"></i></a>
+                <a href="/produtos" class="topbar-back" title="Voltar" aria-label="Voltar" id="btnVoltar">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
                 <div>
-                    <h1>Editar Produto</h1>
+                    <h1>Editar produto</h1>
                     <div class="page-subtitle">
                         <span class="id-tag"><i class="fas fa-hashtag"></i><%= prod.id || '—' %></span>
-                        <span><i class="fas fa-pen" style="color:var(--primary);"></i> Actualizar dados do catálogo</span>
+                        <span class="sep">·</span>
+                        <span class="hint"><kbd>/</kbd> primeiro campo</span>
+                        <span class="hint"><kbd>Ctrl</kbd>+<kbd>P</kbd> imprimir</span>
+                        <span class="hint"><kbd>Esc</kbd> descartar</span>
                     </div>
                 </div>
-            </div>
-            <div class="topbar-right">
-                <a href="/produtos" class="btn btn-outline">
-                    <i class="fas fa-times"></i> <span>Cancelar</span>
-                </a>
-                <button type="submit" form="produtoForm" class="btn btn-primary" id="btnTopGuardar">
-                    <i class="fas fa-save"></i> <span>Actualizar</span>
-                </button>
             </div>
         </div>
 
@@ -301,36 +815,33 @@ select.form-control{
                 <!-- COLUNA PRINCIPAL -->
                 <div>
 
-                    <!-- Informação Básica -->
-                    <div class="card" style="margin-bottom:16px;">
+                    <!-- Identificação -->
+                    <div class="card">
                         <div class="card-head">
-                            <h3><i class="fas fa-info-circle"></i> Informação Básica</h3>
-                            <span class="head-desc">Dados de identificação</span>
+                            <h3><i class="fas fa-info-circle"></i> Identificação</h3>
                         </div>
                         <div class="card-body">
 
                             <div class="form-group">
                                 <label class="form-label" for="nome">
-                                    <i class="fas fa-tag"></i> Nome do Produto <span class="required">*</span>
+                                    Nome <span class="required">*</span>
                                 </label>
                                 <input type="text" id="nome" name="nome" class="form-control"
                                        value="<%= prod.nome || '' %>" required maxlength="200"
-                                       oninput="atualizarPreview()">
+                                       oninput="marcarDirty(); atualizarPreview()">
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label class="form-label" for="codigo_barras">
-                                        <i class="fas fa-barcode"></i> Código de Barras
-                                    </label>
+                                    <label class="form-label" for="codigo_barras">Código de barras</label>
                                     <input type="text" id="codigo_barras" name="codigo_barras" class="form-control"
-                                           value="<%= prod.codigo_barras || '' %>" maxlength="50" inputmode="numeric">
+                                           value="<%= prod.codigo_barras || '' %>" maxlength="50" inputmode="numeric"
+                                           oninput="marcarDirty()">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label" for="categoria">
-                                        <i class="fas fa-layer-group"></i> Categoria
-                                    </label>
-                                    <select id="categoria" name="categoria" class="form-control">
+                                    <label class="form-label" for="categoria">Categoria</label>
+                                    <select id="categoria" name="categoria" class="form-control"
+                                            onchange="marcarDirty()">
                                         <option value="" <%= !cat ? 'selected' : '' %>>Sem categoria</option>
                                         <option value="Bebidas" <%= cat === 'Bebidas' ? 'selected' : '' %>>Bebidas</option>
                                         <option value="Alimentos" <%= cat === 'Alimentos' ? 'selected' : '' %>>Alimentos</option>
@@ -344,43 +855,44 @@ select.form-control{
 
                             <div class="form-group">
                                 <label class="form-label" for="descricao">
-                                    <i class="fas fa-align-left"></i> Descrição <span class="optional">(opcional)</span>
+                                    Descrição <span class="optional">(opcional)</span>
                                 </label>
                                 <textarea id="descricao" name="descricao" class="form-control" rows="3"
-                                          maxlength="500"><%= prod.descricao || '' %></textarea>
+                                          maxlength="500" oninput="marcarDirty()"><%= prod.descricao || '' %></textarea>
                             </div>
 
                         </div>
                     </div>
 
                     <!-- Preços -->
-                    <div class="card" style="margin-bottom:16px;">
+                    <div class="card">
                         <div class="card-head">
                             <h3><i class="fas fa-coins"></i> Preços</h3>
-                            <span class="head-desc">Custo e venda</span>
                         </div>
                         <div class="card-body">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label class="form-label" for="preco_custo">
-                                        <i class="fas fa-shopping-bag"></i> Preço de Custo
-                                    </label>
+                                    <label class="form-label" for="preco_custo">Preço de custo</label>
                                     <div class="input-money">
                                         <input type="number" id="preco_custo" name="preco_custo" class="form-control"
                                                step="0.01" min="0" value="<%= Number(prod.preco_custo || 0) %>"
-                                               inputmode="decimal" oninput="atualizarPreview()">
+                                               inputmode="decimal" oninput="marcarDirty(); atualizarPreview()">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label" for="preco_venda">
-                                        <i class="fas fa-tag"></i> Preço de Venda <span class="required">*</span>
+                                        Preço de venda <span class="required">*</span>
                                     </label>
                                     <div class="input-money">
                                         <input type="number" id="preco_venda" name="preco_venda" class="form-control"
                                                step="0.01" min="0.01" value="<%= Number(prod.preco_venda || 0) %>"
-                                               required inputmode="decimal" oninput="atualizarPreview()">
+                                               required inputmode="decimal" oninput="marcarDirty(); atualizarPreview()">
                                     </div>
                                 </div>
+                            </div>
+                            <div class="form-hint is-warning" id="avisoPrecos" role="status" style="display: none;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                O preço de venda está abaixo do preço de custo.
                             </div>
                         </div>
                     </div>
@@ -389,30 +901,21 @@ select.form-control{
                     <div class="card">
                         <div class="card-head">
                             <h3><i class="fas fa-cubes"></i> Stock</h3>
-                            <span class="head-desc">Quantidades actuais</span>
                         </div>
                         <div class="card-body">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label class="form-label" for="quantidade_estoque">
-                                        <i class="fas fa-boxes"></i> Quantidade em Estoque
-                                    </label>
+                                    <label class="form-label" for="quantidade_estoque">Quantidade em stock</label>
                                     <input type="number" id="quantidade_estoque" name="quantidade_estoque" class="form-control"
                                            min="0" value="<%= Number(prod.quantidade_estoque || 0) %>"
-                                           inputmode="numeric" oninput="atualizarPreview()">
+                                           inputmode="numeric" oninput="marcarDirty(); atualizarPreview()">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label" for="quantidade_minima">
-                                        <i class="fas fa-exclamation-triangle"></i> Stock Mínimo
-                                    </label>
+                                    <label class="form-label" for="quantidade_minima">Stock mínimo</label>
                                     <input type="number" id="quantidade_minima" name="quantidade_minima" class="form-control"
                                            min="0" value="<%= Number(prod.quantidade_minima || 5) %>"
-                                           inputmode="numeric">
+                                           inputmode="numeric" oninput="marcarDirty()">
                                 </div>
-                            </div>
-                            <div class="form-hint">
-                                <i class="fas fa-bell"></i>
-                                Será notificado quando o stock ficar igual ou inferior ao valor mínimo.
                             </div>
                         </div>
                     </div>
@@ -420,109 +923,238 @@ select.form-control{
                 </div>
 
                 <!-- PAINEL LATERAL -->
-                <div class="side-panel">
+                <aside class="side-panel">
 
+                    <!-- 1. Pré-visualização -->
                     <div class="preview-card">
                         <div class="preview-head">
-                            <div class="label"><i class="fas fa-eye"></i> Resumo Atualizado</div>
+                            <div class="label">Pré-visualização</div>
                             <div class="value" id="preview_nome"><%= prod.nome || '—' %></div>
                         </div>
                         <div class="preview-body">
                             <div class="preview-row">
-                                <span class="key"><i class="fas fa-tag"></i> Preço de venda</span>
+                                <span class="key">Preço de venda</span>
                                 <span class="val" id="preview_preco">0,00 Kz</span>
                             </div>
                             <div class="preview-row">
-                                <span class="key"><i class="fas fa-shopping-bag"></i> Custo</span>
+                                <span class="key">Custo</span>
                                 <span class="val muted" id="preview_custo">0,00 Kz</span>
                             </div>
                             <div class="preview-row">
-                                <span class="key"><i class="fas fa-percent"></i> Margem bruta</span>
+                                <span class="key">Margem</span>
                                 <span class="val" id="preview_margem">0,00 Kz</span>
                             </div>
                             <div class="preview-row">
-                                <span class="key"><i class="fas fa-chart-line"></i> Margem (%)</span>
-                                <span class="val" id="preview_margem_pct">0%</span>
-                            </div>
-                            <div class="preview-row">
-                                <span class="key"><i class="fas fa-cubes"></i> Stock</span>
+                                <span class="key">Stock actual</span>
                                 <span class="val" id="preview_stock">0 un.</span>
                             </div>
-                            <div class="preview-row">
-                                <span class="key"><i class="fas fa-coins"></i> Valor do inventário</span>
+                            <div class="preview-row total">
+                                <span class="key">Valor do inventário</span>
                                 <span class="val" id="preview_inventario">0,00 Kz</span>
                             </div>
                         </div>
+                        <div class="preview-warning" id="previewAviso" role="status" style="display: none;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Margem negativa. Reveja os preços antes de guardar.</span>
+                        </div>
                     </div>
 
-                    <div class="danger-zone">
-                        <div class="title">
-                            <i class="fas fa-exclamation-triangle"></i> Zona Sensível
+                    <!-- 2. Eliminar (posição original: abaixo do preview) -->
+                    <div class="card danger-card no-print">
+                        <div class="card-head">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Zona de risco</h3>
                         </div>
-                        <div class="desc">
-                            A eliminação do produto é <strong>permanente</strong> e afecta o histórico de vendas associado.
+                        <div class="card-body">
+                            <p class="card-desc">A eliminação do produto é permanente e afecta o histórico de vendas associado.</p>
+                            <button type="button" class="btn btn-outline is-danger btn-block" onclick="abrirModalEliminar()">
+                                <i class="fas fa-trash"></i> Eliminar produto
+                            </button>
                         </div>
-                        <button type="button" class="btn btn-danger btn-block btn-sm" onclick="abrirModalEliminar()">
-                            <i class="fas fa-trash"></i> Eliminar Produto
-                        </button>
                     </div>
 
-                </div>
+                    <!-- 3. Transferir stock (preparado para funcionalidade futura) -->
+                    <div class="card transfer-card no-print">
+                        <div class="card-head">
+                            <h3>
+                                <i class="fas fa-exchange-alt"></i> Transferir stock
+                                <span class="badge-soft">Em breve</span>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-desc">Mover unidades deste produto entre armazéns.</p>
+                            <button type="button" class="btn btn-outline btn-block" onclick="abrirModalTransferir()">
+                                <i class="fas fa-exchange-alt"></i> Transferir
+                            </button>
+                        </div>
+                    </div>
+
+                </aside>
+            </div>
+
+            <!-- ACÇÕES DO FORMULÁRIO (abaixo, junto ao último campo) -->
+            <div class="form-actions no-print">
+                <a href="/produtos" class="btn btn-outline" id="btnCancelar">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary" id="btnGuardar" aria-busy="false">
+                    <i class="fas fa-save"></i> Actualizar
+                </button>
             </div>
         </form>
     </div>
 </main>
 
-<!-- MODAL ELIMINAR -->
-<div class="modal-backdrop" id="eliminarModal" onclick="if(event.target===this) fecharModal('eliminarModal')">
-    <div class="modal">
+<!-- ============================================================
+     MODAL: CONFIRMAR ELIMINAÇÃO
+     ============================================================ -->
+<div class="modal-backdrop no-print" id="eliminarModal" onclick="if (event.target === this) fecharModal('eliminarModal')">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="eliminarTitulo">
         <div class="modal-header">
-            <h3 style="color:var(--primary-dark);">
-                <i class="fas fa-exclamation-triangle" style="color:var(--warning);"></i>
-                Confirmar Eliminação
-            </h3>
-            <button type="button" class="modal-close" onclick="fecharModal('eliminarModal')">&times;</button>
+            <h3 id="eliminarTitulo">Eliminar produto</h3>
+            <button type="button" class="modal-close" onclick="fecharModal('eliminarModal')" aria-label="Fechar">&times;</button>
         </div>
         <div class="modal-body">
-            <p style="font-size:13.5px;color:var(--text-soft);line-height:1.6;">
-                Tem a certeza que deseja eliminar <strong><%= prod.nome || 'este produto' %></strong>?<br>
-                Esta acção <strong style="color:var(--primary-dark);">não pode ser revertida</strong>.
-            </p>
+            <div class="notice">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div>
+                    <strong>Acção irreversível.</strong>
+                    O produto <strong><%= prod.nome || '—' %></strong> será eliminado permanentemente.
+                </div>
+            </div>
         </div>
         <div class="modal-actions">
             <button type="button" class="btn btn-outline" onclick="fecharModal('eliminarModal')">Cancelar</button>
-            <button type="button" class="btn btn-danger" id="btnEliminarReal">
-                <i class="fas fa-trash"></i> Eliminar Definitivamente
+            <button type="button" class="btn btn-primary" id="btnEliminarReal" aria-busy="false">
+                <i class="fas fa-trash"></i> Eliminar
             </button>
         </div>
+    </div>
+</div>
+
+<!-- ============================================================
+     MODAL: TRANSFERIR STOCK (preparado para futura funcionalidade)
+     ============================================================ -->
+<div class="modal-backdrop no-print" id="transferirModal" onclick="if (event.target === this) fecharModal('transferirModal')">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="transferirTitulo">
+        <div class="modal-header">
+            <h3 id="transferirTitulo">Transferir stock</h3>
+            <button type="button" class="modal-close" onclick="fecharModal('transferirModal')" aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="transferirForm" method="POST" action="/produtos/<%= prod.id %>/transferir-stock">
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label class="form-label" for="transferirOrigemDisplay">Armazém de origem</label>
+                    <input type="text" id="transferirOrigemDisplay" class="form-control"
+                           value="<%= _armazemAtualNome %>" readonly>
+                    <input type="hidden" id="transferirOrigem" name="armazem_origem" value="<%= _armazemAtualId %>">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="transferirDestino">
+                        Armazém de destino <span class="required">*</span>
+                    </label>
+                    <select id="transferirDestino" name="armazem_destino" class="form-control" required <%= _temMultiplosArmazens ? '' : 'disabled' %>>
+                        <option value="">Selecionar armazém…</option>
+                        <% _armazensDestino.forEach(a => { %>
+                            <option value="<%= a.id %>"><%= a.nome %></option>
+                        <% }); %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="transferirQtd">
+                        Quantidade <span class="required">*</span>
+                    </label>
+                    <input type="number" id="transferirQtd" name="quantidade" class="form-control"
+                           min="1" max="<%= Number(prod.quantidade_estoque || 0) %>"
+                           placeholder="0" inputmode="numeric" required <%= _temMultiplosArmazens ? '' : 'disabled' %>>
+                    <div class="form-hint">Disponível: <strong><%= Number(prod.quantidade_estoque || 0) %></strong> unidades.</div>
+                </div>
+
+                <div class="notice is-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <% if (_temMultiplosArmazens) { %>
+                            Funcionalidade em preparação. O formulário está pronto mas o servidor ainda não aceita pedidos de transferência.
+                        <% } else { %>
+                            Apenas um armazém configurado. Adicione um segundo armazém para activar a transferência.
+                        <% } %>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="fecharModal('transferirModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="btnTransferirConfirmar"
+                        aria-busy="false" <%= _temMultiplosArmazens ? '' : 'disabled' %>>
+                    <i class="fas fa-exchange-alt"></i> Transferir
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <div id="toast-container" aria-live="polite"></div>
 
 <script>
+/* ============================================================
+   UTILS
+   ============================================================ */
 const PRODUTO_ID = <%= Number(prod.id) || 0 %>;
 
-function toast(msg, tipo='info', dur=3000) {
+const fmtKz = v => Number(v || 0).toLocaleString('pt-AO', {
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+}) + ' Kz';
+
+function toast(msg, tipo = 'info', dur = 3000) {
     const c = document.getElementById('toast-container');
-    const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', info:'fa-info-circle', warning:'fa-exclamation-triangle' };
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        info: 'fa-info-circle',
+        warning: 'fa-exclamation-triangle'
+    };
     const t = document.createElement('div');
     t.className = 'toast ' + tipo;
-    t.innerHTML = '<i class="fas ' + (icons[tipo]||icons.info) + '"></i><span></span>';
+    t.innerHTML = '<i class="fas ' + (icons[tipo] || icons.info) + '"></i><span></span>';
     t.querySelector('span').textContent = msg;
     c.appendChild(t);
     setTimeout(() => {
-        t.style.transition = 'all .25s ease';
+        t.style.transition = 'opacity .2s ease';
         t.style.opacity = '0';
-        t.style.transform = 'translateX(30px)';
-        setTimeout(() => t.remove(), 250);
+        setTimeout(() => t.remove(), 200);
     }, dur);
 }
+
 function abrirModal(id) { document.getElementById(id).classList.add('open'); }
 function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
 
-const fmtKz = v => Number(v||0).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' Kz';
+/* ============================================================
+   DIRTY STATE
+   ============================================================ */
+let dirty = false;
+function marcarDirty() { dirty = true; }
 
+function tentarSair(e) {
+    if (dirty && !confirm('Descartar alterações ao produto?')) {
+        if (e) e.preventDefault();
+        return false;
+    }
+    return true;
+}
+
+document.getElementById('btnCancelar').addEventListener('click', function (e) {
+    tentarSair(e);
+});
+document.getElementById('btnVoltar').addEventListener('click', function (e) {
+    tentarSair(e);
+});
+
+/* ============================================================
+   PREVIEW
+   ============================================================ */
 function atualizarPreview() {
     const nome = (document.getElementById('nome').value || '').trim();
     const custo = parseFloat(document.getElementById('preco_custo').value) || 0;
@@ -534,20 +1166,33 @@ function atualizarPreview() {
     document.getElementById('preview_custo').textContent = fmtKz(custo);
 
     const margem = venda - custo;
-    const margemPct = venda > 0 ? (margem / venda) * 100 : 0;
 
     const margemEl = document.getElementById('preview_margem');
-    const margemPctEl = document.getElementById('preview_margem_pct');
     margemEl.textContent = fmtKz(margem);
-    margemEl.className = 'val ' + (margem >= 0 ? 'green' : 'red');
-    margemPctEl.textContent = margemPct.toFixed(1) + '%';
-    margemPctEl.className = 'val ' + (margemPct >= 20 ? 'green' : (margemPct >= 0 ? '' : 'red'));
+    margemEl.className = 'val ' + (
+        margem > 0 ? 'green' :
+        margem < 0 ? 'red' :
+        'muted'
+    );
 
     document.getElementById('preview_stock').textContent = estoque + ' un.';
     document.getElementById('preview_inventario').textContent = fmtKz(venda * estoque);
+
+    const avisoPrecos = document.getElementById('avisoPrecos');
+    const avisoPreview = document.getElementById('previewAviso');
+    const temAviso = custo > 0 && venda > 0 && venda < custo;
+    avisoPrecos.style.display = temAviso ? 'flex' : 'none';
+    avisoPreview.style.display = temAviso ? 'flex' : 'none';
+
+    /* Actualiza o max do campo de transferência */
+    const qtdTransf = document.getElementById('transferirQtd');
+    if (qtdTransf) qtdTransf.max = estoque;
 }
 
-document.getElementById('produtoForm').addEventListener('submit', function(e) {
+/* ============================================================
+   SUBMIT
+   ============================================================ */
+document.getElementById('produtoForm').addEventListener('submit', function (e) {
     const nome = document.getElementById('nome').value.trim();
     const venda = parseFloat(document.getElementById('preco_venda').value) || 0;
 
@@ -559,24 +1204,44 @@ document.getElementById('produtoForm').addEventListener('submit', function(e) {
     }
     if (venda <= 0) {
         e.preventDefault();
-        toast('Preço de venda deve ser maior que zero.', 'error');
+        toast('O preço de venda deve ser maior que zero.', 'error');
         document.getElementById('preco_venda').focus();
         return;
     }
 
-    const btn = document.getElementById('btnTopGuardar');
+    const custo = parseFloat(document.getElementById('preco_custo').value) || 0;
+    if (custo > 0 && venda < custo) {
+        if (!confirm('O preço de venda está abaixo do custo. Guardar mesmo assim?')) {
+            e.preventDefault();
+            return;
+        }
+    }
+
+    dirty = false;
+
+    const btn = document.getElementById('btnGuardar');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>A guardar...</span>';
+    btn.setAttribute('aria-busy', 'true');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A guardar…';
 });
 
+/* ============================================================
+   ELIMINAR
+   ============================================================ */
 function abrirModalEliminar() {
+    const btn = document.getElementById('btnEliminarReal');
+    btn.disabled = false;
+    btn.setAttribute('aria-busy', 'false');
+    btn.innerHTML = '<i class="fas fa-trash"></i> Eliminar';
     abrirModal('eliminarModal');
+    setTimeout(() => btn.focus(), 80);
 }
 
-document.getElementById('btnEliminarReal')?.addEventListener('click', async function() {
+document.getElementById('btnEliminarReal')?.addEventListener('click', async function () {
     const btn = this;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A eliminar...';
+    btn.setAttribute('aria-busy', 'true');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A eliminar…';
 
     try {
         const resp = await fetch('/api/produtos/' + PRODUTO_ID, { method: 'DELETE' });
@@ -584,19 +1249,132 @@ document.getElementById('btnEliminarReal')?.addEventListener('click', async func
         try { data = await resp.json(); } catch (err) {}
         if (!resp.ok) throw new Error(data.erro || 'Falha ao eliminar.');
         toast('Produto eliminado.', 'success', 2400);
+        dirty = false;
         fecharModal('eliminarModal');
         setTimeout(() => window.location.href = '/produtos', 800);
     } catch (err) {
         toast(err.message || 'Erro ao eliminar produto.', 'error', 3600);
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-trash"></i> Eliminar Definitivamente';
+        btn.setAttribute('aria-busy', 'false');
+        btn.innerHTML = '<i class="fas fa-trash"></i> Eliminar';
     }
 });
 
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') fecharModal('eliminarModal');
+/* ============================================================
+   TRANSFERIR STOCK (estrutura pronta para backend futuro)
+   ============================================================ */
+function abrirModalTransferir() {
+    const btn = document.getElementById('btnTransferirConfirmar');
+    if (btn && !btn.disabled) {
+        btn.innerHTML = '<i class="fas fa-exchange-alt"></i> Transferir';
+        btn.setAttribute('aria-busy', 'false');
+    }
+    /* Limpa campos em cada abertura */
+    const destino = document.getElementById('transferirDestino');
+    const qtd = document.getElementById('transferirQtd');
+    if (destino && !destino.disabled) destino.value = '';
+    if (qtd && !qtd.disabled) qtd.value = '';
+
+    abrirModal('transferirModal');
+    setTimeout(() => {
+        const el = document.getElementById('transferirDestino');
+        if (el && !el.disabled) el.focus();
+    }, 80);
+}
+
+document.getElementById('transferirForm')?.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const origem = document.getElementById('transferirOrigem').value;
+    const destino = document.getElementById('transferirDestino').value;
+    const qtd = parseInt(document.getElementById('transferirQtd').value, 10);
+    const btn = document.getElementById('btnTransferirConfirmar');
+
+    if (!destino) {
+        toast('Selecione o armazém de destino.', 'error');
+        document.getElementById('transferirDestino').focus();
+        return;
+    }
+    if (String(destino) === String(origem)) {
+        toast('Origem e destino devem ser diferentes.', 'error');
+        return;
+    }
+    if (!qtd || qtd < 1) {
+        toast('Introduza uma quantidade válida.', 'error');
+        document.getElementById('transferirQtd').focus();
+        return;
+    }
+
+    btn.disabled = true;
+    btn.setAttribute('aria-busy', 'true');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A transferir…';
+
+    try {
+        const resp = await fetch('/produtos/' + PRODUTO_ID + '/transferir-stock', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                armazem_origem: origem,
+                armazem_destino: destino,
+                quantidade: qtd
+            })
+        });
+
+        if (!resp.ok) {
+            if (resp.status === 404) {
+                throw new Error('Funcionalidade em preparação. O servidor ainda não aceita este pedido.');
+            }
+            let data = {};
+            try { data = await resp.json(); } catch(err) {}
+            throw new Error(data.erro || 'Falha na transferência.');
+        }
+
+        toast('Stock transferido com sucesso.', 'success', 2400);
+        dirty = false;
+        fecharModal('transferirModal');
+        setTimeout(() => window.location.reload(), 600);
+    } catch (err) {
+        toast(err.message || 'Funcionalidade em preparação.', 'warning', 4000);
+        btn.disabled = false;
+        btn.setAttribute('aria-busy', 'false');
+        btn.innerHTML = '<i class="fas fa-exchange-alt"></i> Transferir';
+    }
 });
 
+/* ============================================================
+   ATALHOS
+   ============================================================ */
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        if (document.getElementById('transferirModal').classList.contains('open')) {
+            fecharModal('transferirModal');
+            return;
+        }
+        if (document.getElementById('eliminarModal').classList.contains('open')) {
+            fecharModal('eliminarModal');
+            return;
+        }
+        document.getElementById('btnCancelar').click();
+        return;
+    }
+    const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
+    if (e.key === '/' && !isTyping && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        document.getElementById('nome').focus();
+    }
+});
+
+/* ============================================================
+   PRINT
+   ============================================================ */
+window.addEventListener('beforeprint', () => {
+    const el = document.getElementById('printEmitido');
+    if (el) el.textContent = new Date().toLocaleString('pt-AO');
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
 atualizarPreview();
 setTimeout(() => document.getElementById('nome').focus(), 100);
 </script>

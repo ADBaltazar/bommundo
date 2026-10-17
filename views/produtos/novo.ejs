@@ -10,260 +10,612 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Novo Produto - Bom Mundo</title>
+<title>Novo Produto — Bom Mundo</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root{
-    --primary:#E53935;--primary-dark:#c62828;--primary-soft:#FFF5F5;--primary-line:#FFCDD2;
-    --dark:#2E2E2E;--dark-2:#3a3a3a;--dark-soft:#F2F4F7;
-    --success:#4CAF50;--success-dark:#2E7D32;--success-soft:#E8F5E9;--success-line:#C8E6C9;
-    --warning:#FF9800;--warning-dark:#E65100;--warning-soft:#FFF8E1;
-    --info:#2196F3;--info-dark:#1565C0;--info-soft:#E3F2FD;
-    --bg:#F5F6F8;--card:#fff;--border:#e6e8ec;--border-strong:#d0d4dc;
-    --text:#1f2328;--text-soft:#4a5058;--muted:#8b939f;--muted-2:#b0b7c0;
-    --shadow-sm:0 1px 3px rgba(0,0,0,.05);
-    --shadow:0 4px 12px rgba(0,0,0,.06);
-    --shadow-lg:0 12px 32px rgba(0,0,0,.12);
-    --radius:10px;--radius-sm:6px;
-    --sidebar-w:220px;
-}
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
-body{background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh;font-size:14px}
-a{text-decoration:none;color:inherit}
-button{font-family:inherit;cursor:pointer}
-input,select,textarea{font-family:inherit}
+:root {
+  /* ─── Paleta original (mantida) ─── */
+  --primary:        #E53935;
+  --primary-dark:   #c62828;
+  --primary-soft:   #FFF5F5;
+  --dark:           #2E2E2E;
+  --dark-2:         #3a3a3a;
+  --success:        #4CAF50;
+  --success-dark:   #2E7D32;
+  --warning:        #FF9800;
+  --warning-dark:   #E65100;
+  --info:           #2196F3;
+  --info-dark:      #1565C0;
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 16px;border-radius:var(--radius-sm);font-weight:600;font-size:13.5px;border:1px solid transparent;transition:all .18s;white-space:nowrap}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover:not(:disabled){background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 4px 10px rgba(229,57,53,.25)}
-.btn-outline{background:#fff;color:var(--text);border-color:var(--border-strong)}
-.btn-outline:hover:not(:disabled){border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
-.btn-ghost{background:transparent;color:var(--text-soft)}
-.btn-ghost:hover:not(:disabled){background:var(--dark-soft);color:var(--text)}
-.btn-sm{padding:6px 11px;font-size:12px}
-.btn-block{display:flex;width:100%}
+  --bg:             #F5F6F8;
+  --surface:        #FFFFFF;
+  --surface-subtle: #FAFBFC;
+  --border:         #e6e8ec;
+  --border-strong:  #d0d4dc;
+  --fg:             #1f2328;
+  --fg-soft:        #4a5058;
+  --fg-muted:       #8b939f;
+  --fg-placeholder: #b0b7c0;
 
-/* ============================================================
-   SIDEBAR
-   ============================================================ */
-.sidebar{
-    width:var(--sidebar-w);background:var(--dark);color:#fff;padding:18px 0;
-    height:100vh;position:fixed;top:0;left:0;overflow-y:auto;z-index:100;
-    transition:width .2s ease;
-}
-.logo{font-size:20px;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:9px;padding:0 18px 16px;border-bottom:1px solid #444;margin-bottom:12px;letter-spacing:.5px}
-.logo i{font-size:22px}
-.nav-menu{list-style:none}
-.nav-menu li{margin-bottom:2px}
-.nav-menu a{color:#d5d9df;font-weight:500;padding:10px 18px;display:flex;align-items:center;gap:11px;border-left:3px solid transparent;transition:all .18s;font-size:13.5px}
-.nav-menu a:hover{background:var(--dark-2);color:#fff}
-.nav-menu a.active{background:var(--dark-2);color:#fff;border-left-color:var(--primary);font-weight:600}
-.nav-menu a.active i{color:var(--primary)}
-.nav-menu i{width:18px;text-align:center;font-size:14px}
-.user-info{padding:14px 18px;border-top:1px solid #444;margin-top:16px;display:flex;align-items:center;gap:10px}
-.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;flex-shrink:0}
-.user-details{min-width:0;flex:1}
-.user-name{font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-role{font-size:11px;color:#9aa1ab}
+  --success-soft:   #E8F5E9;
+  --danger-soft:    #FFEBEE;
+  --warning-soft:   #FFF8E1;
 
-/* ============================================================
-   MAIN — Conteúdo totalmente centrado
-   ============================================================ */
-.main-content{
-    margin-left:var(--sidebar-w);
-    min-height:100vh;
-    padding:22px 24px 40px;
-    display:flex;
-    justify-content:center;   /* centra horizontalmente o container */
-    transition:margin-left .2s ease;
+  /* ─── Escala de espaço ─── */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px;
+
+  --sidebar-w: 220px;
+  --radius: 4px;
+
+  color-scheme: light;
 }
 
-/* Container centrado que segura todo o conteúdo */
-.page-container{
-    width:100%;
-    max-width:1240px;         /* largura máxima confortável */
-    margin:0 auto;            /* garante centragem */
-    display:flex;
-    flex-direction:column;
-    gap:16px;
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--fg); color: var(--surface); }
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
-/* ============================================================
-   TOPBAR
-   ============================================================ */
-.topbar{
-    display:flex;justify-content:space-between;align-items:center;
-    gap:14px;flex-wrap:wrap;
-}
-.topbar-left{display:flex;align-items:center;gap:14px;min-width:0}
-.topbar-back{
-    width:40px;height:40px;border-radius:var(--radius-sm);background:#fff;
-    display:inline-flex;align-items:center;justify-content:center;
-    color:var(--text-soft);box-shadow:var(--shadow-sm);border:1px solid var(--border);
-    transition:all .18s;flex-shrink:0;
-}
-.topbar-back:hover{color:var(--primary);border-color:var(--primary);transform:translateX(-2px)}
-.topbar-left h1{font-size:22px;font-weight:700;letter-spacing:-.3px;line-height:1.2}
-.topbar-left .page-subtitle{font-size:12.5px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-
-/* ============================================================
-   LAYOUT: 2 COLUNAS CENTRADAS
-   ============================================================ */
-.grid-layout{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) 380px;
-    gap:18px;
-    align-items:start;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-/* ============================================================
-   CARDS
-   ============================================================ */
-.card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
-.card-head{padding:14px 20px;border-bottom:1px solid var(--border);background:#fafbfc;display:flex;align-items:center;gap:10px}
-.card-head h3{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:9px}
-.card-head h3 i{color:var(--primary)}
-.card-head .head-desc{font-size:11.5px;color:var(--muted);margin-left:auto;font-weight:500}
-.card-body{padding:22px 24px}
+/* ---------- Botões ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+  white-space: nowrap;
+}
+.btn i { font-size: 11px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
 
-/* ============================================================
-   FORMULÁRIO
-   ============================================================ */
-.form-group{margin-bottom:18px}
-.form-group:last-child{margin-bottom:0}
-.form-label{
-    display:flex;align-items:center;gap:6px;
-    margin-bottom:7px;color:var(--text);font-weight:700;font-size:12.5px;
-}
-.form-label i{color:var(--muted);font-size:11px}
-.form-label .required{color:var(--primary)}
-.form-label .optional{color:var(--muted);font-weight:500;font-size:11px;margin-left:2px}
-.form-control{
-    width:100%;padding:11px 14px;border:1.5px solid var(--border-strong);
-    border-radius:6px;font-size:14px;transition:all .18s;
-    background:#fff;color:var(--text);font-family:inherit;
-}
-.form-control:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px rgba(229,57,53,.08)}
-.form-control::placeholder{color:var(--muted-2)}
-textarea.form-control{resize:vertical;min-height:76px;line-height:1.5}
-select.form-control{
-    cursor:pointer;appearance:none;
-    background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3e%3cpath fill='%23888' d='M6 9L1 4h10z'/%3e%3c/svg%3e");
-    background-repeat:no-repeat;background-position:right 14px center;
-    padding-right:36px;
-}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.form-hint{font-size:11.5px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:5px}
-.form-hint i{color:var(--info);font-size:11px}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
+.btn-primary:active:not(:disabled) { background: var(--primary-dark); }
+.btn-primary i { color: #fff; }
 
-/* Input com prefixo de moeda */
-.input-money{position:relative}
-.input-money input{padding-right:44px;text-align:right;font-weight:600}
-.input-money::after{
-    content:'Kz';position:absolute;right:14px;top:50%;transform:translateY(-50%);
-    font-size:11px;font-weight:700;color:var(--muted);pointer-events:none;
-    text-transform:uppercase;letter-spacing:.3px;
+.btn-outline { background: var(--surface); color: var(--fg); border-color: var(--border-strong); }
+.btn-outline:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.btn-outline:hover:not(:disabled) i { color: var(--primary); }
+.btn-outline:active:not(:disabled) { background: var(--surface-subtle); }
+.btn-outline i { color: var(--fg-soft); }
+
+/* ---------- kbd (atalhos) ---------- */
+kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 5px;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  background: var(--surface);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  line-height: 1;
+  min-width: 16px;
+  height: 16px;
 }
 
-/* ============================================================
-   PAINEL LATERAL
-   ============================================================ */
-.side-panel{position:sticky;top:22px;display:flex;flex-direction:column;gap:14px}
+/* ---------- Sidebar ---------- */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--dark);
+  color: #fff;
+  padding: var(--s-5) 0;
+  height: 100vh;
+  position: fixed;
+  inset: 0 auto 0 0;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: .5px;
+  padding: 0 var(--s-5) var(--s-5);
+  border-bottom: 1px solid #2a2a2a;
+  margin-bottom: var(--s-4);
+}
+.logo i { color: var(--primary); font-size: 15px; }
 
-.preview-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-.preview-head{
-    padding:16px 20px;
-    background:linear-gradient(135deg,var(--dark) 0%,var(--dark-2) 100%);
-    color:#fff;
+.nav-menu { list-style: none; flex: 1; }
+.nav-menu a {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-5);
+  font-size: 13px;
+  font-weight: 500;
+  color: #d5d9df;
+  border-left: 3px solid transparent;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
 }
-.preview-head .label{
-    font-size:10.5px;text-transform:uppercase;letter-spacing:1.2px;
-    color:rgba(255,255,255,.55);font-weight:700;
-    display:flex;align-items:center;gap:7px;margin-bottom:6px;
+.nav-menu a:hover { background: var(--dark-2); color: var(--primary); }
+.nav-menu a:hover i { color: var(--primary); }
+.nav-menu a.active {
+  background: var(--dark-2);
+  color: var(--primary);
+  border-left-color: var(--primary);
 }
-.preview-head .label i{color:rgba(255,255,255,.7)}
-.preview-head .value{
-    font-size:17px;font-weight:800;line-height:1.25;
-    word-break:break-word;
+.nav-menu a.active i { color: var(--primary); }
+.nav-menu a:focus-visible { outline-color: #fff; }
+.nav-menu i {
+  width: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  transition: color .2s ease;
 }
-.preview-body{padding:16px 20px}
-.preview-row{
-    display:flex;justify-content:space-between;align-items:center;
-    padding:8px 0;font-size:13px;border-bottom:1px dashed var(--border);
-    gap:12px;
-}
-.preview-row:last-child{border-bottom:none;font-weight:700;padding-top:12px;margin-top:4px;border-top:2px solid var(--dark)}
-.preview-row .key{color:var(--text-soft);display:flex;align-items:center;gap:6px;flex-shrink:0}
-.preview-row .key i{color:var(--muted);font-size:11px;width:14px}
-.preview-row .val{color:var(--text);font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
-.preview-row .val.green{color:var(--success-dark)}
-.preview-row .val.red{color:var(--primary-dark)}
-.preview-row .val.muted{color:var(--muted);font-weight:500}
 
-/* Card de ajuda */
-.help-card{
-    background:linear-gradient(135deg,#F0F7FF 0%,#E3F2FD 100%);
-    border:1px solid #BBDEFB;
-    border-radius:var(--radius);
-    padding:16px 18px;
-    display:flex;gap:12px;
+.user-info {
+  padding: var(--s-4) var(--s-5) 0;
+  border-top: 1px solid #2a2a2a;
+  margin-top: var(--s-4);
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
 }
-.help-card i{color:var(--info);font-size:18px;flex-shrink:0;margin-top:2px}
-.help-card .content{font-size:12.5px;color:var(--info-dark);line-height:1.6}
-.help-card .content strong{color:var(--info-dark);font-weight:700;display:block;margin-bottom:4px}
-.help-card ul{margin:6px 0 0 16px;padding:0}
-.help-card li{margin-bottom:4px}
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.user-details { min-width: 0; flex: 1; }
+.user-name { font-size: 13px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 12px; color: #888; }
 
-/* ============================================================
-   TOASTS
-   ============================================================ */
-#toast-container{position:fixed;top:20px;right:20px;z-index:3000;display:flex;flex-direction:column;gap:10px}
-.toast{
-    display:flex;align-items:center;gap:11px;padding:12px 16px;
-    border-radius:8px;color:#fff;font-size:13.5px;font-weight:600;
-    box-shadow:0 8px 22px rgba(0,0,0,.2);animation:toastIn .25s ease;max-width:360px;
+/* ---------- Main ---------- */
+.main-content {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+  padding: var(--s-5);
+  display: flex;
+  justify-content: center;
 }
-.toast.success{background:var(--success)}
-.toast.error{background:var(--primary)}
-.toast.info{background:var(--info)}
-.toast.warning{background:var(--warning)}
-@keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+.page-container {
+  width: 100%;
+  max-width: 1180px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
 
-/* ============================================================
-   RESPONSIVO
-   ============================================================ */
-@media(max-width:1180px){
-    .grid-layout{grid-template-columns:1fr 340px;gap:16px}
+/* ---------- Print header (só em @media print) ---------- */
+.print-header { display: none; }
+
+/* ---------- Topbar ---------- */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--border);
 }
-@media(max-width:1000px){
-    .grid-layout{grid-template-columns:1fr}
-    .side-panel{position:static}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  min-width: 0;
 }
-@media(max-width:900px){
-    :root{--sidebar-w:60px}
-    .sidebar .logo span,.sidebar .nav-menu span,.sidebar .user-details{display:none}
-    .sidebar .logo{justify-content:center;padding:0 8px 14px}
-    .sidebar .logo i{margin:0}
-    .sidebar .nav-menu a{justify-content:center;padding:11px 8px}
-    .sidebar .user-info{justify-content:center;padding:12px 8px}
-    .main-content{padding:16px 16px 32px}
+.topbar-back {
+  width: 36px; height: 36px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-soft);
+  transition: color .15s, border-color .15s;
+  flex-shrink: 0;
 }
-@media(max-width:600px){
-    .main-content{padding:12px 12px 28px}
-    .card-body{padding:18px 16px}
-    .form-row{grid-template-columns:1fr;gap:0}
-    .form-row .form-group{margin-bottom:18px}
-    .topbar-left h1{font-size:18px}
-    .topbar-right .btn span{display:none}
-    .preview-head .value{font-size:15px}
+.topbar-back:hover { color: var(--primary); border-color: var(--primary); }
+.topbar-back:active { background: var(--surface-subtle); }
+.topbar-left h1 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -.005em;
+  line-height: 1.2;
+}
+.topbar-left .page-subtitle {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+.topbar-left .page-subtitle .sep { color: var(--border); }
+.topbar-left .page-subtitle .hint { display: inline-flex; align-items: center; gap: 4px; }
+
+/* ---------- Layout 2 colunas ---------- */
+.grid-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: var(--s-4);
+  align-items: start;
+}
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: var(--s-4);
+}
+.card:last-child { margin-bottom: 0; }
+.card-head {
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.card-head h3 {
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.card-head h3 i { color: var(--primary); font-size: 13px; }
+.card-body { padding: var(--s-4); }
+
+/* ---------- Formulário ---------- */
+.form-group { display: flex; flex-direction: column; gap: var(--s-1); margin-bottom: var(--s-3); }
+.form-group:last-child { margin-bottom: 0; }
+.form-label {
+  font-size: 12px;
+  color: var(--fg);
+  font-weight: 500;
+}
+.form-label .required { color: var(--primary); margin-left: 2px; }
+.form-label .optional { color: var(--fg-muted); font-weight: 400; font-size: 11px; margin-left: 4px; }
+.form-control {
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--fg);
+  caret-color: var(--primary);
+  transition: border-color .15s;
+}
+.form-control::placeholder { color: var(--fg-placeholder); }
+.form-control:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: var(--primary);
+}
+textarea.form-control { resize: vertical; min-height: 76px; line-height: 1.5; }
+select.form-control {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3e%3cpath fill='%238b939f' d='M6 9L1 4h10z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+}
+.form-hint {
+  font-size: 11px;
+  color: var(--fg-muted);
+  margin-top: var(--s-1);
+}
+.form-hint.is-warning { color: var(--warning-dark); font-weight: 500; }
+
+/* Input de moeda */
+.input-money { position: relative; }
+.input-money input { padding-right: 36px; text-align: right; font-variant-numeric: tabular-nums; }
+.input-money::after {
+  content: 'Kz';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  pointer-events: none;
+}
+
+/* ---------- Form actions (abaixo do form) ---------- */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-top: var(--s-4);
+}
+
+/* ---------- Painel lateral ---------- */
+.side-panel {
+  position: sticky;
+  top: var(--s-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.preview-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.preview-head {
+  padding: var(--s-3) var(--s-4);
+  background: var(--dark);
+  color: #fff;
+}
+.preview-head .label {
+  font-size: 11px;
+  color: rgba(255,255,255,.6);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: var(--s-1);
+}
+.preview-head .value {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  word-break: break-word;
+  min-height: 1.3em;
+}
+.preview-body { padding: var(--s-3) var(--s-4); }
+
+.preview-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+}
+.preview-row:last-child { border-bottom: none; }
+.preview-row .key {
+  color: var(--fg-muted);
+  flex-shrink: 0;
+  font-size: 12px;
+}
+.preview-row .val {
+  color: var(--fg);
+  font-weight: 500;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.preview-row .val.green  { color: var(--success-dark); font-weight: 600; }
+.preview-row .val.red    { color: var(--primary-dark); font-weight: 600; }
+.preview-row .val.muted  { color: var(--fg-muted); font-weight: 400; }
+
+.preview-row.total {
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--fg);
+  margin-top: var(--s-1);
+}
+.preview-row.total .key { color: var(--fg); font-weight: 500; }
+.preview-row.total .val { color: var(--fg); font-weight: 600; }
+
+/* Aviso inline de margem */
+.preview-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  margin: 0 var(--s-4) var(--s-3);
+  background: var(--warning-soft);
+  border-left: 3px solid var(--warning);
+  border-radius: var(--radius);
+  font-size: 11px;
+  color: var(--warning-dark);
+  line-height: 1.4;
+}
+.preview-warning i { font-size: 11px; margin-top: 1px; flex-shrink: 0; }
+
+/* ---------- Toast ---------- */
+#toast-container {
+  position: fixed;
+  top: var(--s-4);
+  right: var(--s-4);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--fg-muted);
+  color: var(--fg);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  animation: fadeIn .15s ease;
+  max-width: 360px;
+}
+.toast i { font-size: 12px; flex-shrink: 0; }
+.toast.success { border-left-color: var(--success); }
+.toast.success i { color: var(--success); }
+.toast.error { border-left-color: var(--primary); }
+.toast.error i { color: var(--primary); }
+.toast.info { border-left-color: var(--info); }
+.toast.info i { color: var(--info); }
+.toast.warning { border-left-color: var(--warning); }
+.toast.warning i { color: var(--warning); }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 1000px) {
+  .grid-layout { grid-template-columns: 1fr; }
+  .side-panel { position: static; }
+}
+
+@media (max-width: 900px) {
+  :root { --sidebar-w: 60px; }
+  .sidebar .logo span,
+  .sidebar .nav-menu a span,
+  .sidebar .user-details { display: none; }
+  .sidebar .logo { justify-content: center; padding: 0 0 var(--s-5); gap: 0; }
+  .sidebar .nav-menu a { justify-content: center; padding: var(--s-3); }
+  .sidebar .user-info { justify-content: center; padding: var(--s-3) 0 0; }
+  .main-content { padding: var(--s-3); }
+}
+
+@media (max-width: 600px) {
+  .main-content { padding: var(--s-2); }
+  .card-body { padding: var(--s-3); }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .form-row .form-group { margin-bottom: var(--s-3); }
+  .topbar-left h1 { font-size: 18px; }
+  .preview-head .value { font-size: 15px; }
+  .page-subtitle .hint { display: none; }
+  .form-actions { flex-direction: column-reverse; }
+  .form-actions .btn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Impressão ---------- */
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+
+  html, body {
+    background: #fff !important;
+    display: block !important;
+    font-size: 10pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sidebar, #toast-container, .topbar-back, kbd,
+  .form-actions, .preview-warning { display: none !important; }
+  .main-content { margin: 0 !important; padding: 0 !important; }
+  .page-container { max-width: 100%; gap: 12pt; }
+
+  .print-header {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20pt;
+    padding-bottom: 8pt;
+    margin-bottom: 12pt;
+    border-bottom: 2pt solid var(--dark);
+    flex-wrap: wrap;
+  }
+  .print-brand-name { font-size: 16pt; font-weight: 700; letter-spacing: .5pt; }
+  .print-brand-sub { font-size: 9pt; color: #555; line-height: 1.4; }
+  .print-meta { text-align: right; font-size: 9pt; line-height: 1.5; color: #333; }
+  .print-meta strong { color: #000; }
+
+  .topbar {
+    border-bottom: 1pt solid #999;
+    padding-bottom: 6pt;
+    margin-bottom: 10pt;
+  }
+  .topbar-left h1 { font-size: 14pt; }
+  .topbar-left .page-subtitle { font-size: 9pt; color: #555; }
+
+  .grid-layout { display: block; }
+  .side-panel { margin-top: 12pt; position: static; }
+
+  .card {
+    box-shadow: none !important;
+    border: 1pt solid #999 !important;
+    border-radius: 0 !important;
+    break-inside: avoid;
+    margin-bottom: 12pt;
+  }
+  .card-head {
+    background: #f5f5f5 !important;
+    border-bottom: 1pt solid #999 !important;
+  }
+  .form-control {
+    border: 1pt solid #999 !important;
+    background: #fff !important;
+  }
+
+  .preview-head {
+    background: var(--dark) !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .preview-row .val.green { color: var(--success-dark) !important; }
+  .preview-row .val.red { color: var(--primary-dark) !important; }
 }
 </style>
 </head>
 <body>
 
-<aside class="sidebar">
+<aside class="sidebar no-print">
     <div class="logo"><i class="fas fa-globe-americas"></i><span>BOM MUNDO</span></div>
     <ul class="nav-menu">
         <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Painel</span></a></li>
@@ -275,7 +627,7 @@ select.form-control{
         <li><a href="#"><i class="fas fa-cog"></i><span>Config.</span></a></li>
     </ul>
     <div class="user-info">
-        <div class="user-avatar"><%= operadorNome.substring(0,2).toUpperCase() %></div>
+        <div class="user-avatar"><%= operadorNome.substring(0, 2).toUpperCase() %></div>
         <div class="user-details">
             <div class="user-name"><%= operadorNome %></div>
             <div class="user-role">Gerente</div>
@@ -286,24 +638,36 @@ select.form-control{
 <main class="main-content">
     <div class="page-container">
 
-        <!-- TOPBAR -->
+        <!-- Print header (só em @media print) -->
+        <div class="print-header">
+            <div>
+                <div class="print-brand-name">BOM MUNDO</div>
+                <div class="print-brand-sub">Comércio Geral e Prestação de Serviços</div>
+                <div class="print-brand-sub">NIF: 5000000000 · Luanda, Angola</div>
+            </div>
+            <div class="print-meta">
+                <div><strong>Formulário:</strong> Novo produto</div>
+                <div><strong>Emitido:</strong> <span id="printEmitido">—</span></div>
+                <div><strong>Operador:</strong> <%= operadorNome %></div>
+            </div>
+        </div>
+
+        <!-- TOPBAR (apenas título + back; sem botões) -->
         <div class="topbar">
             <div class="topbar-left">
-                <a href="/produtos" class="topbar-back" title="Voltar"><i class="fas fa-arrow-left"></i></a>
+                <a href="/produtos" class="topbar-back" title="Voltar" aria-label="Voltar" id="btnVoltar">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
                 <div>
-                    <h1>Novo Produto</h1>
+                    <h1>Novo produto</h1>
                     <div class="page-subtitle">
-                        <span><i class="fas fa-plus-circle" style="color:var(--primary);"></i> Registar novo item no catálogo</span>
+                        <span>Registar novo item no catálogo</span>
+                        <span class="sep">·</span>
+                        <span class="hint"><kbd>/</kbd> primeiro campo</span>
+                        <span class="hint"><kbd>Ctrl</kbd>+<kbd>P</kbd> imprimir</span>
+                        <span class="hint"><kbd>Esc</kbd> descartar</span>
                     </div>
                 </div>
-            </div>
-            <div class="topbar-right">
-                <a href="/produtos" class="btn btn-outline">
-                    <i class="fas fa-times"></i> <span>Cancelar</span>
-                </a>
-                <button type="submit" form="produtoForm" class="btn btn-primary" id="btnTopGuardar">
-                    <i class="fas fa-save"></i> <span>Guardar Produto</span>
-                </button>
             </div>
         </div>
 
@@ -314,40 +678,33 @@ select.form-control{
                 <!-- COLUNA PRINCIPAL -->
                 <div>
 
-                    <!-- Informação Básica -->
-                    <div class="card" style="margin-bottom:16px;">
+                    <!-- Identificação -->
+                    <div class="card">
                         <div class="card-head">
-                            <h3><i class="fas fa-info-circle"></i> Informação Básica</h3>
-                            <span class="head-desc">Dados de identificação</span>
+                            <h3><i class="fas fa-info-circle"></i> Identificação</h3>
                         </div>
                         <div class="card-body">
 
                             <div class="form-group">
                                 <label class="form-label" for="nome">
-                                    <i class="fas fa-tag"></i> Nome do Produto <span class="required">*</span>
+                                    Nome <span class="required">*</span>
                                 </label>
                                 <input type="text" id="nome" name="nome" class="form-control"
-                                       required maxlength="200" placeholder="Ex.: Coca-Cola 2L"
-                                       oninput="atualizarPreview()">
-                                <div class="form-hint">
-                                    <i class="fas fa-info-circle"></i>
-                                    Nome que aparecerá na factura e no catálogo.
-                                </div>
+                                       required maxlength="200" placeholder="Nome do produto"
+                                       oninput="marcarDirty(); atualizarPreview()">
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label class="form-label" for="codigo_barras">
-                                        <i class="fas fa-barcode"></i> Código de Barras
-                                    </label>
+                                    <label class="form-label" for="codigo_barras">Código de barras</label>
                                     <input type="text" id="codigo_barras" name="codigo_barras" class="form-control"
-                                           maxlength="50" placeholder="0000000000000" inputmode="numeric">
+                                           maxlength="50" placeholder="0000000000000" inputmode="numeric"
+                                           oninput="marcarDirty()">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label" for="categoria">
-                                        <i class="fas fa-layer-group"></i> Categoria
-                                    </label>
-                                    <select id="categoria" name="categoria" class="form-control">
+                                    <label class="form-label" for="categoria">Categoria</label>
+                                    <select id="categoria" name="categoria" class="form-control"
+                                            onchange="marcarDirty()">
                                         <option value="">Sem categoria</option>
                                         <option value="Bebidas">Bebidas</option>
                                         <option value="Alimentos">Alimentos</option>
@@ -361,43 +718,45 @@ select.form-control{
 
                             <div class="form-group">
                                 <label class="form-label" for="descricao">
-                                    <i class="fas fa-align-left"></i> Descrição <span class="optional">(opcional)</span>
+                                    Descrição <span class="optional">(opcional)</span>
                                 </label>
                                 <textarea id="descricao" name="descricao" class="form-control" rows="3"
-                                          maxlength="500" placeholder="Detalhes adicionais sobre o produto..."></textarea>
+                                          maxlength="500" placeholder="Notas internas"
+                                          oninput="marcarDirty()"></textarea>
                             </div>
 
                         </div>
                     </div>
 
                     <!-- Preços -->
-                    <div class="card" style="margin-bottom:16px;">
+                    <div class="card">
                         <div class="card-head">
                             <h3><i class="fas fa-coins"></i> Preços</h3>
-                            <span class="head-desc">Custo e venda</span>
                         </div>
                         <div class="card-body">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label class="form-label" for="preco_custo">
-                                        <i class="fas fa-shopping-bag"></i> Preço de Custo
-                                    </label>
+                                    <label class="form-label" for="preco_custo">Preço de custo</label>
                                     <div class="input-money">
                                         <input type="number" id="preco_custo" name="preco_custo" class="form-control"
                                                step="0.01" min="0" placeholder="0,00" inputmode="decimal"
-                                               oninput="atualizarPreview()">
+                                               oninput="marcarDirty(); atualizarPreview()">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label" for="preco_venda">
-                                        <i class="fas fa-tag"></i> Preço de Venda <span class="required">*</span>
+                                        Preço de venda <span class="required">*</span>
                                     </label>
                                     <div class="input-money">
                                         <input type="number" id="preco_venda" name="preco_venda" class="form-control"
                                                step="0.01" min="0.01" required placeholder="0,00" inputmode="decimal"
-                                               oninput="atualizarPreview()">
+                                               oninput="marcarDirty(); atualizarPreview()">
                                     </div>
                                 </div>
+                            </div>
+                            <div class="form-hint is-warning" id="avisoPrecos" role="status" style="display: none;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                O preço de venda está abaixo do preço de custo.
                             </div>
                         </div>
                     </div>
@@ -406,29 +765,21 @@ select.form-control{
                     <div class="card">
                         <div class="card-head">
                             <h3><i class="fas fa-cubes"></i> Stock</h3>
-                            <span class="head-desc">Quantidades iniciais</span>
                         </div>
                         <div class="card-body">
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label class="form-label" for="quantidade_estoque">
-                                        <i class="fas fa-boxes"></i> Quantidade Inicial
-                                    </label>
+                                    <label class="form-label" for="quantidade_estoque">Quantidade inicial</label>
                                     <input type="number" id="quantidade_estoque" name="quantidade_estoque" class="form-control"
                                            min="0" value="0" placeholder="0" inputmode="numeric"
-                                           oninput="atualizarPreview()">
+                                           oninput="marcarDirty(); atualizarPreview()">
                                 </div>
                                 <div class="form-group">
-                                    <label class="form-label" for="quantidade_minima">
-                                        <i class="fas fa-exclamation-triangle"></i> Stock Mínimo
-                                    </label>
+                                    <label class="form-label" for="quantidade_minima">Stock mínimo</label>
                                     <input type="number" id="quantidade_minima" name="quantidade_minima" class="form-control"
-                                           min="0" value="5" placeholder="5" inputmode="numeric">
+                                           min="0" value="5" placeholder="5" inputmode="numeric"
+                                           oninput="marcarDirty()">
                                 </div>
-                            </div>
-                            <div class="form-hint">
-                                <i class="fas fa-bell"></i>
-                                Será notificado quando o stock ficar igual ou inferior ao valor mínimo.
                             </div>
                         </div>
                     </div>
@@ -436,55 +787,52 @@ select.form-control{
                 </div>
 
                 <!-- PAINEL LATERAL -->
-                <div class="side-panel">
+                <aside class="side-panel">
 
                     <div class="preview-card">
                         <div class="preview-head">
-                            <div class="label"><i class="fas fa-eye"></i> Pré-visualização</div>
+                            <div class="label">Pré-visualização</div>
                             <div class="value" id="preview_nome">—</div>
                         </div>
                         <div class="preview-body">
                             <div class="preview-row">
-                                <span class="key"><i class="fas fa-tag"></i> Preço de venda</span>
+                                <span class="key">Preço de venda</span>
                                 <span class="val" id="preview_preco">0,00 Kz</span>
                             </div>
                             <div class="preview-row">
-                                <span class="key"><i class="fas fa-shopping-bag"></i> Custo</span>
+                                <span class="key">Custo</span>
                                 <span class="val muted" id="preview_custo">0,00 Kz</span>
                             </div>
                             <div class="preview-row">
-                                <span class="key"><i class="fas fa-percent"></i> Margem bruta</span>
+                                <span class="key">Margem</span>
                                 <span class="val" id="preview_margem">0,00 Kz</span>
                             </div>
                             <div class="preview-row">
-                                <span class="key"><i class="fas fa-chart-line"></i> Margem (%)</span>
-                                <span class="val" id="preview_margem_pct">0%</span>
-                            </div>
-                            <div class="preview-row">
-                                <span class="key"><i class="fas fa-cubes"></i> Stock inicial</span>
+                                <span class="key">Stock inicial</span>
                                 <span class="val" id="preview_stock">0 un.</span>
                             </div>
-                            <div class="preview-row">
-                                <span class="key"><i class="fas fa-coins"></i> Valor do inventário</span>
+                            <div class="preview-row total">
+                                <span class="key">Valor do inventário</span>
                                 <span class="val" id="preview_inventario">0,00 Kz</span>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="help-card">
-                        <i class="fas fa-lightbulb"></i>
-                        <div class="content">
-                            <strong>Dicas rápidas</strong>
-                            <ul>
-                                <li>Use nomes curtos e descritivos</li>
-                                <li>Preencha o código de barras para pesquisa rápida</li>
-                                <li>Defina preços de venda acima do custo</li>
-                                <li>Mantenha o stock mínimo actualizado</li>
-                            </ul>
+                        <div class="preview-warning" id="previewAviso" role="status" style="display: none;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Margem negativa. Reveja os preços antes de guardar.</span>
                         </div>
                     </div>
 
-                </div>
+                </aside>
+            </div>
+
+            <!-- ACÇÕES DO FORMULÁRIO (abaixo, junto ao último campo) -->
+            <div class="form-actions no-print">
+                <a href="/produtos" class="btn btn-outline" id="btnCancelar">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+                <button type="submit" class="btn btn-primary" id="btnGuardar" aria-busy="false">
+                    <i class="fas fa-save"></i> Guardar produto
+                </button>
             </div>
         </form>
     </div>
@@ -493,24 +841,57 @@ select.form-control{
 <div id="toast-container" aria-live="polite"></div>
 
 <script>
-function toast(msg, tipo='info', dur=3000) {
+/* ============================================================
+   UTILS
+   ============================================================ */
+const fmtKz = v => Number(v || 0).toLocaleString('pt-AO', {
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+}) + ' Kz';
+
+function toast(msg, tipo = 'info', dur = 3000) {
     const c = document.getElementById('toast-container');
-    const icons = { success:'fa-check-circle', error:'fa-exclamation-circle', info:'fa-info-circle', warning:'fa-exclamation-triangle' };
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        info: 'fa-info-circle',
+        warning: 'fa-exclamation-triangle'
+    };
     const t = document.createElement('div');
     t.className = 'toast ' + tipo;
-    t.innerHTML = '<i class="fas ' + (icons[tipo]||icons.info) + '"></i><span></span>';
+    t.innerHTML = '<i class="fas ' + (icons[tipo] || icons.info) + '"></i><span></span>';
     t.querySelector('span').textContent = msg;
     c.appendChild(t);
     setTimeout(() => {
-        t.style.transition = 'all .25s ease';
+        t.style.transition = 'opacity .2s ease';
         t.style.opacity = '0';
-        t.style.transform = 'translateX(30px)';
-        setTimeout(() => t.remove(), 250);
+        setTimeout(() => t.remove(), 200);
     }, dur);
 }
 
-const fmtKz = v => Number(v||0).toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' Kz';
+/* ============================================================
+   DIRTY STATE
+   ============================================================ */
+let dirty = false;
+function marcarDirty() { dirty = true; }
 
+function tentarSair(e) {
+    if (dirty && !confirm('Descartar alterações ao produto?')) {
+        if (e) e.preventDefault();
+        return false;
+    }
+    return true;
+}
+
+document.getElementById('btnCancelar').addEventListener('click', function (e) {
+    tentarSair(e);
+});
+document.getElementById('btnVoltar').addEventListener('click', function (e) {
+    tentarSair(e);
+});
+
+/* ============================================================
+   PREVIEW
+   ============================================================ */
 function atualizarPreview() {
     const nome = (document.getElementById('nome').value || '').trim();
     const custo = parseFloat(document.getElementById('preco_custo').value) || 0;
@@ -522,20 +903,29 @@ function atualizarPreview() {
     document.getElementById('preview_custo').textContent = fmtKz(custo);
 
     const margem = venda - custo;
-    const margemPct = venda > 0 ? (margem / venda) * 100 : 0;
 
     const margemEl = document.getElementById('preview_margem');
-    const margemPctEl = document.getElementById('preview_margem_pct');
     margemEl.textContent = fmtKz(margem);
-    margemEl.className = 'val ' + (margem >= 0 ? 'green' : 'red');
-    margemPctEl.textContent = margemPct.toFixed(1) + '%';
-    margemPctEl.className = 'val ' + (margemPct >= 20 ? 'green' : (margemPct >= 0 ? '' : 'red'));
+    margemEl.className = 'val ' + (
+        margem > 0 ? 'green' :
+        margem < 0 ? 'red' :
+        'muted'
+    );
 
     document.getElementById('preview_stock').textContent = estoque + ' un.';
     document.getElementById('preview_inventario').textContent = fmtKz(venda * estoque);
+
+    const avisoPrecos = document.getElementById('avisoPrecos');
+    const avisoPreview = document.getElementById('previewAviso');
+    const temAviso = custo > 0 && venda > 0 && venda < custo;
+    avisoPrecos.style.display = temAviso ? 'flex' : 'none';
+    avisoPreview.style.display = temAviso ? 'flex' : 'none';
 }
 
-document.getElementById('produtoForm').addEventListener('submit', function(e) {
+/* ============================================================
+   SUBMIT
+   ============================================================ */
+document.getElementById('produtoForm').addEventListener('submit', function (e) {
     const nome = document.getElementById('nome').value.trim();
     const venda = parseFloat(document.getElementById('preco_venda').value) || 0;
 
@@ -547,16 +937,54 @@ document.getElementById('produtoForm').addEventListener('submit', function(e) {
     }
     if (venda <= 0) {
         e.preventDefault();
-        toast('Preço de venda deve ser maior que zero.', 'error');
+        toast('O preço de venda deve ser maior que zero.', 'error');
         document.getElementById('preco_venda').focus();
         return;
     }
 
-    const btn = document.getElementById('btnTopGuardar');
+    const custo = parseFloat(document.getElementById('preco_custo').value) || 0;
+    if (custo > 0 && venda < custo) {
+        if (!confirm('O preço de venda está abaixo do custo. Guardar mesmo assim?')) {
+            e.preventDefault();
+            return;
+        }
+    }
+
+    dirty = false;
+
+    const btn = document.getElementById('btnGuardar');
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>A guardar...</span>';
+    btn.setAttribute('aria-busy', 'true');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A guardar…';
 });
 
+/* ============================================================
+   ATALHOS
+   ============================================================ */
+document.addEventListener('keydown', e => {
+    const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
+
+    if (e.key === 'Escape') {
+        document.getElementById('btnCancelar').click();
+        return;
+    }
+    if (e.key === '/' && !isTyping && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        document.getElementById('nome').focus();
+    }
+});
+
+/* ============================================================
+   PRINT — data de emissão
+   ============================================================ */
+window.addEventListener('beforeprint', () => {
+    const el = document.getElementById('printEmitido');
+    if (el) el.textContent = new Date().toLocaleString('pt-AO');
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
 atualizarPreview();
 setTimeout(() => document.getElementById('nome').focus(), 100);
 </script>

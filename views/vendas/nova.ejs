@@ -12,377 +12,1344 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nova Venda - Bom Mundo</title>
+<title>Nova Venda — Bom Mundo</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-:root{
-    --primary:#E53935;--primary-dark:#c62828;--primary-soft:#FFF5F5;--primary-line:#FFCDD2;
-    --dark:#2E2E2E;--dark-2:#3a3a3a;--dark-soft:#F2F4F7;
-    --success:#4CAF50;--success-dark:#2E7D32;--success-soft:#E8F5E9;--success-line:#C8E6C9;
-    --warning:#FF9800;--warning-dark:#E65100;--warning-soft:#FFF8E1;
-    --info:#2196F3;--info-dark:#1565C0;--info-soft:#E3F2FD;
-    --bg:#F5F6F8;--card:#fff;--border:#e6e8ec;--border-strong:#d0d4dc;
-    --text:#1f2328;--text-soft:#4a5058;--muted:#8b939f;--muted-2:#b0b7c0;
-    --shadow-sm:0 1px 3px rgba(0,0,0,.05);
-    --shadow:0 4px 12px rgba(0,0,0,.06);
-    --shadow-lg:0 12px 32px rgba(0,0,0,.12);
-    --radius:10px;--radius-sm:6px;
+:root {
+  --bg:             #fafafa;
+  --surface:        #ffffff;
+  --border:         #e5e5e5;
+  --fg:             #1a1a1a;
+  --fg-muted:       #666666;
+  --primary:        #c62828;
+  --primary-hover:  #a01f1f;
+  --primary-active: #8b1a1a;
+  --success:        #16a34a;
+  --warning:        #b45309;
+  --info:           #2563eb;
+  --danger:         #c62828;
+  --focus:          #1a1a1a;
+
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px;
 }
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
-body{background:var(--bg);color:var(--text);line-height:1.5;display:flex;min-height:100vh;font-size:14px}
-a{text-decoration:none;color:inherit}
-button{font-family:inherit;cursor:pointer}
-input,select,textarea{font-family:inherit}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 16px;border-radius:var(--radius-sm);font-weight:600;font-size:13.5px;border:1px solid transparent;transition:all .18s;white-space:nowrap}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover:not(:disabled){background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 4px 10px rgba(229,57,53,.25)}
-.btn-success{background:var(--success);color:#fff}
-.btn-success:hover:not(:disabled){background:var(--success-dark);transform:translateY(-1px);box-shadow:0 4px 10px rgba(76,175,80,.25)}
-.btn-dark{background:var(--dark);color:#fff}
-.btn-dark:hover:not(:disabled){background:var(--dark-2)}
-.btn-outline{background:#fff;color:var(--text);border-color:var(--border-strong)}
-.btn-outline:hover:not(:disabled){border-color:var(--primary);color:var(--primary);background:var(--primary-soft)}
-.btn-ghost{background:transparent;color:var(--text-soft)}
-.btn-ghost:hover:not(:disabled){background:var(--dark-soft);color:var(--text)}
-.btn-sm{padding:6px 11px;font-size:12px}
-.btn-block{display:flex;width:100%}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-.sidebar{width:220px;background:var(--dark);color:#fff;padding:18px 0;height:100vh;position:fixed;top:0;left:0;overflow-y:auto;z-index:100}
-.logo{font-size:20px;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:9px;padding:0 18px 16px;border-bottom:1px solid #444;margin-bottom:12px;letter-spacing:.5px}
-.logo i{font-size:22px}
-.nav-menu{list-style:none}
-.nav-menu li{margin-bottom:2px}
-.nav-menu a{color:#d5d9df;font-weight:500;padding:10px 18px;display:flex;align-items:center;gap:11px;border-left:3px solid transparent;transition:all .18s;font-size:13.5px}
-.nav-menu a:hover{background:var(--dark-2);color:#fff}
-.nav-menu a.active{background:var(--dark-2);color:#fff;border-left-color:var(--primary);font-weight:600}
-.nav-menu a.active i{color:var(--primary)}
-.nav-menu i{width:18px;text-align:center;font-size:14px}
-.user-info{padding:14px 18px;border-top:1px solid #444;margin-top:16px;display:flex;align-items:center;gap:10px}
-.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;flex-shrink:0}
-.user-details{min-width:0;flex:1}
-.user-name{font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-role{font-size:11px;color:#9aa1ab}
+html { -webkit-text-size-adjust: 100%; }
 
-.main-content{flex:1;margin-left:220px;padding:16px 20px;min-width:0;display:flex;flex-direction:column;gap:14px;height:100vh;overflow:hidden}
-
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;flex-shrink:0}
-.topbar-left{display:flex;align-items:center;gap:12px}
-.topbar-back{width:38px;height:38px;border-radius:var(--radius-sm);background:#fff;display:inline-flex;align-items:center;justify-content:center;color:var(--text-soft);box-shadow:var(--shadow-sm);border:1px solid var(--border);transition:all .18s}
-.topbar-back:hover{color:var(--primary);border-color:var(--primary)}
-.topbar-left h1{font-size:20px;font-weight:700;letter-spacing:-.3px}
-.topbar-left .page-subtitle{font-size:12px;color:var(--muted);margin-top:1px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.topbar-left .page-subtitle kbd{background:#fff;border:1px solid var(--border-strong);border-bottom-width:2px;border-radius:4px;padding:1px 6px;font-size:10px;font-family:Consolas,monospace;color:var(--text-soft);font-weight:700}
-
-.topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.cliente-pill{display:inline-flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--border);border-radius:40px;padding:7px 8px 7px 14px;box-shadow:var(--shadow-sm);transition:all .2s;cursor:pointer}
-.cliente-pill:hover{border-color:var(--primary);box-shadow:var(--shadow)}
-.cliente-pill .avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--muted),var(--muted-2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700}
-.cliente-pill.has-cliente .avatar{background:linear-gradient(135deg,var(--success),var(--success-dark))}
-.cliente-pill .text{min-width:0;display:flex;flex-direction:column;line-height:1.15}
-.cliente-pill .text .lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700}
-.cliente-pill .text .nome{font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
-.cliente-pill .caret{color:var(--muted);font-size:11px;padding-right:6px}
-
-.main-grid{display:grid;grid-template-columns:1fr 440px;gap:14px;flex:1;min-height:0;overflow:hidden}
-
-.col-pesquisa{display:flex;flex-direction:column;gap:12px;min-height:0}
-
-.search-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow-sm);flex-shrink:0}
-.search-wrapper{position:relative}
-.search-wrapper input{padding:13px 100px 13px 46px;height:52px;font-size:16px;font-weight:500;width:100%;border:2px solid var(--border-strong);border-radius:10px;background:#fff;color:var(--text);transition:all .18s}
-.search-wrapper input:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 4px rgba(229,57,53,.08)}
-.search-wrapper .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:17px;pointer-events:none}
-.search-wrapper .search-hint{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--dark-soft);border:1px solid var(--border);border-radius:5px;padding:3px 9px;font-size:10.5px;font-weight:700;color:var(--muted);font-family:Consolas,monospace;letter-spacing:.5px;pointer-events:none}
-.search-wrapper .search-status{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);font-weight:600;display:none;align-items:center;gap:6px}
-.search-wrapper.loading .search-status{display:flex}
-.search-wrapper.loading .search-hint{display:none}
-
-.filtros-rapidos{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.chip{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1.5px solid var(--border);border-radius:20px;padding:4px 12px;font-size:11.5px;font-weight:700;color:var(--text-soft);cursor:pointer;transition:all .15s}
-.chip:hover{border-color:var(--primary);color:var(--primary)}
-.chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
-.chip.dark{background:var(--dark);border-color:var(--dark);color:#fff}
-.chip.dark:hover{background:var(--dark-2);border-color:var(--dark-2);color:#fff;transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.15)}
-.chip i{font-size:10px}
-
-.resultados-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
-.resultados-head{padding:11px 16px;border-bottom:1px solid var(--border);background:#fafbfc;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.resultados-head .info{font-size:11.5px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:8px}
-.resultados-head .info strong{color:var(--text)}
-.resultados-head .info .badge{background:var(--dark-soft);color:var(--text-soft);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.3px}
-.resultados-list{flex:1;overflow-y:auto;padding:6px;min-height:0}
-.resultados-list::-webkit-scrollbar{width:8px}
-.resultados-list::-webkit-scrollbar-thumb{background:#ddd;border-radius:4px}
-
-.resultado-item{display:grid;grid-template-columns:40px 1fr auto auto;gap:11px;align-items:center;padding:9px 11px;border-radius:8px;cursor:pointer;transition:all .12s;border:1px solid transparent}
-.resultado-item:hover{background:var(--primary-soft);border-color:var(--primary-line)}
-.resultado-item.out-of-stock{opacity:.5;cursor:not-allowed}
-.resultado-item.out-of-stock:hover{background:#fafafa;border-color:transparent}
-
-.resultado-thumb{width:40px;height:40px;border-radius:8px;background:var(--primary-soft);border:1px solid var(--primary-line);display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:16px;flex-shrink:0}
-.resultado-info{min-width:0}
-.resultado-info .nome{font-size:13.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
-.resultado-info .meta{font-size:11px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
-.resultado-info .meta i{font-size:9px;margin-right:3px}
-.resultado-preco{text-align:right;flex-shrink:0}
-.resultado-preco .preco{font-size:14.5px;font-weight:800;color:var(--primary);display:block;line-height:1.1}
-.resultado-preco .stock{font-size:10px;font-weight:700;color:var(--muted);margin-top:2px}
-.resultado-preco .stock.low{color:var(--warning-dark)}
-.resultado-preco .stock.zero{color:var(--primary-dark)}
-.resultado-add{width:34px;height:34px;border-radius:8px;background:var(--dark);color:#fff;border:none;display:inline-flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;flex-shrink:0}
-.resultado-item:hover .resultado-add{background:var(--primary)}
-.resultado-item.out-of-stock .resultado-add{background:var(--muted-2);cursor:not-allowed}
-
-.resultados-empty{text-align:center;padding:44px 20px;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%}
-.resultados-empty i{font-size:40px;color:var(--muted-2);margin-bottom:12px}
-.resultados-empty p{font-size:13.5px;font-weight:600;color:var(--text-soft);margin-bottom:4px}
-.resultados-empty .hint{font-size:12px;color:var(--muted)}
-
-.col-prefactura{display:flex;flex-direction:column;min-height:0}
-
-.prefactura{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
-.prefactura-header{padding:14px 18px;background:linear-gradient(135deg,var(--dark) 0%,var(--dark-2) 100%);color:#fff;flex-shrink:0}
-.prefactura-header .title{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.6);font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:7px}
-.prefactura-header .numero{font-size:17px;font-weight:800;letter-spacing:.3px}
-.prefactura-header .meta{margin-top:8px;display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:rgba(255,255,255,.7)}
-.prefactura-header .cliente-inline{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;color:#fff}
-
-.prefactura-itens{flex:1;overflow-y:auto;padding:0;min-height:0}
-.prefactura-itens::-webkit-scrollbar{width:6px}
-.prefactura-itens::-webkit-scrollbar-thumb{background:#ddd;border-radius:3px}
-
-.prefactura-item{display:grid;grid-template-columns:auto 1fr auto 28px;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid #f0f2f5;transition:background .15s}
-.prefactura-item:last-child{border-bottom:none}
-.prefactura-item:hover{background:#fafbfc}
-
-.qty-mini{display:inline-flex;align-items:center;border:1px solid var(--border-strong);border-radius:6px;overflow:hidden;background:#fff;flex-shrink:0}
-.qty-mini button{width:22px;height:26px;background:#FAFBFC;border:none;color:var(--text-soft);font-size:10px;font-weight:700;transition:all .15s;cursor:pointer}
-.qty-mini button:hover:not(:disabled){background:var(--primary);color:#fff}
-.qty-mini button:disabled{opacity:.3;cursor:not-allowed}
-.qty-mini .qty-value{width:30px;text-align:center;font-size:12px;font-weight:800;color:var(--text);padding:0 2px;line-height:26px}
-
-.prefactura-item .info{min-width:0}
-.prefactura-item .nome{font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prefactura-item .unit{font-size:11px;color:var(--muted);margin-top:1px}
-.prefactura-item .valor{font-size:13px;font-weight:800;color:var(--text);text-align:right}
-.prefactura-item .remove{width:26px;height:26px;border-radius:6px;background:transparent;border:none;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s}
-.prefactura-item .remove:hover{background:#FFEBEE;color:var(--primary)}
-
-.prefactura-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);padding:30px 20px;text-align:center}
-.prefactura-empty i{font-size:40px;color:var(--muted-2);margin-bottom:12px}
-.prefactura-empty p{font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:4px}
-.prefactura-empty .hint{font-size:11.5px;color:var(--muted)}
-
-.prefactura-totais{padding:12px 18px;background:#fafbfc;border-top:1px solid var(--border);flex-shrink:0}
-.prefactura-totais .linha{display:flex;justify-content:space-between;padding:3px 0;font-size:12.5px;color:var(--text-soft)}
-.prefactura-totais .linha .val{font-weight:700;color:var(--text)}
-.prefactura-totais .linha .val.red{color:var(--primary-dark)}
-.prefactura-totais .linha.grande{font-size:19px;font-weight:800;color:var(--primary);padding-top:10px;margin-top:6px;border-top:2px solid var(--dark)}
-.prefactura-totais .linha.grande .val{color:var(--primary);font-size:19px}
-
-/* ============================================================
-   PAGAMENTO — modo simples + modo split
-   ============================================================ */
-.prefactura-pgto{padding:12px 18px;background:#fafbfc;border-top:1px solid var(--border);flex-shrink:0}
-.prefactura-pgto .label{display:flex;justify-content:space-between;align-items:center;font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:700;margin-bottom:8px}
-.prefactura-pgto .btn-add-pgto{background:transparent;border:1px dashed var(--border-strong);color:var(--text-soft);padding:2px 9px;border-radius:12px;font-size:10.5px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
-.prefactura-pgto .btn-add-pgto:hover{border-color:var(--primary);color:var(--primary);border-style:solid}
-
-/* Modo simples: tabs */
-.pgto-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.pgto-tab{
-    display:flex;flex-direction:column;align-items:center;gap:3px;
-    padding:9px 4px;border:1.5px solid var(--border);border-radius:7px;
-    background:#fff;cursor:pointer;transition:all .15s;text-align:center;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg);
+  display: flex;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
-.pgto-tab:hover{border-color:var(--primary);background:var(--primary-soft)}
-.pgto-tab.selected{background:var(--primary);border-color:var(--primary);box-shadow:0 3px 10px rgba(229,57,53,.2)}
-.pgto-tab i{font-size:15px;color:var(--muted);transition:color .15s}
-.pgto-tab.selected i{color:#fff}
-.pgto-tab span{font-size:10.5px;font-weight:700;color:var(--text-soft);transition:color .15s}
-.pgto-tab.selected span{color:#fff}
-.pgto-tab input{display:none}
 
-.pgto-simple-hint{
-    margin-top:8px;font-size:11px;color:var(--muted);
-    display:flex;align-items:center;gap:6px;
-    padding:6px 10px;background:#fff;border-radius:6px;
-    border:1px dashed var(--border);
-}
-.pgto-simple-hint i{color:var(--info);font-size:12px}
-.pgto-simple-hint strong{color:var(--text-soft);margin-left:auto;}
+a { color: inherit; text-decoration: none; }
 
-/* Modo split: linhas */
-.pgto-split-header{
-    display:flex;justify-content:space-between;align-items:center;
-    margin-bottom:8px;
-    font-size:10.5px;color:var(--muted);font-weight:600;
-}
-.pgto-split-header .btn-voltar-simples{
-    background:transparent;border:none;color:var(--info);font-size:10.5px;
-    font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;
-    padding:2px 6px;border-radius:4px;transition:all .15s;
-}
-.pgto-split-header .btn-voltar-simples:hover{background:var(--info-soft);text-decoration:underline}
+::selection { background: var(--fg); color: var(--bg); }
 
-.pgto-linha{display:grid;grid-template-columns:1fr 110px 26px;gap:6px;align-items:center;margin-bottom:6px}
-.pgto-linha:last-child{margin-bottom:0}
-.pgto-metodo{
-    padding:7px 10px;border:1.5px solid var(--border-strong);border-radius:6px;
-    font-size:12px;font-weight:600;background:#fff;color:var(--text);cursor:pointer;
-    appearance:none;
-    background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3e%3cpath fill='%23888' d='M5 7L1 3h8z'/%3e%3c/svg%3e");
-    background-repeat:no-repeat;background-position:right 8px center;padding-right:24px;
-    transition:border-color .15s;
-}
-.pgto-metodo:focus{border-color:var(--primary);outline:none}
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
-.pgto-valor-wrapper{position:relative;display:flex;align-items:center;border:1.5px solid var(--border-strong);border-radius:6px;background:#fff;transition:border-color .15s}
-.pgto-valor-wrapper:focus-within{border-color:var(--primary)}
-.pgto-valor{flex:1;border:none;outline:none;background:transparent;padding:7px 26px 7px 10px;font-size:12.5px;font-weight:700;color:var(--text);text-align:right;min-width:0;-moz-appearance:textfield}
+/* ---------- Animações ---------- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------- Botões ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+  white-space: nowrap;
+}
+.btn i { font-size: 11px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+.btn-primary:active:not(:disabled) { background: var(--primary-active); }
+.btn-primary i { color: #fff; }
+
+.btn-outline { background: var(--surface); color: var(--fg); border-color: var(--border); }
+.btn-outline:hover:not(:disabled) { border-color: var(--fg-muted); }
+.btn-outline:active:not(:disabled) { background: var(--bg); }
+.btn-outline i { color: var(--fg-muted); }
+
+.btn-ghost { background: transparent; color: var(--fg-muted); }
+.btn-ghost:hover:not(:disabled) { background: var(--bg); color: var(--fg); }
+
+.btn-sm { padding: var(--s-1) var(--s-2); font-size: 12px; }
+.btn-block { display: flex; width: 100%; justify-content: center; }
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  width: 220px;
+  background: #1a1a1a;
+  color: #d4d4d4;
+  height: 100vh;
+  position: fixed;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--s-5) 0;
+  z-index: 100;
+  overflow-y: auto;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0 var(--s-5) var(--s-5);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: .5px;
+  border-bottom: 1px solid #2a2a2a;
+  margin-bottom: var(--s-4);
+}
+.logo i { color: var(--primary); font-size: 15px; }
+
+.nav-menu { list-style: none; flex: 1; }
+.nav-menu a {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-5);
+  font-size: 13px;
+  font-weight: 500;
+  color: #d4d4d4;
+  border-left: 3px solid transparent;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+.nav-menu a:hover { background: #2a2a2a; color: var(--primary); }
+.nav-menu a:hover i { color: var(--primary); }
+.nav-menu a.active {
+  background: #2a2a2a;
+  color: var(--primary);
+  border-left-color: var(--primary);
+}
+.nav-menu a.active i { color: var(--primary); }
+.nav-menu a:focus-visible { outline-color: #fff; }
+.nav-menu i {
+  width: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  transition: color .2s ease;
+}
+
+.user-info {
+  padding: var(--s-4) var(--s-5) 0;
+  border-top: 1px solid #2a2a2a;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+.user-avatar {
+  width: 32px; height: 32px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: #fff;
+  flex-shrink: 0;
+}
+.user-details { min-width: 0; flex: 1; }
+.user-name { font-size: 13px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 12px; color: #888; }
+
+/* ---------- Main ---------- */
+.main-content {
+  flex: 1;
+  margin-left: 220px;
+  padding: var(--s-4);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ---------- Topbar ---------- */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.topbar-left { display: flex; align-items: center; gap: var(--s-3); }
+.topbar-back {
+  width: 36px; height: 36px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--fg-muted);
+  transition: color .15s, border-color .15s;
+}
+.topbar-back:hover { color: var(--primary); border-color: var(--primary); }
+.topbar-left h1 { font-size: 18px; font-weight: 600; letter-spacing: -.005em; }
+.topbar-left .page-subtitle {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-top: 2px;
+  display: flex; align-items: center; gap: var(--s-3); flex-wrap: wrap;
+}
+.topbar-left .page-subtitle kbd {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-family: ui-monospace, Consolas, monospace;
+  color: var(--fg-muted);
+  font-weight: 600;
+}
+.topbar-left .page-subtitle .caixa-open {
+  color: var(--success);
+  font-weight: 500;
+  display: flex; align-items: center; gap: var(--s-1);
+}
+.topbar-left .page-subtitle .caixa-open::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+.topbar-right { display: flex; align-items: center; gap: var(--s-2); flex-wrap: wrap; }
+
+/* ---------- Cliente pill ---------- */
+.cliente-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: var(--s-1) var(--s-3) var(--s-1) var(--s-1);
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.cliente-pill:hover { border-color: var(--fg-muted); }
+.cliente-pill:active { background: var(--bg); }
+.cliente-pill .avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--fg-muted);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.cliente-pill.has-cliente .avatar { background: var(--success); }
+.cliente-pill .text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.cliente-pill .text .lbl { font-size: 10px; color: var(--fg-muted); font-weight: 500; }
+.cliente-pill .text .nome {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+.cliente-pill .caret { color: var(--fg-muted); font-size: 10px; padding-right: var(--s-1); }
+
+/* ---------- Banner de aviso ---------- */
+.warning-banner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--warning);
+  border-radius: 4px;
+  padding: var(--s-3) var(--s-4);
+  color: var(--warning);
+  font-size: 13px;
+  display: flex;
+  gap: var(--s-3);
+  align-items: center;
+}
+.warning-banner i { font-size: 14px; }
+.warning-banner strong { color: var(--fg); font-weight: 500; }
+.warning-banner a { color: var(--primary); font-weight: 500; text-decoration: underline; }
+
+/* ---------- Layout grid ---------- */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 440px;
+  gap: var(--s-3);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.col-pesquisa { display: flex; flex-direction: column; gap: var(--s-3); min-height: 0; }
+.col-prefactura { display: flex; flex-direction: column; min-height: 0; }
+
+/* ---------- Search card ---------- */
+.search-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: var(--s-3);
+  flex-shrink: 0;
+}
+.search-wrapper { position: relative; }
+.search-wrapper input {
+  width: 100%;
+  padding: var(--s-3) 100px var(--s-3) 40px;
+  font-size: 15px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--fg);
+  caret-color: var(--primary);
+  transition: border-color .15s;
+}
+.search-wrapper input::placeholder { color: #999; font-weight: 400; }
+.search-wrapper input:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+  border-color: var(--fg);
+}
+.search-wrapper .search-icon {
+  position: absolute;
+  left: var(--s-3);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--fg-muted);
+  font-size: 14px;
+  pointer-events: none;
+  transition: color .15s;
+}
+.search-wrapper:focus-within .search-icon { color: var(--primary); }
+.search-wrapper .search-hint {
+  position: absolute;
+  right: var(--s-2);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  font-family: ui-monospace, Consolas, monospace;
+  pointer-events: none;
+}
+.search-wrapper .search-status {
+  position: absolute;
+  right: var(--s-3);
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: var(--fg-muted);
+  display: none;
+  align-items: center;
+  gap: var(--s-2);
+}
+.search-wrapper.loading .search-status { display: flex; }
+.search-wrapper.loading .search-hint { display: none; }
+.search-wrapper .spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: inline-block;
+}
+
+/* ---------- Filtros rápidos ---------- */
+.filtros-rapidos { display: flex; gap: var(--s-2); flex-wrap: wrap; margin-top: var(--s-3); }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: var(--s-1) var(--s-3);
+  font: inherit;
+  font-size: 12px;
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.chip:hover { border-color: var(--fg-muted); color: var(--fg); background: var(--bg); }
+.chip:active { background: var(--border); }
+.chip.active { background: var(--fg); border-color: var(--fg); color: #fff; }
+.chip i { font-size: 10px; }
+.chip .chip-add {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: var(--s-1) var(--s-3);
+  font: inherit;
+  font-size: 12px;
+  color: var(--primary);
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s;
+  margin-left: auto;
+}
+.chip .chip-add:hover { border-color: var(--primary); background: rgba(198,40,40,.04); }
+
+/* ---------- Resultados ---------- */
+.resultados-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.resultados-head {
+  padding: var(--s-2) var(--s-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+.resultados-head .info { display: flex; align-items: center; gap: var(--s-2); }
+.resultados-head .info strong { color: var(--fg); font-weight: 500; }
+.resultados-head .modo { font-size: 11px; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+
+.resultados-list { flex: 1; overflow-y: auto; padding: var(--s-1); min-height: 0; }
+
+.resultado-item {
+  display: grid;
+  grid-template-columns: 40px 1fr auto auto;
+  gap: var(--s-3);
+  align-items: center;
+  padding: var(--s-2) var(--s-3);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color .12s;
+  border: 1px solid transparent;
+}
+.resultado-item:hover { background: var(--bg); }
+.resultado-item:active { background: var(--border); }
+.resultado-item.out-of-stock { opacity: .45; cursor: not-allowed; }
+.resultado-item.out-of-stock:hover { background: transparent; }
+
+.resultado-thumb {
+  width: 40px; height: 40px;
+  border-radius: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--fg-muted);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.resultado-info { min-width: 0; }
+.resultado-info .nome {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+.resultado-info .meta {
+  font-size: 11px;
+  color: var(--fg-muted);
+  display: flex;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
+}
+.resultado-info .meta i { font-size: 9px; margin-right: var(--s-1); }
+.resultado-info .meta b { color: var(--fg); font-weight: 500; }
+.resultado-info .meta .low-stock { color: var(--warning); font-weight: 500; }
+.resultado-info .meta .no-stock { color: var(--danger); font-weight: 500; }
+
+.resultado-preco { text-align: right; flex-shrink: 0; }
+.resultado-preco .preco {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  display: block;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.resultado-preco .stock {
+  font-size: 10px;
+  color: var(--fg-muted);
+  margin-top: 2px;
+  display: block;
+}
+.resultado-preco .stock.low { color: var(--warning); }
+.resultado-preco .stock.zero { color: var(--danger); }
+
+.resultado-add {
+  width: 30px; height: 30px;
+  border-radius: 4px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color .15s;
+  flex-shrink: 0;
+}
+.resultado-add:hover:not(:disabled) { background: var(--primary-hover); }
+.resultado-add:active:not(:disabled) { background: var(--primary-active); }
+.resultado-add:disabled { background: var(--border); color: var(--fg-muted); cursor: not-allowed; }
+
+.resultados-empty {
+  text-align: center;
+  padding: var(--s-6) var(--s-4);
+  color: var(--fg-muted);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.resultados-empty i { color: var(--fg-muted); font-size: 20px; opacity: .5; margin-bottom: var(--s-3); }
+
+/* ---------- Pay method dot (reutilizável) ---------- */
+.pay-method {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pay-method::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--fg-muted);
+  opacity: .8;
+}
+.pay-dinheiro::before     { background: var(--success); }
+.pay-cartao_debito::before { background: var(--info); }
+.pay-transferencia::before { background: var(--warning); }
+
+/* ---------- Pre-factura ---------- */
+.prefactura {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.prefactura-header {
+  padding: var(--s-4) var(--s-4);
+  background: #1a1a1a;
+  color: #fff;
+  flex-shrink: 0;
+}
+.prefactura-header .title {
+  font-size: 11px;
+  color: rgba(255,255,255,.6);
+  font-weight: 500;
+  letter-spacing: .5px;
+  margin-bottom: var(--s-2);
+}
+.prefactura-header .numero {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: .3px;
+  font-variant-numeric: tabular-nums;
+}
+.prefactura-header .meta {
+  margin-top: var(--s-2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: rgba(255,255,255,.7);
+  font-variant-numeric: tabular-nums;
+}
+.prefactura-header .cliente-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  background: rgba(255,255,255,.1);
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.prefactura-itens { flex: 1; overflow-y: auto; min-height: 0; }
+
+.prefactura-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto 26px;
+  gap: var(--s-2);
+  align-items: center;
+  padding: var(--s-2) var(--s-4);
+  border-bottom: 1px solid var(--border);
+  transition: background-color .15s;
+}
+.prefactura-item:last-child { border-bottom: none; }
+.prefactura-item:hover { background: var(--bg); }
+
+.qty-mini {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.qty-mini button {
+  width: 22px; height: 24px;
+  background: var(--bg);
+  border: none;
+  color: var(--fg-muted);
+  font-size: 10px;
+  cursor: pointer;
+  transition: background-color .15s, color .15s;
+}
+.qty-mini button:hover:not(:disabled) { background: var(--primary); color: #fff; }
+.qty-mini button:active:not(:disabled) { background: var(--primary-active); }
+.qty-mini button:disabled { opacity: .3; cursor: not-allowed; }
+.qty-mini .qty-value {
+  width: 28px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg);
+  line-height: 24px;
+  font-variant-numeric: tabular-nums;
+}
+
+.prefactura-item .info { min-width: 0; }
+.prefactura-item .nome {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.prefactura-item .unit { font-size: 11px; color: var(--fg-muted); margin-top: 1px; font-variant-numeric: tabular-nums; }
+.prefactura-item .valor {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.prefactura-item .remove {
+  width: 24px; height: 24px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  color: var(--fg-muted);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background-color .15s, color .15s;
+}
+.prefactura-item .remove:hover { background: rgba(198,40,40,.06); color: var(--primary); }
+
+.prefactura-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-muted);
+  padding: var(--s-5);
+  font-size: 13px;
+}
+.prefactura-empty i { color: var(--fg-muted); font-size: 20px; opacity: .4; margin-bottom: var(--s-2); }
+
+.prefactura-totais {
+  padding: var(--s-3) var(--s-4);
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.prefactura-totais .linha {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+.prefactura-totais .linha .val { font-weight: 500; color: var(--fg); font-variant-numeric: tabular-nums; }
+.prefactura-totais .linha .val.red { color: var(--danger); }
+.prefactura-totais .linha.grande {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fg);
+  padding-top: var(--s-2);
+  margin-top: var(--s-2);
+  border-top: 1px solid var(--border);
+}
+.prefactura-totais .linha.grande .val { color: var(--primary); font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ---------- Pagamento ---------- */
+.prefactura-pgto {
+  padding: var(--s-3) var(--s-4);
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.prefactura-pgto .label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--fg-muted);
+  font-weight: 500;
+  margin-bottom: var(--s-2);
+}
+.prefactura-pgto .btn-add-pgto {
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--fg-muted);
+  padding: 1px 8px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+.prefactura-pgto .btn-add-pgto:hover { border-color: var(--fg-muted); color: var(--fg); }
+
+/* Tabs de pagamento */
+.pgto-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--s-2); }
+.pgto-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--s-2) var(--s-1);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color .15s, background-color .15s, color .15s;
+}
+.pgto-tab:hover { border-color: var(--fg-muted); }
+.pgto-tab.selected {
+  border-color: var(--primary);
+  background: rgba(198,40,40,.04);
+}
+.pgto-tab i { font-size: 14px; color: var(--fg-muted); transition: color .15s; }
+.pgto-tab.selected i { color: var(--primary); }
+.pgto-tab span { font-size: 11px; font-weight: 500; color: var(--fg-muted); transition: color .15s; }
+.pgto-tab.selected span { color: var(--primary); }
+.pgto-tab input { display: none; }
+
+.pgto-simple-hint {
+  margin-top: var(--s-2);
+  font-size: 11px;
+  color: var(--fg-muted);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-1) var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.pgto-simple-hint strong { color: var(--fg); font-weight: 500; margin-left: auto; }
+
+/* Split */
+.pgto-split-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--s-2);
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+.pgto-split-header strong { color: var(--fg); font-weight: 500; }
+.pgto-split-header .btn-voltar-simples {
+  background: transparent;
+  border: none;
+  color: var(--info);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: 1px 6px;
+  border-radius: 4px;
+  transition: background-color .15s;
+}
+.pgto-split-header .btn-voltar-simples:hover { background: rgba(37,99,235,.06); }
+
+.pgto-linha {
+  display: grid;
+  grid-template-columns: 1fr 100px 24px;
+  gap: var(--s-2);
+  align-items: center;
+  margin-bottom: var(--s-2);
+}
+.pgto-linha:last-child { margin-bottom: 0; }
+
+.pgto-metodo {
+  padding: var(--s-1) var(--s-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 12px;
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3e%3cpath fill='%23666' d='M5 7L1 3h8z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
+  transition: border-color .15s;
+}
+.pgto-metodo:focus { outline: 2px solid var(--focus); outline-offset: 1px; border-color: var(--fg); }
+
+.pgto-valor-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  transition: border-color .15s;
+}
+.pgto-valor-wrapper:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; border-color: var(--fg); }
+.pgto-valor {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: var(--s-1) 24px var(--s-1) var(--s-2);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg);
+  text-align: right;
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+}
 .pgto-valor::-webkit-outer-spin-button,
-.pgto-valor::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.pgto-moeda{position:absolute;right:8px;font-size:10px;font-weight:700;color:var(--muted);pointer-events:none;text-transform:uppercase;letter-spacing:.3px}
-.pgto-remove{width:26px;height:26px;border-radius:6px;background:transparent;border:none;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;font-size:11px;transition:all .15s}
-.pgto-remove:hover:not(:disabled){background:#FFEBEE;color:var(--primary)}
-.pgto-remove:disabled{opacity:.3;cursor:not-allowed}
+.pgto-valor::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.pgto-moeda {
+  position: absolute;
+  right: var(--s-2);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  pointer-events: none;
+}
 
-.pgto-status{margin-top:8px;padding:7px 12px;border-radius:6px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:7px;transition:all .2s}
-.pgto-status.ok{background:var(--success-soft);color:var(--success-dark)}
-.pgto-status.falta{background:var(--warning-soft);color:var(--warning-dark)}
-.pgto-status.sobra{background:var(--info-soft);color:var(--info-dark)}
-.pgto-status strong{margin-left:auto;font-size:13px}
+.pgto-remove {
+  width: 24px; height: 24px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  color: var(--fg-muted);
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background-color .15s, color .15s;
+}
+.pgto-remove:hover:not(:disabled) { background: rgba(198,40,40,.06); color: var(--primary); }
+.pgto-remove:disabled { opacity: .3; cursor: not-allowed; }
 
-.prefactura-desconto{padding:0 18px 12px;background:#fafbfc;flex-shrink:0}
-.desconto-wrapper{position:relative;display:flex;align-items:center;background:#fff;border:1.5px solid var(--border);border-radius:7px;transition:border .15s}
-.desconto-wrapper:focus-within{border-color:var(--primary)}
-.desconto-wrapper i{position:absolute;left:11px;color:var(--muted);font-size:12px}
-.desconto-wrapper input{flex:1;border:none;outline:none;background:transparent;padding:9px 11px 9px 32px;font-size:13px;font-weight:600;color:var(--text);-moz-appearance:textfield}
+/* Status do pagamento */
+.pgto-status {
+  margin-top: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  font-variant-numeric: tabular-nums;
+}
+.pgto-status strong { margin-left: auto; font-size: 13px; font-weight: 600; }
+.pgto-status.ok { color: var(--success); border-left-color: var(--success); }
+.pgto-status.falta { color: var(--warning); border-left-color: var(--warning); }
+.pgto-status.sobra { color: var(--info); border-left-color: var(--info); }
+
+/* Desconto */
+.prefactura-desconto {
+  padding: 0 var(--s-4) var(--s-3);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+.prefactura-desconto .label {
+  font-size: 11px;
+  color: var(--fg-muted);
+  font-weight: 500;
+  margin-bottom: var(--s-1);
+}
+.desconto-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  transition: border-color .15s;
+}
+.desconto-wrapper:focus-within { outline: 2px solid var(--focus); outline-offset: 1px; border-color: var(--fg); }
+.desconto-wrapper i {
+  position: absolute;
+  left: var(--s-3);
+  color: var(--fg-muted);
+  font-size: 11px;
+  pointer-events: none;
+}
+.desconto-wrapper input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: var(--s-2) var(--s-2) var(--s-2) 30px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+}
 .desconto-wrapper input::-webkit-outer-spin-button,
-.desconto-wrapper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.desconto-wrapper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
-.prefactura-acoes{padding:12px 18px 16px;background:#fafbfc;border-top:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;gap:8px}
-
-/* MODAL */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:2000;padding:20px;backdrop-filter:blur(3px);overflow-y:auto}
-.modal-backdrop.open{display:flex}
-.modal{background:#fff;border-radius:12px;width:100%;max-width:480px;box-shadow:0 20px 50px rgba(0,0,0,.3);overflow:hidden;animation:modalPop .22s ease;margin:auto}
-.modal.modal-lg{max-width:800px}
-@keyframes modalPop{from{transform:scale(.94) translateY(8px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
-.modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#FAFBFC;border-bottom:1px solid var(--border)}
-.modal-header h3{font-size:16px;font-weight:700;display:flex;align-items:center;gap:9px}
-.modal-header h3 i{color:var(--primary)}
-.modal-close{background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--muted);padding:0 4px;border-radius:6px;transition:all .15s}
-.modal-close:hover{color:var(--primary);background:var(--dark-soft)}
-.modal-body{padding:20px;max-height:75vh;overflow-y:auto}
-.modal-body.documento-body{padding:0;background:#f5f6f8}
-.modal-actions{display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--border);background:#FAFBFC}
-
-.form-group{margin-bottom:14px}
-.form-group:last-child{margin-bottom:0}
-.form-label{display:block;margin-bottom:6px;color:var(--text);font-weight:700;font-size:12.5px;display:flex;align-items:center;gap:6px}
-.form-label i{color:var(--muted);font-size:11px}
-.form-label .required{color:var(--primary)}
-.form-label .optional{color:var(--muted);font-weight:500;font-size:11px;margin-left:2px}
-.form-control{width:100%;padding:10px 13px;border:1.5px solid var(--border-strong);border-radius:6px;font-size:13.5px;transition:all .18s;background:#fff;color:var(--text)}
-.form-control:focus{border-color:var(--primary);outline:none;box-shadow:0 0 0 3px rgba(229,57,53,.08)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.form-hint{font-size:11.5px;color:var(--muted);margin-top:5px;display:flex;align-items:center;gap:5px}
-
-.checkbox-inline{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text);cursor:pointer;padding:8px 0;user-select:none}
-.checkbox-inline input{width:16px;height:16px;accent-color:var(--primary);cursor:pointer}
-.checkbox-inline .cb-info{display:flex;flex-direction:column;gap:1px}
-.checkbox-inline .cb-info .cb-title{font-weight:600;font-size:13px}
-.checkbox-inline .cb-info .cb-desc{font-size:11px;color:var(--muted)}
-
-.cliente-resultado{display:grid;grid-template-columns:40px 1fr auto;gap:11px;align-items:center;padding:10px 12px;border-radius:8px;cursor:pointer;transition:all .12s;border:1px solid transparent}
-.cliente-resultado:hover{background:var(--info-soft);border-color:var(--info)}
-.cliente-resultado .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--info),var(--info-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px}
-.cliente-resultado .info .nome{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:2px}
-.cliente-resultado .info .meta{font-size:11.5px;color:var(--muted);display:flex;gap:10px}
-.cliente-resultado .info .meta i{font-size:10px;margin-right:3px}
-
-/* FACTURA DOCUMENTO */
-.factura-doc{background:#fff;padding:28px 32px;max-width:760px;margin:20px auto;border-radius:6px;box-shadow:0 4px 20px rgba(0,0,0,.08);font-size:12.5px;color:var(--text)}
-.fp-header{display:flex;justify-content:space-between;gap:24px;padding-bottom:14px;border-bottom:2px solid var(--primary);margin-bottom:16px;flex-wrap:wrap}
-.fp-brand{flex:1;min-width:220px}
-.fp-brand-logo{font-size:16px;font-weight:800;color:var(--primary);letter-spacing:.5px;display:flex;align-items:center;gap:7px;margin-bottom:6px}
-.fp-brand p{font-size:10.5px;color:var(--muted);margin:1px 0;line-height:1.5}
-.fp-doc{text-align:right;min-width:220px}
-.fp-doc h3{font-size:14px;letter-spacing:2.5px;font-weight:800;color:var(--text);margin-bottom:8px}
-.fp-doc p{font-size:11px;color:var(--text-soft);margin:2px 0}
-.fp-doc p span{color:var(--muted)}
-.fp-doc p strong{color:var(--text);font-weight:700}
-.fp-cliente{background:#fafbfc;border:1px solid var(--border);border-radius:5px;padding:10px 14px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.fp-cliente .bloco h4{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;margin-bottom:5px}
-.fp-cliente .bloco p{margin:1px 0;font-size:11.5px;color:var(--text)}
-.fp-cliente .bloco p strong{color:var(--text);font-weight:700}
-.fp-cliente .bloco p span{color:var(--muted)}
-.fp-table{width:100%;border-collapse:collapse;margin-bottom:0;font-size:11.5px}
-.fp-table th{background:var(--dark);color:#fff;text-align:left;padding:8px 10px;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:700;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.fp-table th.text-end{text-align:right}
-.fp-table th.text-center{text-align:center}
-.fp-table td{padding:8px 10px;border-bottom:1px solid #f0f2f5;font-size:11.5px;color:var(--text);vertical-align:middle}
-.fp-table td.text-end{text-align:right}
-.fp-table td.text-center{text-align:center}
-.fp-table tbody tr:nth-child(even){background:#FAFBFC}
-.fp-table tbody tr:last-child td{border-bottom:1px solid #ddd}
-.fp-totais{padding:12px 0 0;display:flex;justify-content:flex-end}
-.fp-totais table{width:280px;border-collapse:collapse}
-.fp-totais td{padding:5px 10px;font-size:11.5px;color:var(--text-soft)}
-.fp-totais td:last-child{text-align:right;font-weight:700;color:var(--text)}
-.fp-totais tr.grand-total td{border-top:2px solid var(--dark);font-size:14.5px;font-weight:800;color:var(--primary);padding-top:9px}
-.fp-totais tr.desconto td:last-child{color:var(--primary-dark)}
-.fp-pgto-bloco{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border)}
-.fp-pgto-bloco h4{font-size:10px;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted);font-weight:700;margin-bottom:8px}
-.fp-pgto-linha{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:11.5px;color:var(--text);border-bottom:1px dashed #f0f2f5}
-.fp-pgto-linha:last-child{border-bottom:none}
-.fp-pgto-linha .metodo{display:flex;align-items:center;gap:7px;font-weight:600}
-.fp-pgto-linha .metodo i{color:var(--muted);width:14px;text-align:center}
-.fp-pgto-linha .valor{font-weight:800;color:var(--text)}
-.fp-pgto-linha.troco .valor{color:var(--info-dark)}
-.fp-pgto-linha.total-pago{border-top:1.5px solid var(--dark);border-bottom:none;padding-top:8px;margin-top:4px;font-weight:700}
-.fp-pgto-linha.total-pago .valor{color:var(--primary);font-size:13px}
-.fp-footer{margin-top:22px;padding-top:12px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;gap:20px;font-size:9.5px;color:var(--muted)}
-.fp-aviso{margin-top:14px;padding:8px 12px;border-radius:4px;background:var(--info-soft);border-left:3px solid var(--info);font-size:10.5px;color:var(--info-dark)}
-.fp-assinatura{margin-top:26px;text-align:center}
-.fp-assinatura .linha{width:240px;border-top:1px solid #666;margin:0 auto 5px}
-.fp-assinatura .lbl{font-size:10px;color:var(--muted)}
-
-#toast-container{position:fixed;top:20px;right:20px;z-index:3000;display:flex;flex-direction:column;gap:10px}
-.toast{display:flex;align-items:center;gap:11px;padding:12px 16px;border-radius:8px;color:#fff;font-size:13.5px;font-weight:600;box-shadow:0 8px 22px rgba(0,0,0,.2);animation:toastIn .25s ease;max-width:360px}
-.toast.success{background:var(--success)}
-.toast.error{background:var(--primary)}
-.toast.info{background:var(--info)}
-.toast.warning{background:var(--warning)}
-@keyframes toastIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
-
-@media(max-width:1100px){
-    .main-grid{grid-template-columns:1fr;grid-template-rows:1fr auto}
-    .col-prefactura{max-height:60vh}
-    .factura-doc{padding:20px 18px;margin:12px}
-    .fp-header{flex-direction:column;gap:14px}
-    .fp-doc{text-align:left;min-width:0}
-    .fp-cliente{grid-template-columns:1fr}
-    .fp-totais table{width:100%}
+.prefactura-acoes {
+  padding: var(--s-3) var(--s-4) var(--s-4);
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
 }
-@media(max-width:900px){
-    .sidebar{width:60px}
-    .sidebar .logo span,.sidebar .nav-menu span,.sidebar .user-details{display:none}
-    .sidebar .logo{justify-content:center;padding:0 8px 14px}
-    .sidebar .logo i{margin:0}
-    .sidebar .nav-menu a{justify-content:center;padding:11px 8px}
-    .sidebar .user-info{justify-content:center;padding:12px 8px}
-    .main-content{margin-left:60px;padding:12px}
+
+/* ---------- Modais ---------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--s-4);
+  overflow-y: auto;
 }
-@media(max-width:576px){
-    .main-content{padding:10px;gap:10px}
-    .resultado-item{grid-template-columns:36px 1fr auto;gap:9px;padding:8px 9px}
-    .resultado-preco{display:none}
-    .cliente-pill .text .nome{max-width:100px}
-    .pgto-linha{grid-template-columns:1fr 100px 26px}
+.modal-backdrop.open { display: flex; animation: fadeIn .15s ease; }
+.modal {
+  background: var(--surface);
+  border-radius: 4px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  overflow: hidden;
+  margin: auto;
+}
+.modal.modal-lg { max-width: 780px; }
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--s-4);
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h3 { font-size: 14px; font-weight: 600; }
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--fg-muted);
+  padding: 0 var(--s-1);
+  transition: color .15s;
+}
+.modal-close:hover { color: var(--fg); }
+.modal-body { padding: var(--s-4); max-height: 75vh; overflow-y: auto; }
+.modal-body.documento-body { padding: 0; background: var(--bg); }
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+
+/* ---------- Forms ---------- */
+.form-group { margin-bottom: var(--s-3); }
+.form-group:last-child { margin-bottom: 0; }
+.form-label {
+  display: block;
+  margin-bottom: var(--s-1);
+  color: var(--fg);
+  font-weight: 500;
+  font-size: 12px;
+}
+.form-label .required { color: var(--primary); margin-left: 2px; }
+.form-label .optional { color: var(--fg-muted); font-weight: 400; font-size: 11px; margin-left: var(--s-1); }
+.form-control {
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--fg);
+  caret-color: var(--primary);
+  transition: border-color .15s;
+}
+.form-control::placeholder { color: #999; }
+.form-control:focus { outline: 2px solid var(--focus); outline-offset: 1px; border-color: var(--fg); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-3); }
+
+.checkbox-inline {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  font-size: 13px;
+  color: var(--fg);
+  cursor: pointer;
+  padding: var(--s-2) 0;
+  user-select: none;
+}
+.checkbox-inline input { width: 15px; height: 15px; accent-color: var(--primary); cursor: pointer; margin-top: 1px; }
+.checkbox-inline .cb-info { display: flex; flex-direction: column; gap: 1px; }
+.checkbox-inline .cb-info .cb-title { font-weight: 500; font-size: 13px; }
+.checkbox-inline .cb-info .cb-desc { font-size: 11px; color: var(--fg-muted); }
+
+/* ---------- Cliente resultado ---------- */
+.cliente-resultado {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  gap: var(--s-3);
+  align-items: center;
+  padding: var(--s-2) var(--s-3);
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color .12s;
+}
+.cliente-resultado:hover { background: var(--bg); }
+.cliente-resultado:active { background: var(--border); }
+.cliente-resultado .avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--info);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+}
+.cliente-resultado .info .nome { font-size: 13px; font-weight: 500; color: var(--fg); margin-bottom: 2px; }
+.cliente-resultado .info .meta {
+  font-size: 11px;
+  color: var(--fg-muted);
+  display: flex;
+  gap: var(--s-3);
+  font-variant-numeric: tabular-nums;
+}
+.cliente-resultado .info .meta i { font-size: 9px; margin-right: var(--s-1); }
+.cliente-resultado > i.fa-chevron-right { color: var(--fg-muted); font-size: 11px; }
+
+/* ---------- Factura documento ---------- */
+.factura-doc {
+  background: var(--surface);
+  padding: var(--s-6) var(--s-5);
+  max-width: 720px;
+  margin: var(--s-4) auto;
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--fg);
+}
+.fp-header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-5);
+  padding-bottom: var(--s-3);
+  border-bottom: 2px solid var(--primary);
+  margin-bottom: var(--s-4);
+  flex-wrap: wrap;
+}
+.fp-brand { flex: 1; min-width: 200px; }
+.fp-brand-logo {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: .5px;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-bottom: var(--s-2);
+}
+.fp-brand-logo i { font-size: 14px; }
+.fp-brand p { font-size: 11px; color: var(--fg-muted); margin: 1px 0; line-height: 1.5; }
+.fp-doc { text-align: right; min-width: 200px; }
+.fp-doc h3 {
+  font-size: 13px;
+  letter-spacing: 2.5px;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: var(--s-2);
+}
+.fp-doc p { font-size: 11px; color: var(--fg-muted); margin: 2px 0; font-variant-numeric: tabular-nums; }
+.fp-doc p strong { color: var(--fg); font-weight: 500; }
+
+.fp-cliente {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: var(--s-3) var(--s-4);
+  margin-bottom: var(--s-4);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-4);
+}
+.fp-cliente .bloco h4 {
+  font-size: 10px;
+  color: var(--fg-muted);
+  font-weight: 500;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  margin-bottom: var(--s-1);
+}
+.fp-cliente .bloco p { margin: 1px 0; font-size: 11px; color: var(--fg); font-variant-numeric: tabular-nums; }
+.fp-cliente .bloco p strong { color: var(--fg); font-weight: 500; }
+.fp-cliente .bloco p span { color: var(--fg-muted); }
+
+.fp-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.fp-table th {
+  background: var(--fg);
+  color: #fff;
+  text-align: left;
+  padding: var(--s-2) var(--s-3);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.fp-table th.text-end { text-align: right; }
+.fp-table th.text-center { text-align: center; }
+.fp-table td { padding: var(--s-2) var(--s-3); border-bottom: 1px solid var(--border); font-size: 11px; vertical-align: middle; }
+.fp-table td.text-end { text-align: right; font-variant-numeric: tabular-nums; }
+.fp-table td.text-center { text-align: center; font-variant-numeric: tabular-nums; }
+.fp-table tbody tr:nth-child(even) { background: var(--bg); }
+.fp-table tbody tr:last-child td { border-bottom: 1px solid var(--border); }
+
+.fp-totais { padding: var(--s-3) 0 0; display: flex; justify-content: flex-end; }
+.fp-totais table { width: 260px; border-collapse: collapse; }
+.fp-totais td { padding: var(--s-1) var(--s-2); font-size: 11px; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.fp-totais td:last-child { text-align: right; font-weight: 600; color: var(--fg); }
+.fp-totais tr.grand-total td {
+  border-top: 1px solid var(--fg);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--primary);
+  padding-top: var(--s-2);
+}
+
+.fp-pgto-bloco { margin-top: var(--s-4); padding-top: var(--s-3); border-top: 1px solid var(--border); }
+.fp-pgto-bloco h4 {
+  font-size: 10px;
+  color: var(--fg-muted);
+  font-weight: 500;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  margin-bottom: var(--s-2);
+}
+.fp-pgto-linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--s-1) 0;
+  font-size: 11px;
+  border-bottom: 1px solid var(--border);
+}
+.fp-pgto-linha:last-child { border-bottom: none; }
+.fp-pgto-linha .metodo { font-weight: 500; }
+.fp-pgto-linha .valor { font-weight: 600; font-variant-numeric: tabular-nums; }
+.fp-pgto-linha.troco .valor { color: var(--info); }
+.fp-pgto-linha.total-pago {
+  border-top: 1px solid var(--fg);
+  border-bottom: none;
+  padding-top: var(--s-2);
+  margin-top: var(--s-1);
+  font-weight: 600;
+}
+.fp-pgto-linha.total-pago .valor { color: var(--primary); font-size: 12px; }
+
+.fp-aviso {
+  margin-top: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border-left: 3px solid var(--info);
+  background: var(--bg);
+  font-size: 10px;
+  color: var(--fg-muted);
+}
+.fp-aviso strong { color: var(--fg); font-weight: 500; }
+
+.fp-assinatura { margin-top: var(--s-5); text-align: center; }
+.fp-assinatura .linha { width: 200px; border-top: 1px solid var(--fg-muted); margin: 0 auto var(--s-1); }
+.fp-assinatura .lbl { font-size: 10px; color: var(--fg-muted); }
+
+.fp-footer {
+  margin-top: var(--s-4);
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-4);
+  font-size: 10px;
+  color: var(--fg-muted);
+  flex-wrap: wrap;
+}
+
+/* ---------- Toast ---------- */
+#toast-container {
+  position: fixed;
+  top: var(--s-4);
+  right: var(--s-4);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  color: var(--fg);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  animation: fadeIn .15s ease;
+  max-width: 360px;
+}
+.toast i { font-size: 12px; flex-shrink: 0; }
+.toast.success { border-left-color: var(--success); }
+.toast.success i { color: var(--success); }
+.toast.error { border-left-color: var(--danger); }
+.toast.error i { color: var(--danger); }
+.toast.info { border-left-color: var(--info); }
+.toast.info i { color: var(--info); }
+.toast.warning { border-left-color: var(--warning); }
+.toast.warning i { color: var(--warning); }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 1100px) {
+  .main-grid { grid-template-columns: 1fr; grid-template-rows: 1fr auto; }
+  .col-prefactura { max-height: 60vh; }
+  .factura-doc { padding: var(--s-4) var(--s-3); margin: var(--s-3); }
+  .fp-header { flex-direction: column; gap: var(--s-3); }
+  .fp-doc { text-align: left; min-width: 0; }
+  .fp-cliente { grid-template-columns: 1fr; gap: var(--s-3); }
+  .fp-totais table { width: 100%; }
+}
+
+@media (max-width: 900px) {
+  .sidebar { width: 60px; }
+  .sidebar .logo span, .sidebar .nav-menu a span, .sidebar .user-details { display: none; }
+  .sidebar .logo { justify-content: center; padding: 0 0 var(--s-5); gap: 0; }
+  .sidebar .nav-menu a { justify-content: center; padding: var(--s-3); }
+  .sidebar .user-info { justify-content: center; padding: var(--s-3) 0 0; }
+  .main-content { margin-left: 60px; padding: var(--s-3); }
+}
+
+@media (max-width: 576px) {
+  .main-content { padding: var(--s-2); gap: var(--s-2); }
+  .resultado-item { grid-template-columns: 36px 1fr auto; gap: var(--s-2); padding: var(--s-2); }
+  .resultado-preco { display: none; }
+  .cliente-pill .text .nome { max-width: 100px; }
+  .pgto-linha { grid-template-columns: 1fr 90px 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Impressão ---------- */
+@media print {
+  .sidebar, .topbar, .main-grid, .modal-header, .modal-actions { display: none !important; }
+  .modal-backdrop { position: static; background: none; display: block; padding: 0; }
+  .modal { box-shadow: none; max-width: 100%; }
+  .modal-body.documento-body { padding: 0; background: #fff; }
+  .factura-doc { box-shadow: none; margin: 0; padding: 0; max-width: 100%; }
+  .fp-table th, .fp-pgto-linha.total-pago .valor { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 </style>
 </head>
@@ -420,9 +1387,7 @@ input,select,textarea{font-family:inherit}
                     <span><kbd>/</kbd> Buscar</span>
                     <span><kbd>ESC</kbd> Limpar</span>
                     <% if (caixaId) { %>
-                    <span style="color:var(--success-dark);font-weight:700;display:flex;align-items:center;gap:5px;">
-                        <i class="fas fa-circle" style="font-size:7px;"></i> Caixa #<%= caixaId %>
-                    </span>
+                    <span class="caixa-open">Caixa #<%= caixaId %></span>
                     <% } %>
                 </div>
             </div>
@@ -440,9 +1405,9 @@ input,select,textarea{font-family:inherit}
     </div>
 
     <% if (!caixa) { %>
-        <div style="background:var(--warning-soft);border-left:4px solid var(--warning);border-radius:var(--radius-sm);padding:14px 18px;color:var(--warning-dark);font-size:13.5px;display:flex;gap:12px;align-items:center;">
-            <i class="fas fa-exclamation-triangle" style="font-size:17px;"></i>
-            <div><strong>Nenhum caixa aberto.</strong> É necessário <a href="/caixa/abrir" style="font-weight:700;text-decoration:underline;">abrir um caixa</a> antes de registar vendas.</div>
+        <div class="warning-banner">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div><strong>Nenhum caixa aberto.</strong> <a href="/caixa/abrir">Abrir caixa</a> antes de registar vendas.</div>
         </div>
     <% } else { %>
 
@@ -461,40 +1426,32 @@ input,select,textarea{font-family:inherit}
                     <div class="search-wrapper" id="searchWrapper">
                         <i class="fas fa-barcode search-icon"></i>
                         <input type="text" id="produtoSearch"
-                               placeholder="Bipe o código ou pesquise pelo nome do produto..."
+                               placeholder="Bipe o código ou pesquise pelo nome do produto"
                                autocomplete="off" autofocus>
-                        <span class="search-hint">ESC limpar</span>
+                        <span class="search-hint">ESC</span>
                         <span class="search-status">
-                            <span style="width:14px;height:14px;border:2px solid var(--border-strong);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;"></span>
-                            A buscar...
+                            <span class="spinner"></span> A buscar…
                         </span>
                     </div>
                     <div class="filtros-rapidos" id="filtrosRapidos">
-                        <button type="button" class="chip active" data-filtro="todos"><i class="fas fa-list"></i> Todos</button>
-                        <button type="button" class="chip" data-filtro="stock"><i class="fas fa-check-circle"></i> Em stock</button>
-                        <button type="button" class="chip" data-filtro="low"><i class="fas fa-exclamation-triangle"></i> Stock baixo</button>
-                        <button type="button" class="chip dark" onclick="abrirModalNovoProduto()" style="margin-left:auto;">
-                            <i class="fas fa-plus"></i> Novo Produto
+                        <button type="button" class="chip active" data-filtro="todos">Todos</button>
+                        <button type="button" class="chip" data-filtro="stock">Em stock</button>
+                        <button type="button" class="chip" data-filtro="low">Stock baixo</button>
+                        <button type="button" class="chip-add" onclick="abrirModalNovoProduto()">
+                            <i class="fas fa-plus"></i> Novo produto
                         </button>
                     </div>
                 </div>
 
                 <div class="resultados-card">
                     <div class="resultados-head">
-                        <div class="info">
-                            <i class="fas fa-cubes" style="color:var(--muted);"></i>
-                            <strong id="resultadosCount">0</strong> produtos
-                            <span class="badge" id="resultadosModo">A aguardar</span>
-                        </div>
-                        <span style="font-size:11px;color:var(--muted);">
-                            <i class="fas fa-bolt" style="color:var(--warning);"></i> Dinâmico
-                        </span>
+                        <div class="info"><strong id="resultadosCount">0</strong> produtos</div>
+                        <span class="modo" id="resultadosModo"></span>
                     </div>
                     <div class="resultados-list" id="resultadosList">
                         <div class="resultados-empty">
                             <i class="fas fa-keyboard"></i>
-                            <p>Comece a escrever ou bipe um código</p>
-                            <span class="hint">Os produtos aparecerão aqui automaticamente</span>
+                            <span>Sem produtos recentes.</span>
                         </div>
                     </div>
                 </div>
@@ -504,7 +1461,7 @@ input,select,textarea{font-family:inherit}
             <div class="col-prefactura">
                 <div class="prefactura">
                     <div class="prefactura-header">
-                        <div class="title"><i class="fas fa-file-invoice"></i> Pré-Factura</div>
+                        <div class="title">Pré-factura</div>
                         <div class="numero" id="pfNumero">FT — / —</div>
                         <div class="meta">
                             <span id="pfData">—</span>
@@ -517,8 +1474,7 @@ input,select,textarea{font-family:inherit}
                     <div class="prefactura-itens" id="pfItens">
                         <div class="prefactura-empty">
                             <i class="fas fa-shopping-basket"></i>
-                            <p>Nenhum item adicionado</p>
-                            <span class="hint">Adicione produtos para começar</span>
+                            <span>Sem itens.</span>
                         </div>
                     </div>
 
@@ -537,16 +1493,14 @@ input,select,textarea{font-family:inherit}
                         </div>
                     </div>
 
-                    <!-- PAGAMENTO: modo simples + botão para split -->
                     <div class="prefactura-pgto">
                         <div class="label">
-                            <span>Forma de Pagamento</span>
+                            <span>Forma de pagamento</span>
                             <button type="button" class="btn-add-pgto" id="btnAddPgto" onclick="ativarSplitMode()">
                                 <i class="fas fa-plus"></i> Dividir
                             </button>
                         </div>
 
-                        <!-- Modo SIMPLES -->
                         <div id="pgtoSimple">
                             <div class="pgto-tabs">
                                 <label class="pgto-tab selected" data-metodo="Dinheiro">
@@ -566,30 +1520,26 @@ input,select,textarea{font-family:inherit}
                                 </label>
                             </div>
                             <div class="pgto-simple-hint">
-                                <i class="fas fa-info-circle"></i>
-                                Valor a receber
+                                <span>Valor a receber</span>
                                 <strong id="pgtoSimpleValor">0,00 Kz</strong>
                             </div>
                         </div>
 
-                        <!-- Modo SPLIT -->
                         <div id="pgtoSplit" style="display:none;">
                             <div class="pgto-split-header">
                                 <span>Dividido em <strong id="pgtoSplitCount">1</strong> método(s)</span>
                                 <button type="button" class="btn-voltar-simples" onclick="desativarSplitMode()">
-                                    <i class="fas fa-undo"></i> Voltar a método único
+                                    <i class="fas fa-undo"></i> Voltar
                                 </button>
                             </div>
                             <div id="pagamentosList"></div>
                         </div>
 
-                        <div class="pgto-status ok" id="pgtoStatus" style="display:none;">
-                            <i class="fas fa-check-circle"></i> Pagamento completo
-                        </div>
+                        <div class="pgto-status ok" id="pgtoStatus" style="display:none;"></div>
                     </div>
 
                     <div class="prefactura-desconto">
-                        <div class="label" style="font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);font-weight:700;margin-bottom:6px;">Desconto</div>
+                        <div class="label">Desconto</div>
                         <div class="desconto-wrapper">
                             <i class="fas fa-percent"></i>
                             <input type="number" id="desconto" name="desconto" value="0" min="0" step="0.01" placeholder="0,00" inputmode="decimal">
@@ -597,12 +1547,11 @@ input,select,textarea{font-family:inherit}
                     </div>
 
                     <div class="prefactura-acoes">
-                        <button type="button" class="btn btn-success btn-block" id="btnFinalizar" style="padding:14px;font-size:15px;">
-                            <i class="fas fa-check-circle"></i> Finalizar Venda
-                            <span style="opacity:.7;font-weight:600;font-size:11px;margin-left:6px;">(F2)</span>
+                        <button type="button" class="btn btn-primary btn-block" id="btnFinalizar" style="padding: var(--s-3);">
+                            <i class="fas fa-check"></i> Finalizar venda
                         </button>
                         <button type="button" class="btn btn-ghost btn-block btn-sm" id="btnLimpar" style="display:none;">
-                            <i class="fas fa-trash-alt"></i> Limpar Venda
+                            <i class="fas fa-trash-alt"></i> Limpar venda
                         </button>
                     </div>
                 </div>
@@ -616,52 +1565,48 @@ input,select,textarea{font-family:inherit}
 <div class="modal-backdrop" id="novoProdutoModal" onclick="if(event.target===this) fecharModal('novoProdutoModal')">
     <div class="modal">
         <div class="modal-header">
-            <h3><i class="fas fa-box-open"></i> Registar Novo Produto</h3>
-            <button type="button" class="modal-close" onclick="fecharModal('novoProdutoModal')">&times;</button>
+            <h3>Registar novo produto</h3>
+            <button type="button" class="modal-close" onclick="fecharModal('novoProdutoModal')" aria-label="Fechar">&times;</button>
         </div>
         <form id="novoProdutoForm">
             <div class="modal-body">
                 <div class="form-group">
-                    <label class="form-label" for="npNome"><i class="fas fa-tag"></i> Nome do Produto <span class="required">*</span></label>
-                    <input type="text" id="npNome" class="form-control" required placeholder="Ex.: Coca-Cola 2L" autocomplete="off">
+                    <label class="form-label" for="npNome">Nome <span class="required">*</span></label>
+                    <input type="text" id="npNome" class="form-control" required autocomplete="off">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label" for="npCodigo"><i class="fas fa-barcode"></i> Código de Barras</label>
-                        <input type="text" id="npCodigo" class="form-control" placeholder="0000000000000">
+                        <label class="form-label" for="npCodigo">Código de barras</label>
+                        <input type="text" id="npCodigo" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="npCategoria"><i class="fas fa-folder"></i> Categoria</label>
-                        <input type="text" id="npCategoria" class="form-control" placeholder="Ex.: Bebidas">
+                        <label class="form-label" for="npCategoria">Categoria</label>
+                        <input type="text" id="npCategoria" class="form-control">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label class="form-label" for="npPreco"><i class="fas fa-coins"></i> Preço de Venda (Kz) <span class="required">*</span></label>
+                        <label class="form-label" for="npPreco">Preço de venda (Kz) <span class="required">*</span></label>
                         <input type="number" id="npPreco" class="form-control" step="0.01" min="0.01" placeholder="0,00" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="npEstoque"><i class="fas fa-cubes"></i> Quantidade Inicial <span class="required">*</span></label>
+                        <label class="form-label" for="npEstoque">Quantidade inicial <span class="required">*</span></label>
                         <input type="number" id="npEstoque" class="form-control" min="0" step="1" placeholder="0" required>
                     </div>
                 </div>
-                <div class="form-group" style="margin-top:4px;">
+                <div class="form-group" style="margin-top: var(--s-1);">
                     <label class="checkbox-inline">
                         <input type="checkbox" id="npAdicionarAoCarrinho" checked>
                         <span class="cb-info">
-                            <span class="cb-title">Adicionar automaticamente à venda</span>
-                            <span class="cb-desc">O produto será colocado no carrinho após guardar</span>
+                            <span class="cb-title">Adicionar à venda</span>
+                            <span class="cb-desc">Coloca o produto no carrinho ao guardar</span>
                         </span>
                     </label>
                 </div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn btn-outline" onclick="fecharModal('novoProdutoModal')">
-                    Cancelar
-                </button>
-                <button type="submit" class="btn btn-success" id="btnGuardarProduto">
-                    <i class="fas fa-save"></i> Guardar Produto
-                </button>
+                <button type="button" class="btn btn-outline" onclick="fecharModal('novoProdutoModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="btnGuardarProduto">Guardar</button>
             </div>
         </form>
     </div>
@@ -671,53 +1616,57 @@ input,select,textarea{font-family:inherit}
 <div class="modal-backdrop" id="clienteModal" onclick="if(event.target===this) fecharModal('clienteModal')">
     <div class="modal">
         <div class="modal-header">
-            <h3><i class="fas fa-user-tag"></i> Cliente da Venda</h3>
-            <button type="button" class="modal-close" onclick="fecharModal('clienteModal')">&times;</button>
+            <h3>Cliente da venda</h3>
+            <button type="button" class="modal-close" onclick="fecharModal('clienteModal')" aria-label="Fechar">&times;</button>
         </div>
         <div class="modal-body">
             <div id="clientePesquisaPanel">
-                <div class="search-wrapper" style="margin-bottom:14px;">
+                <div class="search-wrapper" style="margin-bottom: var(--s-3);">
                     <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="clienteSearch" placeholder="Pesquisar por nome ou NIF...">
+                    <input type="text" id="clienteSearch" placeholder="Pesquisar por nome ou NIF">
                 </div>
-                <div id="clientesList" style="max-height:340px;overflow-y:auto;"></div>
+                <div id="clientesList" style="max-height: 340px; overflow-y: auto;"></div>
             </div>
             <div id="clienteNovoPanel" style="display:none;">
-                <button type="button" class="btn btn-ghost btn-sm" onclick="mostrarPainelClientes('pesquisa')" style="margin-bottom:12px;">
-                    <i class="fas fa-arrow-left"></i> Voltar à pesquisa
+                <button type="button" class="btn btn-ghost btn-sm" onclick="mostrarPainelClientes('pesquisa')" style="margin-bottom: var(--s-3);">
+                    <i class="fas fa-arrow-left"></i> Voltar
                 </button>
                 <form id="novoClienteForm">
                     <div class="form-group">
-                        <label class="form-label" for="ncNome"><i class="fas fa-user"></i> Nome Completo <span class="required">*</span></label>
-                        <input type="text" id="ncNome" class="form-control" required placeholder="Ex.: Maria Santos">
+                        <label class="form-label" for="ncNome">Nome completo <span class="required">*</span></label>
+                        <input type="text" id="ncNome" class="form-control" required>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label" for="ncNif"><i class="fas fa-id-card"></i> NIF</label>
-                            <input type="text" id="ncNif" class="form-control" placeholder="000000000" inputmode="numeric">
+                            <label class="form-label" for="ncNif">NIF</label>
+                            <input type="text" id="ncNif" class="form-control" inputmode="numeric">
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="ncTelefone"><i class="fas fa-phone"></i> Telefone</label>
+                            <label class="form-label" for="ncTelefone">Telefone</label>
                             <input type="tel" id="ncTelefone" class="form-control" placeholder="+244 900 000 000">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="ncEmail"><i class="fas fa-envelope"></i> Email</label>
+                        <label class="form-label" for="ncEmail">Email</label>
                         <input type="email" id="ncEmail" class="form-control" placeholder="cliente@email.com">
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="ncEndereco"><i class="fas fa-map-marker-alt"></i> Endereço</label>
+                        <label class="form-label" for="ncEndereco">Endereço</label>
                         <input type="text" id="ncEndereco" class="form-control" placeholder="Rua, número, bairro">
+                    </div>
+                    <div style="display: flex; gap: var(--s-2); justify-content: flex-end; margin-top: var(--s-3);">
+                        <button type="button" class="btn btn-outline" onclick="mostrarPainelClientes('pesquisa')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="btnGuardarCliente">Guardar</button>
                     </div>
                 </form>
             </div>
         </div>
         <div class="modal-actions" id="clienteModalActions">
             <button type="button" class="btn btn-outline" onclick="selecionarConsumidorFinal()">
-                <i class="fas fa-user-secret"></i> Consumidor Final
+                Consumidor final
             </button>
-            <button type="button" class="btn btn-dark" id="btnAcaoCliente" onclick="mostrarPainelClientes('novo')">
-                <i class="fas fa-user-plus"></i> Novo Cliente
+            <button type="button" class="btn btn-primary" id="btnAcaoCliente" onclick="mostrarPainelClientes('novo')">
+                <i class="fas fa-plus"></i> Novo cliente
             </button>
         </div>
     </div>
@@ -727,18 +1676,18 @@ input,select,textarea{font-family:inherit}
 <div class="modal-backdrop" id="confirmarModal" onclick="if(event.target===this) fecharModal('confirmarModal')">
     <div class="modal modal-lg">
         <div class="modal-header">
-            <h3><i class="fas fa-file-invoice"></i> Pré-Factura — Confirmação da Venda</h3>
-            <button type="button" class="modal-close" onclick="fecharModal('confirmarModal')">&times;</button>
+            <h3>Confirmação da venda</h3>
+            <button type="button" class="modal-close" onclick="fecharModal('confirmarModal')" aria-label="Fechar">&times;</button>
         </div>
         <div class="modal-body documento-body">
             <div class="factura-doc" id="facturaDoc"></div>
         </div>
         <div class="modal-actions">
             <button type="button" class="btn btn-outline" onclick="fecharModal('confirmarModal')">
-                <i class="fas fa-arrow-left"></i> Voltar a Editar
+                <i class="fas fa-arrow-left"></i> Voltar
             </button>
-            <button type="button" class="btn btn-success" id="btnConfirmarReal">
-                <i class="fas fa-check-circle"></i> Confirmar e Gravar Venda
+            <button type="button" class="btn btn-primary" id="btnConfirmarReal">
+                <i class="fas fa-check"></i> Confirmar e gravar
             </button>
         </div>
     </div>
@@ -747,9 +1696,6 @@ input,select,textarea{font-family:inherit}
 <div id="toast-container" aria-live="polite"></div>
 
 <script>
-/* ============================================================
-   DADOS DO SERVIDOR
-   ============================================================ */
 window.__CLIENTES__ = <%- JSON.stringify(listaClientes) %>;
 window.__OPERADOR__ = <%- JSON.stringify(operadorNome) %>;
 window.__CAIXA_ID__ = <%- JSON.stringify(caixaId) %>;
@@ -766,9 +1712,6 @@ window.__PRODUTOS_INICIAIS__ = <%- JSON.stringify(
     }) : []
 ) %>;
 
-/* ============================================================
-   UTILS
-   ============================================================ */
 function toast(msg, tipo = 'info', dur = 3000) {
     const c = document.getElementById('toast-container');
     const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle', warning: 'fa-exclamation-triangle' };
@@ -778,10 +1721,9 @@ function toast(msg, tipo = 'info', dur = 3000) {
     t.querySelector('span').textContent = msg;
     c.appendChild(t);
     setTimeout(() => {
-        t.style.transition = 'all .25s ease';
+        t.style.transition = 'opacity .2s ease';
         t.style.opacity = '0';
-        t.style.transform = 'translateX(30px)';
-        setTimeout(() => t.remove(), 250);
+        setTimeout(() => t.remove(), 200);
     }, dur);
 }
 const fmtKz = v => Number(v || 0).toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Kz';
@@ -789,15 +1731,19 @@ const escapeHtml = t => { const d = document.createElement('div'); d.textContent
 function abrirModal(id) { document.getElementById(id).classList.add('open'); }
 function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
 function debounce(fn, ms) { let timer; return function (...args) { clearTimeout(timer); timer = setTimeout(() => fn.apply(this, args), ms); }; }
+
 const METODOS_LABEL = {
-    'Dinheiro': { nome: 'Dinheiro', icon: 'fa-money-bill-wave' },
-    'cartao_debito': { nome: 'TPA (Multicaixa)', icon: 'fa-credit-card' },
-    'transferencia': { nome: 'Transferência', icon: 'fa-university' }
+    'Dinheiro': { nome: 'Dinheiro', payClass: 'pay-dinheiro' },
+    'cartao_debito': { nome: 'TPA (Multicaixa)', payClass: 'pay-cartao_debito' },
+    'transferencia': { nome: 'Transferência', payClass: 'pay-transferencia' }
 };
 
-/* ============================================================
-   ESTADO
-   ============================================================ */
+/* Renderiza um método de pagamento com ponto colorido */
+function renderPayMethod(chave) {
+    const meta = METODOS_LABEL[chave] || { nome: chave, payClass: '' };
+    return `<span class="pay-method ${meta.payClass}">${escapeHtml(meta.nome)}</span>`;
+}
+
 let carrinho = [];
 let clienteSelecionado = null;
 let filtroAtivo = 'todos';
@@ -806,13 +1752,11 @@ const CLIENTES = Array.isArray(window.__CLIENTES__) ? window.__CLIENTES__ : [];
 const OPERADOR = window.__OPERADOR__ || 'Operador';
 const CAIXA_ID = window.__CAIXA_ID__ || '';
 
-/* Modo de pagamento: 'simples' | 'split' */
 let modoPagamento = 'simples';
-let metodoSimples = 'Dinheiro';       // Método selecionado no modo simples
-let pagamentos = [];                  // Array só usado no modo split
+let metodoSimples = 'Dinheiro';
+let pagamentos = [];
 let nextPagamentoId = 1;
 
-/* Cache LRU */
 const cacheProdutos = new Map();
 const CACHE_MAX = 50;
 function cacheAdd(chave, valor) {
@@ -821,9 +1765,6 @@ function cacheAdd(chave, valor) {
     if (cacheProdutos.size > CACHE_MAX) { const p = cacheProdutos.keys().next().value; cacheProdutos.delete(p); }
 }
 
-/* ============================================================
-   HELPERS
-   ============================================================ */
 function getSubtotal() { return carrinho.reduce((s, i) => s + i.subtotal, 0); }
 function getDesconto() { return parseFloat(document.getElementById('desconto')?.value) || 0; }
 function getTotal() { return Math.max(0, getSubtotal() - getDesconto()); }
@@ -832,15 +1773,11 @@ function getDistribuido() {
     return pagamentos.reduce((s, p) => s + (Number(p.valor) || 0), 0);
 }
 function gerarNumeroFactura() {
-    const agora = new Date();
-    const ano = agora.getFullYear();
     const seq = String(Math.floor(Math.random() * 99999)).padStart(5, '0');
-    return 'FT ' + ano + '/' + seq;
+    return 'FT ' + new Date().getFullYear() + '/' + seq;
 }
 
-/* ============================================================
-   RENDER PRÉ-FACTURA
-   ============================================================ */
+/* ---------- RENDER PRÉ-FACTURA ---------- */
 function renderPreFactura() {
     const agora = new Date();
     document.getElementById('pfData').textContent = agora.toLocaleDateString('pt-AO') + ' · ' + agora.toLocaleTimeString('pt-AO', { hour: '2-digit', minute: '2-digit' });
@@ -855,7 +1792,7 @@ function renderPreFactura() {
 
     const container = document.getElementById('pfItens');
     if (carrinho.length === 0) {
-        container.innerHTML = `<div class="prefactura-empty"><i class="fas fa-shopping-basket"></i><p>Nenhum item adicionado</p><span class="hint">Adicione produtos para começar</span></div>`;
+        container.innerHTML = `<div class="prefactura-empty"><i class="fas fa-shopping-basket"></i><span>Sem itens.</span></div>`;
     } else {
         container.innerHTML = carrinho.map(item => `
             <div class="prefactura-item" data-id="${item.id}">
@@ -866,7 +1803,7 @@ function renderPreFactura() {
                 </div>
                 <div class="info">
                     <div class="nome">${escapeHtml(item.nome)}</div>
-                    <div class="unit">${fmtKz(item.preco)} / un. · Stock ${item.estoque}</div>
+                    <div class="unit">${fmtKz(item.preco)} / un. · stock ${item.estoque}</div>
                 </div>
                 <div class="valor">${fmtKz(item.subtotal)}</div>
                 <button type="button" class="remove" onclick="removerItem('${item.id}')" title="Remover"><i class="fas fa-times"></i></button>
@@ -881,24 +1818,18 @@ function renderPreFactura() {
     document.getElementById('pfDescontoLinha').style.display = desconto > 0 ? 'flex' : 'none';
     document.getElementById('pfDesconto').textContent = '- ' + fmtKz(desconto);
     document.getElementById('pfTotal').textContent = fmtKz(total);
-
     document.getElementById('btnLimpar').style.display = carrinho.length > 0 ? '' : 'none';
 
-    // Atualiza UI de pagamento
     if (modoPagamento === 'simples') {
         document.getElementById('pgtoSimpleValor').textContent = fmtKz(total);
-        const status = document.getElementById('pgtoStatus');
-        status.style.display = 'none';
+        document.getElementById('pgtoStatus').style.display = 'none';
     } else {
-        // Ajusta o valor do primeiro pagamento se só houver 1 e estiver em modo auto
         if (pagamentos.length === 1) pagamentos[0].valor = total;
         renderPagamentos();
     }
 }
 
-/* ============================================================
-   MODO SIMPLES
-   ============================================================ */
+/* ---------- MODO SIMPLES ---------- */
 document.querySelectorAll('.pgto-tab').forEach(tab => {
     tab.addEventListener('click', function() {
         document.querySelectorAll('.pgto-tab').forEach(t => t.classList.remove('selected'));
@@ -909,21 +1840,15 @@ document.querySelectorAll('.pgto-tab').forEach(tab => {
     });
 });
 
-/* ============================================================
-   MODO SPLIT: ATIVAR / DESATIVAR
-   ============================================================ */
+/* ---------- MODO SPLIT ---------- */
 function ativarSplitMode() {
     modoPagamento = 'split';
     const total = getTotal();
-
-    // Se ainda não há pagamentos, cria o primeiro a partir do método simples
     if (pagamentos.length === 0) {
         pagamentos = [{ id: nextPagamentoId++, metodo: metodoSimples, valor: total }];
     } else {
-        // Recalcula o primeiro com o total
         pagamentos[0].valor = total;
     }
-
     document.getElementById('pgtoSimple').style.display = 'none';
     document.getElementById('pgtoSplit').style.display = '';
     document.getElementById('pgtoStatus').style.display = 'flex';
@@ -933,24 +1858,19 @@ function ativarSplitMode() {
 
 function desativarSplitMode() {
     if (pagamentos.length > 1) {
-        if (!confirm('Tem métodos de pagamento adicionais. Voltar a método único irá descartá-los. Continuar?')) {
-            return;
-        }
+        if (!confirm('Tem métodos adicionais. Voltar a método único irá descartá-los. Continuar?')) return;
     }
     modoPagamento = 'simples';
-    // Preserva o primeiro método como método simples
     if (pagamentos.length > 0) {
         metodoSimples = pagamentos[0].metodo;
-        // Atualiza a tab ativa
         document.querySelectorAll('.pgto-tab').forEach(t => {
             const radio = t.querySelector('input[type="radio"]');
-            const isSelected = radio.value === metodoSimples;
-            t.classList.toggle('selected', isSelected);
-            radio.checked = isSelected;
+            const sel = radio.value === metodoSimples;
+            t.classList.toggle('selected', sel);
+            radio.checked = sel;
         });
     }
     pagamentos = [];
-
     document.getElementById('pgtoSimple').style.display = '';
     document.getElementById('pgtoSplit').style.display = 'none';
     document.getElementById('pgtoStatus').style.display = 'none';
@@ -958,13 +1878,9 @@ function desativarSplitMode() {
     renderPreFactura();
 }
 
-/* ============================================================
-   RENDER PAGAMENTOS (split)
-   ============================================================ */
 function renderPagamentos() {
     const container = document.getElementById('pagamentosList');
     const total = getTotal();
-
     document.getElementById('pgtoSplitCount').textContent = pagamentos.length;
 
     container.innerHTML = pagamentos.map(p => {
@@ -972,9 +1888,9 @@ function renderPagamentos() {
         return `
             <div class="pgto-linha" data-pgto-id="${p.id}">
                 <select class="pgto-metodo" onchange="alterarMetodoPagamento(${p.id}, this.value)">
-                    <option value="Dinheiro" ${p.metodo === 'Dinheiro' ? 'selected' : ''}>💵 Dinheiro</option>
-                    <option value="cartao_debito" ${p.metodo === 'cartao_debito' ? 'selected' : ''}>💳 TPA</option>
-                    <option value="transferencia" ${p.metodo === 'transferencia' ? 'selected' : ''}>🏦 Transferência</option>
+                    <option value="Dinheiro" ${p.metodo === 'Dinheiro' ? 'selected' : ''}>Dinheiro</option>
+                    <option value="cartao_debito" ${p.metodo === 'cartao_debito' ? 'selected' : ''}>TPA (Multicaixa)</option>
+                    <option value="transferencia" ${p.metodo === 'transferencia' ? 'selected' : ''}>Transferência</option>
                 </select>
                 <div class="pgto-valor-wrapper">
                     <input type="number" class="pgto-valor"
@@ -986,37 +1902,40 @@ function renderPagamentos() {
                 <button type="button" class="pgto-remove"
                         onclick="removerPagamento(${p.id})"
                         ${pagamentos.length === 1 ? 'disabled' : ''}
-                        title="${pagamentos.length === 1 ? 'Último método não pode ser removido' : 'Remover'}">
+                        title="${pagamentos.length === 1 ? 'Último método' : 'Remover'}">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
         `;
     }).join('');
 
-    // Adiciona botão "+ Adicionar linha" no final
     if (pagamentos.length < 3) {
         const addBtn = document.createElement('button');
         addBtn.type = 'button';
         addBtn.className = 'btn-add-pgto';
-        addBtn.style.marginTop = '6px';
-        addBtn.innerHTML = '<i class="fas fa-plus"></i> Adicionar método';
+        addBtn.style.marginTop = 'var(--s-1)';
+        addBtn.innerHTML = '<i class="fas fa-plus"></i> Adicionar';
         addBtn.onclick = adicionarPagamento;
         container.appendChild(addBtn);
     }
 
-    // Status
+    atualizarStatusPagamento();
+}
+
+function atualizarStatusPagamento() {
+    const total = getTotal();
     const distribuido = getDistribuido();
     const diff = total - distribuido;
     const status = document.getElementById('pgtoStatus');
     if (Math.abs(diff) < 0.01) {
         status.className = 'pgto-status ok';
-        status.innerHTML = `<i class="fas fa-check-circle"></i> Pagamento completo <strong>${fmtKz(distribuido)}</strong>`;
+        status.innerHTML = `<i class="fas fa-check-circle"></i> Completo <strong>${fmtKz(distribuido)}</strong>`;
     } else if (diff > 0) {
         status.className = 'pgto-status falta';
-        status.innerHTML = `<i class="fas fa-exclamation-circle"></i> Falta distribuir <strong>${fmtKz(diff)}</strong>`;
+        status.innerHTML = `<i class="fas fa-exclamation-circle"></i> Falta <strong>${fmtKz(diff)}</strong>`;
     } else {
         status.className = 'pgto-status sobra';
-        status.innerHTML = `<i class="fas fa-info-circle"></i> Troco a devolver <strong>${fmtKz(-diff)}</strong>`;
+        status.innerHTML = `<i class="fas fa-info-circle"></i> Troco <strong>${fmtKz(-diff)}</strong>`;
     }
 }
 
@@ -1024,62 +1943,38 @@ function adicionarPagamento() {
     const total = getTotal();
     const distribuido = getDistribuido();
     const restante = Math.max(0, total - distribuido);
-
     const usados = new Set(pagamentos.map(p => p.metodo));
     const proximos = ['Dinheiro', 'cartao_debito', 'transferencia'].filter(m => !usados.has(m));
-    const proximo = proximos[0] || 'Dinheiro';
-
-    pagamentos.push({ id: nextPagamentoId++, metodo: proximo, valor: restante });
+    pagamentos.push({ id: nextPagamentoId++, metodo: proximos[0] || 'Dinheiro', valor: restante });
     renderPagamentos();
 }
 
 function removerPagamento(id) {
-    if (pagamentos.length === 1) {
-        toast('É necessário pelo menos um método de pagamento.', 'warning');
-        return;
-    }
+    if (pagamentos.length === 1) { toast('Pelo menos um método é necessário.', 'warning'); return; }
     pagamentos = pagamentos.filter(p => p.id !== id);
     renderPagamentos();
 }
 
 function alterarMetodoPagamento(id, metodo) {
     const p = pagamentos.find(x => x.id === id);
-    if (!p) return;
-    p.metodo = metodo;
+    if (p) p.metodo = metodo;
 }
 
 function alterarValorPagamento(id, valor) {
     const p = pagamentos.find(x => x.id === id);
     if (!p) return;
     p.valor = Math.max(0, parseFloat(valor) || 0);
-    // Atualiza apenas o status (não re-renderiza para não perder foco)
-    const distribuido = getDistribuido();
-    const total = getTotal();
-    const diff = total - distribuido;
-    const status = document.getElementById('pgtoStatus');
-    if (Math.abs(diff) < 0.01) {
-        status.className = 'pgto-status ok';
-        status.innerHTML = `<i class="fas fa-check-circle"></i> Pagamento completo <strong>${fmtKz(distribuido)}</strong>`;
-    } else if (diff > 0) {
-        status.className = 'pgto-status falta';
-        status.innerHTML = `<i class="fas fa-exclamation-circle"></i> Falta distribuir <strong>${fmtKz(diff)}</strong>`;
-    } else {
-        status.className = 'pgto-status sobra';
-        status.innerHTML = `<i class="fas fa-info-circle"></i> Troco a devolver <strong>${fmtKz(-diff)}</strong>`;
-    }
+    atualizarStatusPagamento();
 }
 
-/* ============================================================
-   CARRINHO
-   ============================================================ */
+/* ---------- CARRINHO ---------- */
 function adicionarAoCarrinho(produto) {
-    if (produto.quantidade_estoque <= 0) { toast('Produto sem stock disponível.', 'error'); return; }
+    if (produto.quantidade_estoque <= 0) { toast('Produto sem stock.', 'error'); return; }
     const existente = carrinho.find(i => i.id === produto.id);
     if (existente) {
         if (existente.quantidade < produto.quantidade_estoque) {
             existente.quantidade++;
             existente.subtotal = existente.quantidade * existente.preco;
-            toast(produto.nome + ' · ' + existente.quantidade + ' un.', 'success', 1400);
         } else {
             toast('Stock máximo: ' + produto.quantidade_estoque, 'warning');
             return;
@@ -1093,7 +1988,6 @@ function adicionarAoCarrinho(produto) {
             subtotal: produto.preco_venda,
             estoque: produto.quantidade_estoque
         });
-        toast(produto.nome + ' adicionado.', 'success', 1400);
     }
     renderPreFactura();
 }
@@ -1114,12 +2008,11 @@ function removerItem(id) {
     if (!item) return;
     carrinho = carrinho.filter(i => String(i.id) !== String(id));
     renderPreFactura();
-    toast(item.nome + ' removido.', 'info', 1400);
 }
 
 document.getElementById('btnLimpar')?.addEventListener('click', () => {
     if (carrinho.length === 0) return;
-    if (!confirm('Remover todos os itens da venda?')) return;
+    if (!confirm('Remover todos os itens?')) return;
     carrinho = [];
     pagamentos = [];
     modoPagamento = 'simples';
@@ -1127,12 +2020,9 @@ document.getElementById('btnLimpar')?.addEventListener('click', () => {
     document.getElementById('pgtoSplit').style.display = 'none';
     document.getElementById('pgtoStatus').style.display = 'none';
     renderPreFactura();
-    toast('Venda limpa.', 'info', 1400);
 });
 
-/* ============================================================
-   PESQUISA DE PRODUTOS
-   ============================================================ */
+/* ---------- PESQUISA ---------- */
 const searchInput = document.getElementById('produtoSearch');
 const searchWrapper = document.getElementById('searchWrapper');
 const resultadosList = document.getElementById('resultadosList');
@@ -1144,7 +2034,6 @@ async function buscarProdutos(termo) {
     const cacheKey = termo.toLowerCase().trim();
     if (cacheProdutos.has(cacheKey)) { renderResultados(cacheProdutos.get(cacheKey)); return; }
     searchWrapper.classList.add('loading');
-    resultadosModo.textContent = 'A buscar...';
     try {
         const resp = await fetch('/api/produtos/buscar?q=' + encodeURIComponent(termo) + '&limit=15', { headers: { 'Accept': 'application/json' } });
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -1152,15 +2041,12 @@ async function buscarProdutos(termo) {
         const lista = Array.isArray(data) ? data : (data.produtos || []);
         cacheAdd(cacheKey, lista);
         renderResultados(lista);
-        resultadosModo.textContent = 'Servidor';
     } catch (err) {
-        const termoLower = termo.toLowerCase();
+        const t = termo.toLowerCase();
         const filtrados = (window.__PRODUTOS_INICIAIS__ || []).filter(p =>
-            (p.nome || '').toLowerCase().includes(termoLower) ||
-            (p.codigo_barras || '').toLowerCase().includes(termoLower)
+            (p.nome || '').toLowerCase().includes(t) || (p.codigo_barras || '').toLowerCase().includes(t)
         );
         renderResultados(filtrados);
-        resultadosModo.textContent = 'Local';
     } finally {
         searchWrapper.classList.remove('loading');
     }
@@ -1169,7 +2055,7 @@ const buscarDebounced = debounce(buscarProdutos, 250);
 
 function renderResultados(lista) {
     if (!lista || lista.length === 0) {
-        resultadosList.innerHTML = `<div class="resultados-empty"><i class="fas fa-search-minus"></i><p>Nenhum produto encontrado</p><span class="hint">Tente outro termo</span></div>`;
+        resultadosList.innerHTML = `<div class="resultados-empty"><i class="fas fa-search"></i><span>Nenhum produto encontrado.</span></div>`;
         resultadosCount.textContent = '0';
         return;
     }
@@ -1177,7 +2063,7 @@ function renderResultados(lista) {
     if (filtroAtivo === 'stock') filtrados = lista.filter(p => p.quantidade_estoque > 0);
     if (filtroAtivo === 'low') filtrados = lista.filter(p => p.quantidade_estoque > 0 && p.quantidade_estoque <= 5);
     if (filtrados.length === 0) {
-        resultadosList.innerHTML = `<div class="resultados-empty"><i class="fas fa-filter"></i><p>Nenhum produto corresponde ao filtro</p></div>`;
+        resultadosList.innerHTML = `<div class="resultados-empty"><i class="fas fa-filter"></i><span>Nenhum produto neste filtro.</span></div>`;
         resultadosCount.textContent = lista.length;
         return;
     }
@@ -1186,6 +2072,7 @@ function renderResultados(lista) {
         const preco = Number(p.preco_venda) || 0;
         const outOfStock = estoque <= 0;
         const stockClass = estoque <= 0 ? 'zero' : (estoque <= 5 ? 'low' : '');
+        const metaStockClass = estoque <= 0 ? 'no-stock' : (estoque <= 5 ? 'low-stock' : '');
         return `
             <div class="resultado-item ${outOfStock ? 'out-of-stock' : ''}" data-id="${p.id}">
                 <div class="resultado-thumb"><i class="fas fa-box"></i></div>
@@ -1193,20 +2080,19 @@ function renderResultados(lista) {
                     <div class="nome">${escapeHtml(p.nome)}</div>
                     <div class="meta">
                         <span><i class="fas fa-barcode"></i>${escapeHtml(p.codigo_barras || '—')}</span>
-                        <span><i class="fas fa-cubes"></i>Stock: <b>${estoque}</b></span>
+                        <span><i class="fas fa-cubes"></i><b class="${metaStockClass}">${estoque}</b></span>
                     </div>
                 </div>
                 <div class="resultado-preco">
                     <span class="preco">${preco.toLocaleString('pt-AO',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>
                     <span class="stock ${stockClass}">${outOfStock ? 'Sem stock' : 'Kz'}</span>
                 </div>
-                <button type="button" class="resultado-add" ${outOfStock ? 'disabled' : ''}><i class="fas fa-plus"></i></button>
+                <button type="button" class="resultado-add" ${outOfStock ? 'disabled' : ''} tabindex="-1"><i class="fas fa-plus"></i></button>
             </div>`;
     }).join('');
     resultadosCount.textContent = filtrados.length;
     resultadosList.querySelectorAll('.resultado-item').forEach(el => {
-        const produtoId = el.dataset.id;
-        const produto = lista.find(p => String(p.id) === String(produtoId));
+        const produto = lista.find(p => String(p.id) === String(el.dataset.id));
         if (!produto) return;
         el.addEventListener('click', () => {
             if (produto.quantidade_estoque <= 0) return;
@@ -1218,16 +2104,15 @@ function renderResultados(lista) {
 function mostrarProdutosIniciais() {
     const iniciais = window.__PRODUTOS_INICIAIS__ || [];
     if (iniciais.length === 0) {
-        resultadosList.innerHTML = `<div class="resultados-empty"><i class="fas fa-keyboard"></i><p>Comece a escrever ou bipe um código</p><span class="hint">Os produtos aparecerão aqui automaticamente</span></div>`;
+        resultadosList.innerHTML = `<div class="resultados-empty"><i class="fas fa-keyboard"></i><span>Bipe um código ou pesquise.</span></div>`;
         resultadosCount.textContent = '0';
-        resultadosModo.textContent = 'A aguardar';
+        if (resultadosModo) resultadosModo.textContent = '';
         return;
     }
     renderResultados(iniciais);
-    resultadosModo.textContent = 'Recentes';
+    if (resultadosModo) resultadosModo.textContent = 'Recentes';
 }
 
-/* Eventos */
 if (searchInput) {
     searchInput.addEventListener('input', function() {
         filtroTermo = this.value.trim();
@@ -1243,22 +2128,18 @@ if (searchInput) {
         }
     });
 }
-document.querySelectorAll('#filtrosRapidos .chip').forEach(chip => {
-    if (chip.dataset.filtro) {
-        chip.addEventListener('click', function() {
-            document.querySelectorAll('#filtrosRapidos .chip').forEach(c => c.classList.remove('active'));
-            this.classList.add('active');
-            filtroAtivo = this.dataset.filtro;
-            if (filtroTermo.length >= 2) buscarDebounced(filtroTermo);
-            else mostrarProdutosIniciais();
-        });
-    }
+document.querySelectorAll('#filtrosRapidos .chip[data-filtro]').forEach(chip => {
+    chip.addEventListener('click', function() {
+        document.querySelectorAll('#filtrosRapidos .chip').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        filtroAtivo = this.dataset.filtro;
+        if (filtroTermo.length >= 2) buscarDebounced(filtroTermo);
+        else mostrarProdutosIniciais();
+    });
 });
 document.getElementById('desconto')?.addEventListener('input', renderPreFactura);
 
-/* ============================================================
-   NOVO PRODUTO (inline)
-   ============================================================ */
+/* ---------- NOVO PRODUTO ---------- */
 function abrirModalNovoProduto() {
     document.getElementById('novoProdutoForm').reset();
     document.getElementById('npAdicionarAoCarrinho').checked = true;
@@ -1277,13 +2158,13 @@ document.getElementById('novoProdutoForm')?.addEventListener('submit', async fun
         quantidade_estoque: parseInt(document.getElementById('npEstoque').value, 10),
         adicionar_ao_carrinho: document.getElementById('npAdicionarAoCarrinho').checked
     };
-    if (!dados.nome) { toast('Introduza o nome do produto.', 'error'); return; }
-    if (!dados.preco_venda || dados.preco_venda <= 0) { toast('Introduza um preço válido.', 'error'); return; }
-    if (isNaN(dados.quantidade_estoque) || dados.quantidade_estoque < 0) { toast('Introduza uma quantidade válida.', 'error'); return; }
+    if (!dados.nome) { toast('Introduza o nome.', 'error'); return; }
+    if (!dados.preco_venda || dados.preco_venda <= 0) { toast('Preço inválido.', 'error'); return; }
+    if (isNaN(dados.quantidade_estoque) || dados.quantidade_estoque < 0) { toast('Quantidade inválida.', 'error'); return; }
 
     btn.disabled = true;
     btn.dataset.original = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A guardar...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A guardar…';
 
     let novoProduto = null;
     try {
@@ -1294,8 +2175,7 @@ document.getElementById('novoProdutoForm')?.addEventListener('submit', async fun
         });
         let data = {};
         try { data = await resp.json(); } catch(err) {}
-        if (!resp.ok) throw new Error(data.erro || 'Falha ao registar produto.');
-
+        if (!resp.ok) throw new Error(data.erro || 'Falha ao registar.');
         novoProduto = data.produto || {
             id: data.id || ('local-' + Date.now()),
             nome: dados.nome,
@@ -1304,7 +2184,6 @@ document.getElementById('novoProdutoForm')?.addEventListener('submit', async fun
             quantidade_estoque: dados.quantidade_estoque
         };
     } catch (err) {
-        // Fallback local
         novoProduto = {
             id: 'local-' + Date.now(),
             nome: dados.nome,
@@ -1312,32 +2191,25 @@ document.getElementById('novoProdutoForm')?.addEventListener('submit', async fun
             preco_venda: dados.preco_venda,
             quantidade_estoque: dados.quantidade_estoque
         };
-        console.warn('Fallback local para novo produto:', err.message);
     } finally {
         btn.disabled = false;
         btn.innerHTML = btn.dataset.original;
     }
 
-    // Adiciona à lista de iniciais
     if (!Array.isArray(window.__PRODUTOS_INICIAIS__)) window.__PRODUTOS_INICIAIS__ = [];
     window.__PRODUTOS_INICIAIS__.unshift(novoProduto);
 
-    // Adiciona ao carrinho se pedido
     if (dados.adicionar_ao_carrinho && novoProduto.quantidade_estoque > 0) {
         adicionarAoCarrinho(novoProduto);
     }
 
-    // Atualiza resultados
     if (filtroTermo.length >= 2) buscarProdutos(filtroTermo);
     else mostrarProdutosIniciais();
 
     fecharModal('novoProdutoModal');
-    toast('Produto "' + novoProduto.nome + '" registado com sucesso.', 'success', 2500);
 });
 
-/* ============================================================
-   CLIENTE
-   ============================================================ */
+/* ---------- CLIENTE ---------- */
 function atualizarClientePill() {
     const pill = document.getElementById('clientePill');
     const nomeEl = document.getElementById('clienteNomePill');
@@ -1354,31 +2226,36 @@ function atualizarClientePill() {
         document.getElementById('clienteIdInput').value = '';
     }
 }
+
 function abrirModalSelecionarCliente() {
     mostrarPainelClientes('pesquisa');
     renderClientes('');
     abrirModal('clienteModal');
     setTimeout(() => document.getElementById('clienteSearch')?.focus(), 80);
 }
+
 function mostrarPainelClientes(painel) {
     const pesquisa = document.getElementById('clientePesquisaPanel');
     const novo = document.getElementById('clienteNovoPanel');
     const btnAcao = document.getElementById('btnAcaoCliente');
     if (painel === 'novo') {
-        pesquisa.style.display = 'none'; novo.style.display = 'block'; btnAcao.style.display = 'none';
+        pesquisa.style.display = 'none';
+        novo.style.display = 'block';
+        btnAcao.style.display = 'none';
         setTimeout(() => document.getElementById('ncNome')?.focus(), 80);
     } else {
-        pesquisa.style.display = 'block'; novo.style.display = 'none'; btnAcao.style.display = '';
-        btnAcao.innerHTML = '<i class="fas fa-user-plus"></i> Novo Cliente';
-        btnAcao.onclick = () => mostrarPainelClientes('novo');
+        pesquisa.style.display = 'block';
+        novo.style.display = 'none';
+        btnAcao.style.display = '';
     }
 }
+
 function renderClientes(termo) {
     const list = document.getElementById('clientesList');
     const t = (termo || '').toLowerCase().trim();
     const filtrados = CLIENTES.filter(c => !t || (c.nome || '').toLowerCase().includes(t) || (c.nif || '').toLowerCase().includes(t));
     if (!filtrados.length) {
-        list.innerHTML = `<div class="resultados-empty" style="padding:24px 12px;"><i class="fas fa-user-slash"></i><p>Nenhum cliente encontrado</p></div>`;
+        list.innerHTML = `<div class="resultados-empty" style="padding: var(--s-5) var(--s-3);"><i class="fas fa-user-slash"></i><span>Nenhum cliente.</span></div>`;
         return;
     }
     list.innerHTML = filtrados.map((c, idx) => {
@@ -1393,7 +2270,7 @@ function renderClientes(termo) {
                         <span><i class="fas fa-phone"></i>${escapeHtml(c.telefone || '—')}</span>
                     </div>
                 </div>
-                <i class="fas fa-chevron-right" style="color:var(--muted);"></i>
+                <i class="fas fa-chevron-right"></i>
             </div>`;
     }).join('');
     list.querySelectorAll('[data-cliente-idx]').forEach(el => {
@@ -1410,14 +2287,12 @@ function selecionarCliente(c) {
     atualizarClientePill();
     renderPreFactura();
     fecharModal('clienteModal');
-    toast('Cliente: ' + c.nome, 'success', 2000);
 }
 function selecionarConsumidorFinal() {
     clienteSelecionado = null;
     atualizarClientePill();
     renderPreFactura();
     fecharModal('clienteModal');
-    toast('Consumidor Final selecionado.', 'info', 1800);
 }
 
 document.getElementById('novoClienteForm')?.addEventListener('submit', async function(e) {
@@ -1429,9 +2304,9 @@ document.getElementById('novoClienteForm')?.addEventListener('submit', async fun
         email: document.getElementById('ncEmail').value.trim(),
         endereco: document.getElementById('ncEndereco').value.trim()
     };
-    if (!dados.nome) { toast('Introduza o nome do cliente.', 'error'); return; }
-    const btnSubmit = document.querySelector('#clienteModalActions .btn-dark');
-    if (btnSubmit) { btnSubmit.disabled = true; btnSubmit.dataset.original = btnSubmit.innerHTML; btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A guardar...'; }
+    if (!dados.nome) { toast('Introduza o nome.', 'error'); return; }
+    const btnSubmit = document.getElementById('btnGuardarCliente');
+    if (btnSubmit) { btnSubmit.disabled = true; btnSubmit.dataset.original = btnSubmit.innerHTML; btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A guardar…'; }
     try {
         const resp = await fetch('/clientes/novo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dados) });
         let data = {};
@@ -1447,17 +2322,13 @@ document.getElementById('novoClienteForm')?.addEventListener('submit', async fun
         selecionarCliente(novoCliente);
         this.reset();
     } finally {
-        if (btnSubmit) { btnSubmit.disabled = false; btnSubmit.innerHTML = btnSubmit.dataset.original || '<i class="fas fa-user-plus"></i> Novo Cliente'; }
+        if (btnSubmit) { btnSubmit.disabled = false; btnSubmit.innerHTML = btnSubmit.dataset.original || 'Guardar'; }
     }
 });
 
-/* ============================================================
-   FACTURA DOCUMENTO
-   ============================================================ */
+/* ---------- FACTURA ---------- */
 function obterPagamentosParaFactura() {
-    if (modoPagamento === 'simples') {
-        return [{ metodo: metodoSimples, valor: getTotal() }];
-    }
+    if (modoPagamento === 'simples') return [{ metodo: metodoSimples, valor: getTotal() }];
     return pagamentos.map(p => ({ metodo: p.metodo, valor: Number(p.valor) || 0 }));
 }
 
@@ -1477,8 +2348,7 @@ function construirFacturaDocHTML() {
            <p><span>Tel:</span> ${escapeHtml(clienteSelecionado.telefone || '—')}</p>
            ${clienteSelecionado.endereco ? `<p><span>Endereço:</span> ${escapeHtml(clienteSelecionado.endereco)}</p>` : ''}`
         : `<p><strong>Consumidor Final</strong></p>
-           <p><span>NIF:</span> —</p>
-           <p><span>Venda sem identificação fiscal</span></p>`;
+           <p><span>NIF:</span> —</p>`;
 
     const itensHTML = carrinho.map((item, idx) => `
         <tr>
@@ -1491,17 +2361,14 @@ function construirFacturaDocHTML() {
 
     const totalItens = carrinho.reduce((s, i) => s + i.quantidade, 0);
 
-    const pagamentosHTML = pagamentosFinal.map(p => {
-        const meta = METODOS_LABEL[p.metodo] || { nome: p.metodo, icon: 'fa-money-bill' };
-        return `
-            <div class="fp-pgto-linha">
-                <span class="metodo"><i class="fas ${meta.icon}"></i> ${escapeHtml(meta.nome)}</span>
-                <span class="valor">${fmtKz(p.valor)}</span>
-            </div>`;
-    }).join('');
+    const pagamentosHTML = pagamentosFinal.map(p => `
+        <div class="fp-pgto-linha">
+            <span class="metodo">${renderPayMethod(p.metodo)}</span>
+            <span class="valor">${fmtKz(p.valor)}</span>
+        </div>`).join('');
 
     const trocoHTML = troco > 0.01
-        ? `<div class="fp-pgto-linha troco"><span class="metodo"><i class="fas fa-hand-holding-usd"></i> Troco a devolver</span><span class="valor">${fmtKz(troco)}</span></div>`
+        ? `<div class="fp-pgto-linha troco"><span class="metodo">Troco a devolver</span><span class="valor">${fmtKz(troco)}</span></div>`
         : '';
 
     return `
@@ -1532,7 +2399,7 @@ function construirFacturaDocHTML() {
                 <h4>Resumo</h4>
                 <p><span>Nº de itens:</span> <strong>${totalItens}</strong></p>
                 <p><span>Refs. distintas:</span> <strong>${carrinho.length}</strong></p>
-                <p><span>Estado:</span> <strong style="color:var(--warning-dark);">Pré-Venda</strong></p>
+                <p><span>Estado:</span> <strong>Pré-venda</strong></p>
             </div>
         </div>
 
@@ -1542,8 +2409,8 @@ function construirFacturaDocHTML() {
                     <th style="width:32px;">#</th>
                     <th>Descrição</th>
                     <th class="text-center" style="width:60px;">Qtd.</th>
-                    <th class="text-end" style="width:110px;">Preço Unit.</th>
-                    <th class="text-end" style="width:120px;">Subtotal</th>
+                    <th class="text-end" style="width:100px;">Preço unit.</th>
+                    <th class="text-end" style="width:110px;">Subtotal</th>
                 </tr>
             </thead>
             <tbody>${itensHTML}</tbody>
@@ -1551,70 +2418,49 @@ function construirFacturaDocHTML() {
 
         <div class="fp-totais">
             <table>
-                <tr>
-                    <td>Subtotal</td>
-                    <td>${fmtKz(subtotal)}</td>
-                </tr>
-                ${desconto > 0 ? `<tr class="desconto"><td>Desconto</td><td>- ${fmtKz(desconto)}</td></tr>` : ''}
-                <tr class="grand-total">
-                    <td>TOTAL A PAGAR</td>
-                    <td>${fmtKz(total)}</td>
-                </tr>
+                <tr><td>Subtotal</td><td>${fmtKz(subtotal)}</td></tr>
+                ${desconto > 0 ? `<tr><td>Desconto</td><td>- ${fmtKz(desconto)}</td></tr>` : ''}
+                <tr class="grand-total"><td>TOTAL A PAGAR</td><td>${fmtKz(total)}</td></tr>
             </table>
         </div>
 
         <div class="fp-pgto-bloco">
-            <h4><i class="fas fa-credit-card"></i> Pagamento</h4>
+            <h4>Pagamento</h4>
             ${pagamentosHTML}
             ${trocoHTML}
             <div class="fp-pgto-linha total-pago">
-                <span class="metodo"><i class="fas fa-check-circle"></i> Total Pago</span>
+                <span class="metodo">Total pago</span>
                 <span class="valor">${fmtKz(distribuido)}</span>
             </div>
         </div>
 
         <div class="fp-aviso">
-            <i class="fas fa-info-circle"></i>
-            Documento de <strong>pré-venda</strong> para conferência. Após confirmação, será gerado o documento fiscal definitivo.
+            Documento de <strong>pré-venda</strong> para conferência. Será gerado o documento fiscal definitivo após confirmação.
         </div>
 
         <div class="fp-assinatura">
             <div class="linha"></div>
-            <div class="lbl">Assinatura do Cliente</div>
+            <div class="lbl">Assinatura do cliente</div>
         </div>
 
         <div class="fp-footer">
-            <div>
-                <strong>Documento processado por computador.</strong><br>
-                Emitido em ${agora.toLocaleString('pt-AO')}.
-            </div>
-            <div style="text-align:right;">
-                Bom Mundo — Comércio Geral<br>
-                Obrigado pela sua preferência!
-            </div>
+            <div>Documento processado por computador.<br>Emitido em ${agora.toLocaleString('pt-AO')}.</div>
+            <div style="text-align:right;">Bom Mundo — Comércio Geral</div>
         </div>
     `;
 }
 
-/* ============================================================
-   FINALIZAR
-   ============================================================ */
+/* ---------- FINALIZAR ---------- */
 function abrirConfirmacao() {
-    if (carrinho.length === 0) {
-        toast('Adicione pelo menos um produto.', 'error');
-        searchInput?.focus();
-        return;
-    }
+    if (carrinho.length === 0) { toast('Adicione pelo menos um produto.', 'error'); searchInput?.focus(); return; }
 
     const total = getTotal();
     const distribuido = getDistribuido();
     const diff = total - distribuido;
-
     if (modoPagamento === 'split' && diff > 0.01) {
-        toast('Falta distribuir ' + fmtKz(diff) + ' no pagamento.', 'error', 4000);
+        toast('Falta distribuir ' + fmtKz(diff) + '.', 'error', 4000);
         return;
     }
-
     document.getElementById('facturaDoc').innerHTML = construirFacturaDocHTML();
     abrirModal('confirmarModal');
 }
@@ -1626,24 +2472,18 @@ document.getElementById('btnConfirmarReal')?.addEventListener('click', function(
     document.getElementById('produtosData').value = JSON.stringify(carrinho.map(i => i.id));
     document.getElementById('quantidadesData').value = JSON.stringify(carrinho.map(i => i.quantidade));
 
-    // Pagamentos
     const pagamentosPayload = obterPagamentosParaFactura();
     document.getElementById('pagamentosData').value = JSON.stringify(pagamentosPayload);
 
-    // Forma principal (compatibilidade)
-    const formaPrincipal = pagamentosPayload.length === 1
-        ? pagamentosPayload[0].metodo
-        : 'multiplo';
+    const formaPrincipal = pagamentosPayload.length === 1 ? pagamentosPayload[0].metodo : 'multiplo';
     document.getElementById('formaPagamentoPrincipal').value = formaPrincipal;
 
     this.disabled = true;
-    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A gravar...';
+    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A gravar…';
     form.submit();
 });
 
-/* ============================================================
-   ATALHOS
-   ============================================================ */
+/* ---------- ATALHOS ---------- */
 document.addEventListener('keydown', e => {
     if (e.key === 'F2') { e.preventDefault(); abrirConfirmacao(); }
     if (e.key === 'Escape') {
@@ -1667,9 +2507,7 @@ document.addEventListener('keydown', e => {
     }
 });
 
-/* ============================================================
-   INIT
-   ============================================================ */
+/* ---------- INIT ---------- */
 atualizarClientePill();
 renderPreFactura();
 mostrarProdutosIniciais();

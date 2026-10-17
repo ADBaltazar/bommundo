@@ -42,7 +42,7 @@ app.use((req, res, next) => {
   res.locals.success_msg = req.session.success_msg || null;
   res.locals.error_msg = req.session.error_msg || null;
   res.locals.currentPath = req.path;
-  
+   
   // Limpar mensagens flash após exibição
   req.session.success_msg = null;
   req.session.error_msg = null;

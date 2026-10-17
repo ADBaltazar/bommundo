@@ -1,1224 +1,959 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendas - Bom Mundo</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Reset e configurações gerais */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #F5F5F5;
-            color: #2E2E2E;
-            line-height: 1.6;
-            display: flex;
-            min-height: 100vh;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 5px;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: none;
-            font-size: 14px;
-        }
-
-        .btn:disabled {
-            opacity: .65;
-            cursor: not-allowed;
-        }
-
-        .btn-primary { background-color: #E53935; color: white; }
-        .btn-primary:hover:not(:disabled) { background-color: #c62828; }
-
-        .btn-secondary { background-color: #2E2E2E; color: white; }
-        .btn-secondary:hover:not(:disabled) { background-color: #1a1a1a; }
-
-        .btn-warning { background-color: #ff9800; color: white; }
-        .btn-warning:hover:not(:disabled) { background-color: #f57c00; }
-
-        .btn-danger { background-color: #dc3545; color: white; }
-        .btn-danger:hover:not(:disabled) { background-color: #c82333; }
-
-        .btn-success { background-color: #4CAF50; color: white; }
-        .btn-success:hover:not(:disabled) { background-color: #388E3C; }
-
-        .btn-info { background-color: #17a2b8; color: white; }
-        .btn-info:hover:not(:disabled) { background-color: #138496; }
-
-        .btn-sm { padding: 6px 12px; font-size: 12px; }
-        .btn-lg { padding: 12px 24px; font-size: 16px; }
-        .btn-block { display: block; width: 100%; }
-
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background-color: #2E2E2E;
-            color: white;
-            padding: 20px 0;
-            height: 100vh;
-            position: fixed;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #E53935;
-            display: flex;
-            align-items: center;
-            padding: 0 20px 20px;
-            border-bottom: 1px solid #444;
-            margin-bottom: 20px;
-        }
-
-        .logo i { margin-right: 10px; }
-
-        .nav-menu { list-style: none; }
-        .nav-menu li { margin-bottom: 5px; }
-
-        .nav-menu a {
-            color: white;
-            font-weight: 500;
-            transition: all 0.3s;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            border-left: 3px solid transparent;
-        }
-
-        .nav-menu a:hover { background-color: #3a3a3a; color: #E53935; }
-
-        .nav-menu a.active {
-            background-color: #3a3a3a;
-            color: #E53935;
-            border-left: 3px solid #E53935;
-        }
-
-        .nav-menu i { margin-right: 10px; width: 20px; text-align: center; }
-
-        .user-info {
-            padding: 20px;
-            border-top: 1px solid #444;
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #E53935;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            color: white;
-            font-weight: bold;
-        }
-
-        .user-details { flex: 1; }
-        .user-name { font-weight: 600; margin-bottom: 3px; }
-        .user-role { font-size: 12px; color: #aaa; }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 250px;
-            padding: 20px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .page-title {
-            color: #2E2E2E;
-            font-size: 28px;
-            font-weight: 600;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .search-box {
-            display: flex;
-            align-items: center;
-            background: white;
-            border-radius: 5px;
-            padding: 8px 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .search-box input { border: none; outline: none; padding: 5px; width: 200px; }
-        .search-box i { color: #777; }
-
-        .notification {
-            position: relative;
-            background: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            cursor: pointer;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #E53935;
-            color: white;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Page Header */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
-        }
-
-        .page-header h2 {
-            color: #2E2E2E;
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        /* Card Styles */
-        .card {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .card-header {
-            background-color: #F5F5F5;
-            padding: 20px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .card-header h3 {
-            color: #2E2E2E;
-            font-size: 18px;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .card-body { padding: 20px; }
-
-        /* Form Styles */
-        .form-group { margin-bottom: 20px; }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            color: #2E2E2E;
-            font-weight: 500;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-control:focus { border-color: #E53935; outline: none; }
-
-        textarea.form-control { resize: vertical; min-height: 100px; }
-
-        .row { display: flex; flex-wrap: wrap; margin: 0 -10px; }
-
-        .col-md-4, .col-md-6, .col-md-8 { padding: 0 10px; }
-        .col-md-4 { flex: 0 0 33.333333%; }
-        .col-md-6 { flex: 0 0 50%; }
-        .col-md-8 { flex: 0 0 66.666667%; }
-
-        .justify-content-center { justify-content: center; }
-
-        /* Table Styles */
-        .table-responsive { overflow-x: auto; }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .data-table th {
-            background-color: #F5F5F5;
-            color: #2E2E2E;
-            text-align: left;
-            padding: 15px;
-            font-weight: 600;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .data-table td { padding: 15px; border-bottom: 1px solid #eee; }
-        .data-table tr:hover { background-color: #f9f9f9; }
-        .data-table tr:last-child td { border-bottom: none; }
-
-        .text-center { text-align: center; }
-        .text-end { text-align: right; }
-        .text-danger { color: #E53935; font-weight: bold; }
-
-        /* Status Badges */
-        .status-badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .status-concluida { background-color: #E8F5E9; color: #4CAF50; }
-        .status-pendente { background-color: #FFF3E0; color: #FF9800; }
-        .status-cancelada { background-color: #FFEBEE; color: #E53935; }
-
-        /* Alert Styles */
-        .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            border-left: 4px solid;
-        }
-
-        .alert-success { background-color: #E8F5E9; color: #2E7D32; border-left-color: #4CAF50; }
-        .alert-warning { background-color: #FFF3E0; color: #856404; border-left-color: #FF9800; }
-        .alert-info { background-color: #E3F2FD; color: #0d47a1; border-left-color: #2196F3; }
-        .alert-danger { background-color: #FFEBEE; color: #C62828; border-left-color: #E53935; }
-        .alert-link { color: inherit; font-weight: 600; text-decoration: underline; }
-
-        /* ============================================================
-           FACTURA (documento)
-           ============================================================ */
-        .factura {
-            padding: 34px 38px;
-            background: #fff;
-            page-break-inside: avoid;
-            break-inside: avoid;
-        }
-
-        .factura-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 30px;
-            border-bottom: 2px solid #E53935;
-            padding-bottom: 18px;
-            margin-bottom: 22px;
-        }
-
-        .factura-logo {
-            font-size: 22px;
-            font-weight: 800;
-            color: #E53935;
-            letter-spacing: .5px;
-            margin-bottom: 8px;
-        }
-
-        .factura-logo i { margin-right: 8px; }
-
-        .factura-empresa p {
-            font-size: 12.5px;
-            color: #555;
-            margin: 0;
-            line-height: 1.6;
-        }
-
-        .factura-doc { text-align: right; min-width: 210px; }
-
-        .factura-doc h3 {
-            font-size: 21px;
-            letter-spacing: 3px;
-            color: #2E2E2E;
-            margin-bottom: 10px;
-        }
-
-        .factura-doc p { font-size: 13px; margin: 3px 0; color: #555; }
-        .factura-doc p span { color: #999; }
-
-        .factura-info-grid {
-            display: flex;
-            gap: 30px;
-            flex-wrap: wrap;
-            margin-bottom: 22px;
-        }
-
-        .factura-secao { flex: 1 1 240px; }
-
-        .factura-secao h4 {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            color: #999;
-            margin-bottom: 8px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-
-        .factura-secao p { margin: 3px 0; font-size: 13.5px; color: #2E2E2E; }
-        .factura-secao p strong { color: #2E2E2E; }
-
-        .factura .data-table { box-shadow: none; border: 1px solid #e6e6e6; }
-
-        .factura .data-table th {
-            background-color: #2E2E2E;
-            color: #fff;
-            font-size: 12.5px;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-            padding: 11px 14px;
-            border-bottom: none;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        .factura .data-table td {
-            font-size: 13.5px;
-            padding: 11px 14px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .factura .data-table tbody tr:hover { background: transparent; }
-
-        .factura-totais {
-            margin-top: 18px;
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        .factura-totais table { width: 320px; border-collapse: collapse; }
-
-        .factura-totais td {
-            padding: 7px 10px;
-            font-size: 13.5px;
-            color: #555;
-        }
-
-        .factura-totais td:last-child { text-align: right; }
-
-        .factura-totais tr.grand-total td {
-            border-top: 2px solid #2E2E2E;
-            font-size: 17px;
-            font-weight: 700;
-            color: #E53935;
-            padding-top: 10px;
-        }
-
-        .factura-footer {
-            margin-top: 28px;
-            padding-top: 16px;
-            border-top: 1px dashed #ccc;
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
-            font-size: 12px;
-            color: #777;
-        }
-
-        .factura-assinatura {
-            margin-top: 45px;
-            text-align: center;
-            font-size: 12px;
-            color: #777;
-        }
-
-        .factura-assinatura .linha {
-            width: 230px;
-            border-top: 1px solid #999;
-            margin: 0 auto 6px;
-        }
-
-        /* ============================================================
-           MODAL
-           ============================================================ */
-        .modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-
-        .modal-backdrop.open { display: flex; }
-
-        .modal {
-            background: #fff;
-            border-radius: 8px;
-            width: 100%;
-            max-width: 480px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
-            overflow: hidden;
-            animation: modalPop .18s ease;
-        }
-
-        @keyframes modalPop {
-            from { transform: scale(.96); opacity: 0; }
-            to   { transform: scale(1);   opacity: 1; }
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 20px;
-            background: #F5F5F5;
-            border-bottom: 1px solid #eee;
-        }
-
-        .modal-header h3 { font-size: 17px; font-weight: 600; }
-        .modal-header h3 i { color: #E53935; margin-right: 8px; }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 26px;
-            line-height: 1;
-            cursor: pointer;
-            color: #888;
-        }
-
-        .modal-close:hover { color: #E53935; }
-
-        .modal-body { padding: 20px; }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            padding: 0 20px 20px;
-        }
-
-        .checkbox-inline {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            color: #2E2E2E;
-            cursor: pointer;
-        }
-
-        .checkbox-inline input { width: 16px; height: 16px; accent-color: #E53935; }
-
-        /* ============================================================
-           TOASTS
-           ============================================================ */
-        #toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 3000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .toast {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 18px;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
-            animation: toastIn .25s ease;
-            max-width: 360px;
-        }
-
-        .toast.success { background: #4CAF50; }
-        .toast.error   { background: #E53935; }
-        .toast.info    { background: #17a2b8; }
-
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateX(30px); }
-            to   { opacity: 1; transform: translateX(0); }
-        }
-
-        /* Modo PDF: remove sombras/arredondamentos antes de capturar */
-        body.pdf-mode .factura {
-            box-shadow: none !important;
-            border-radius: 0 !important;
-        }
-
-        /* ============================================================
-           IMPRESSÃO
-           ============================================================ */
-        @media print {
-            @page { size: A4 portrait; margin: 10mm; }
-
-            html, body {
-                background: #fff !important;
-                display: block !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-
-            .sidebar,
-            .header,
-            .page-header,
-            .no-print,
-            .modal-backdrop,
-            #toast-container {
-                display: none !important;
-            }
-
-            .main-content {
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-
-            .card,
-            .factura {
-                box-shadow: none !important;
-                border: none !important;
-                border-radius: 0 !important;
-                margin: 0 !important;
-            }
-
-            .factura { padding: 0 !important; }
-
-            .data-table tr:hover { background: transparent !important; }
-
-            .status-badge,
-            .factura .data-table th {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-
-            .factura-totais tr.grand-total td { color: #E53935 !important; }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar { width: 70px; }
-
-            .sidebar .logo span,
-            .sidebar .nav-menu span,
-            .sidebar .user-details { display: none; }
-
-            .sidebar .logo { justify-content: center; padding: 0 10px 20px; }
-            .sidebar .logo i { margin-right: 0; }
-            .sidebar .nav-menu a { justify-content: center; padding: 12px 10px; }
-            .sidebar .nav-menu i { margin-right: 0; }
-            .sidebar .user-info { justify-content: center; padding: 20px 10px; }
-
-            .main-content { margin-left: 70px; }
-            .search-box input { width: 150px; }
-
-            .col-md-4, .col-md-6, .col-md-8 { flex: 0 0 100%; }
-
-            .page-header { flex-direction: column; align-items: flex-start; }
-
-            .factura { padding: 22px 18px; }
-            .factura-top { flex-direction: column; gap: 16px; }
-            .factura-doc { text-align: left; }
-            .factura-totais table { width: 100%; }
-        }
-
-        @media (max-width: 576px) {
-            .header { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .header-actions { width: 100%; justify-content: space-between; }
-            .search-box { flex: 1; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Factura — Bom Mundo</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --bg:             #fafafa;
+  --surface:        #ffffff;
+  --border:         #e5e5e5;
+  --fg:             #1a1a1a;
+  --fg-muted:       #666666;
+  --primary:        #c62828;
+  --primary-hover:  #a01f1f;
+  --primary-active: #8b1a1a;
+  --success:        #16a34a;
+  --warning:        #b45309;
+  --info:           #2563eb;
+  --danger:         #c62828;
+  --focus:          #1a1a1a;
+
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg);
+  display: flex;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: inherit; text-decoration: none; }
+
+::selection { background: var(--fg); color: var(--bg); }
+
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ---------- Botões ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+  white-space: nowrap;
+}
+.btn i { font-size: 11px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+.btn-primary:active:not(:disabled) { background: var(--primary-active); }
+.btn-primary i { color: #fff; }
+
+.btn-outline { background: var(--surface); color: var(--fg); border-color: var(--border); }
+.btn-outline:hover:not(:disabled) { border-color: var(--fg-muted); }
+.btn-outline:active:not(:disabled) { background: var(--bg); }
+.btn-outline i { color: var(--fg-muted); }
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  width: 220px;
+  background: #1a1a1a;
+  color: #d4d4d4;
+  position: fixed;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--s-5) 0;
+  z-index: 100;
+  overflow-y: auto;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0 var(--s-5) var(--s-5);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: .5px;
+  border-bottom: 1px solid #2a2a2a;
+  margin-bottom: var(--s-4);
+}
+.logo i { color: var(--primary); font-size: 15px; }
+
+.nav-menu { list-style: none; flex: 1; }
+.nav-menu a {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-5);
+  font-size: 13px;
+  font-weight: 500;
+  color: #d4d4d4;
+  border-left: 3px solid transparent;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+.nav-menu a:hover { background: #2a2a2a; color: var(--primary); }
+.nav-menu a:hover i { color: var(--primary); }
+.nav-menu a.active {
+  background: #2a2a2a;
+  color: var(--primary);
+  border-left-color: var(--primary);
+}
+.nav-menu a.active i { color: var(--primary); }
+.nav-menu a:focus-visible { outline-color: #fff; }
+.nav-menu i {
+  width: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  transition: color .2s ease;
+}
+
+.user-info {
+  padding: var(--s-4) var(--s-5) 0;
+  border-top: 1px solid #2a2a2a;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+.user-avatar {
+  width: 32px; height: 32px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: #fff;
+  flex-shrink: 0;
+}
+.user-details { min-width: 0; flex: 1; }
+.user-name { font-size: 13px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 12px; color: #888; }
+
+/* ---------- Main ---------- */
+.main-content {
+  flex: 1;
+  margin-left: 220px;
+  padding: var(--s-5);
+  min-width: 0;
+}
+
+/* ---------- Topbar ---------- */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-4);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--s-5);
+  flex-wrap: wrap;
+}
+.topbar-left { display: flex; align-items: center; gap: var(--s-3); }
+.topbar-back {
+  width: 36px; height: 36px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--fg-muted);
+  transition: color .15s, border-color .15s;
+  flex-shrink: 0;
+}
+.topbar-back:hover { color: var(--primary); border-color: var(--primary); }
+.topbar-back:active { background: var(--bg); }
+.topbar-left h1 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -.005em;
+}
+.topbar-left h1 strong { color: var(--primary); font-weight: 600; font-variant-numeric: tabular-nums; }
+.topbar-left .page-subtitle {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
+}
+.topbar-left .page-subtitle .sep { color: var(--border); }
+
+.topbar-right { display: flex; align-items: center; gap: var(--s-2); flex-wrap: wrap; }
+
+/* ---------- Documento ---------- */
+.documento {
+  padding: var(--s-7) var(--s-6);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.doc-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--s-5);
+  border-bottom: 2px solid var(--primary);
+  padding-bottom: var(--s-4);
+  margin-bottom: var(--s-5);
+  flex-wrap: wrap;
+}
+.doc-empresa { flex: 1; min-width: 240px; }
+.doc-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  color: var(--primary);
+  margin-bottom: var(--s-2);
+}
+.doc-logo i { color: var(--primary); font-size: 16px; }
+.doc-empresa p { font-size: 12px; color: var(--fg-muted); line-height: 1.55; }
+
+.doc-titulo-bloco { text-align: right; min-width: 220px; }
+.doc-titulo-bloco h2 {
+  font-size: 16px;
+  letter-spacing: 2.5px;
+  line-height: 1.2;
+  margin-bottom: var(--s-3);
+  font-weight: 700;
+}
+.doc-titulo-bloco p {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin: 2px 0;
+  font-variant-numeric: tabular-nums;
+}
+.doc-titulo-bloco p strong { color: var(--fg); font-weight: 500; }
+
+/* Metadados (cliente + operação) */
+.doc-metadados {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--s-5);
+  margin-bottom: var(--s-5);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--border);
+}
+.meta-bloco h4 {
+  font-size: 11px;
+  color: var(--fg-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: var(--s-2);
+}
+.meta-bloco p {
+  font-size: 12px;
+  margin: 2px 0;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.55;
+}
+.meta-bloco p strong { color: var(--fg); font-weight: 500; }
+.meta-bloco p span { color: var(--fg-muted); }
+
+/* ---------- Status ---------- */
+.status-badge {
+  display: inline;
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.status-badge.status-concluida { color: var(--success); }
+.status-badge.status-pendente  { color: var(--warning); }
+.status-badge.status-cancelada { color: var(--danger); }
+
+/* ---------- Tabela de itens ---------- */
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  border: 1px solid var(--border);
+}
+.doc-table th {
+  text-align: left;
+  padding: var(--s-2) var(--s-3);
+  background: var(--fg);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.doc-table th.text-end { text-align: right; }
+.doc-table th.text-center { text-align: center; }
+.doc-table td {
+  padding: var(--s-2) var(--s-3);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  vertical-align: middle;
+}
+.doc-table td.text-end {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.doc-table td.text-center {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.doc-table tbody tr:nth-child(even) { background: var(--bg); }
+.doc-table tbody tr:last-child td { border-bottom: 1px solid var(--border); }
+.doc-table td strong { font-weight: 600; }
+
+/* ---------- Totais ---------- */
+.doc-totais {
+  margin-top: var(--s-4);
+  display: flex;
+  justify-content: flex-end;
+}
+.doc-totais table {
+  width: 300px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.doc-totais td {
+  padding: var(--s-2) var(--s-3);
+  font-variant-numeric: tabular-nums;
+}
+.doc-totais td:last-child { text-align: right; }
+.doc-totais tr.grand-total td {
+  border-top: 1px solid var(--fg);
+  padding-top: var(--s-3);
+  font-weight: 700;
+  font-size: 13px;
+}
+.doc-totais tr.grand-total td:last-child { color: var(--primary); }
+
+/* ---------- Rodapé do documento ---------- */
+.doc-rodape {
+  margin-top: var(--s-6);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-4);
+  font-size: 11px;
+  color: var(--fg-muted);
+  flex-wrap: wrap;
+}
+
+.doc-assinatura {
+  margin-top: var(--s-6);
+  text-align: center;
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+.doc-assinatura .linha {
+  width: 200px;
+  border-top: 1px solid var(--fg-muted);
+  margin: 0 auto var(--s-2);
+}
+.doc-assinatura strong { color: var(--fg); font-weight: 500; }
+
+/* ---------- Modais ---------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--s-4);
+  overflow-y: auto;
+}
+.modal-backdrop.open { display: flex; animation: fadeIn .15s ease; }
+.modal {
+  background: var(--surface);
+  border-radius: 4px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+  overflow: hidden;
+  margin: auto;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--s-4);
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h3 { font-size: 14px; font-weight: 600; }
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--fg-muted);
+  padding: 0 var(--s-1);
+  transition: color .15s;
+}
+.modal-close:hover { color: var(--fg); }
+.modal-body { padding: var(--s-4); display: flex; flex-direction: column; gap: var(--s-3); }
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+
+/* ---------- Forms ---------- */
+.form-group { display: flex; flex-direction: column; gap: var(--s-1); }
+.form-label {
+  color: var(--fg);
+  font-weight: 500;
+  font-size: 12px;
+}
+.form-label .required { color: var(--primary); margin-left: 2px; }
+.form-control {
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--fg);
+  caret-color: var(--primary);
+  transition: border-color .15s;
+}
+.form-control::placeholder { color: #999; }
+.form-control:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+  border-color: var(--fg);
+}
+textarea.form-control { resize: vertical; min-height: 80px; }
+
+.checkbox-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: 13px;
+  color: var(--fg);
+  cursor: pointer;
+}
+.checkbox-inline input { width: 15px; height: 15px; accent-color: var(--primary); cursor: pointer; }
+
+/* ---------- Toast ---------- */
+#toast-container {
+  position: fixed;
+  top: var(--s-4);
+  right: var(--s-4);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  color: var(--fg);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
+  animation: fadeIn .15s ease;
+  max-width: 360px;
+}
+.toast i { font-size: 12px; flex-shrink: 0; }
+.toast.success { border-left-color: var(--success); }
+.toast.success i { color: var(--success); }
+.toast.error { border-left-color: var(--danger); }
+.toast.error i { color: var(--danger); }
+.toast.info { border-left-color: var(--info); }
+.toast.info i { color: var(--info); }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 900px) {
+  .sidebar { width: 60px; }
+  .sidebar .logo span,
+  .sidebar .nav-menu a span,
+  .sidebar .user-details { display: none; }
+  .sidebar .logo { justify-content: center; padding: 0 0 var(--s-5); gap: 0; }
+  .sidebar .nav-menu a { justify-content: center; padding: var(--s-3); }
+  .sidebar .user-info { justify-content: center; padding: var(--s-3) 0 0; }
+  .main-content { margin-left: 60px; padding: var(--s-3); }
+}
+
+@media (max-width: 640px) {
+  .documento { padding: var(--s-4) var(--s-3); }
+  .doc-top { flex-direction: column; gap: var(--s-3); }
+  .doc-titulo-bloco { text-align: left; min-width: 0; }
+  .doc-metadados { grid-template-columns: 1fr; gap: var(--s-3); }
+  .doc-totais table { width: 100%; }
+  .topbar-left h1 { font-size: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Impressão ---------- */
+@media print {
+  @page { size: A4 portrait; margin: 12mm 10mm; }
+  html, body {
+    background: #fff !important;
+    display: block !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    font-size: 10pt;
+  }
+  .sidebar, .topbar, .no-print, .modal-backdrop, #toast-container { display: none !important; }
+  .main-content { margin: 0 !important; padding: 0 !important; }
+  .documento {
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+  }
+  .doc-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .doc-table tr, .doc-metadados, .doc-totais, .doc-rodape, .doc-assinatura { page-break-inside: avoid; }
+  .doc-table thead { display: table-header-group; }
+}
+</style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo">
-            <i class="fas fa-globe-americas"></i>
-            <span>BOM MUNDO</span>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fas fa-globe-americas"></i><span>BOM MUNDO</span></div>
+    <ul class="nav-menu">
+        <li><a href="/dashboard" class="<%= currentPath.startsWith('/dashboard') ? 'active' : '' %>"><i class="fas fa-tachometer-alt"></i><span>Painel principal</span></a></li>
+        <li><a href="/caixa" class="<%= currentPath.startsWith('/caixa') ? 'active' : '' %>"><i class="fas fa-cash-register"></i><span>Caixas</span></a></li>
+        <li><a href="/vendas" class="<%= currentPath.startsWith('/vendas') ? 'active' : '' %>"><i class="fas fa-shopping-cart"></i><span>Vendas</span></a></li>
+        <li><a href="/produtos" class="<%= currentPath.startsWith('/produtos') ? 'active' : '' %>"><i class="fas fa-boxes"></i><span>Estoque</span></a></li>
+        <li><a href="#"><i class="fas fa-users"></i><span>Clientes</span></a></li>
+        <li><a href="#"><i class="fas fa-chart-bar"></i><span>Relatórios</span></a></li>
+        <li><a href="#"><i class="fas fa-cog"></i><span>Configurações</span></a></li>
+    </ul>
+    <div class="user-info">
+        <div class="user-avatar">JS</div>
+        <div class="user-details">
+            <div class="user-name">João Silva</div>
+            <div class="user-role">Operador de Caixa</div>
         </div>
+    </div>
+</aside>
 
-        <ul class="nav-menu">
-            <li><a href="/dashboard" class="nav-link <%= currentPath.startsWith('/dashboard') ? 'active' : '' %>"><i class="fas fa-tachometer-alt"></i> <span>Painel principal</span></a></li>
-            <li><a href="/caixa" class="nav-link <%= currentPath.startsWith('/caixa') ? 'active' : '' %>"><i class="fas fa-cash-register"></i> <span>Caixas</span></a></li>
-            <li><a href="/vendas" class="nav-link <%= currentPath.startsWith('/vendas') ? 'active' : '' %>"><i class="fas fa-shopping-cart"></i> <span>Vendas</span></a></li>
-            <li><a href="/produtos" class="nav-link <%= currentPath.startsWith('/produtos') ? 'active' : '' %>"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
-            <li><a href="#"><i class="fas fa-users"></i> <span>Clientes</span></a></li>
-            <li><a href="#"><i class="fas fa-chart-bar"></i> <span>Relatórios</span></a></li>
-            <li><a href="#"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
-        </ul>
+<main class="main-content">
 
-        <div class="user-info">
-            <div class="user-avatar">JS</div>
-            <div class="user-details">
-                <div class="user-name">João Silva</div>
-                <div class="user-role">Operador de Caixa</div>
+<%
+    /* ---------- Helpers de formatação ---------- */
+    const formatKz = (valor) => {
+        const n = Number(valor || 0);
+        return n.toFixed(2)
+            .replace('.', ',')
+            .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
+
+    const dataVendaObj = new Date(venda.data_venda);
+    const dataVenda = dataVendaObj.toLocaleDateString('pt-AO');
+    const horaVenda = dataVendaObj.toLocaleTimeString('pt-AO', { hour: '2-digit', minute: '2-digit' });
+
+    const subtotalFactura = venda.ItemVendas.reduce(
+        (soma, item) => soma + Number(item.subtotal || 0), 0
+    );
+    const descontoFactura = Number(venda.desconto || 0);
+    const totalFactura = Math.max(0, subtotalFactura - descontoFactura);
+
+    const numeroFactura = 'FT ' + dataVendaObj.getFullYear() + '/' +
+        String(venda.id).padStart(5, '0');
+
+    const formasPagamento = {
+        'dinheiro': 'Dinheiro',
+        'Tpa': 'TPA (Multicaixa)',
+        'transferencia': 'Transferência Bancária'
+    };
+
+    const statusVenda = {
+        'pendente': 'Pendente',
+        'concluida': 'Concluída',
+        'cancelada': 'Cancelada'
+    };
+%>
+
+    <div class="topbar no-print">
+        <div class="topbar-left">
+            <a href="/vendas" class="topbar-back" title="Voltar para vendas"><i class="fas fa-arrow-left"></i></a>
+            <div>
+                <h1>Factura Nº <strong><%= numeroFactura %></strong></h1>
+                <div class="page-subtitle">
+                    <span>Emitida em <%= dataVenda %> às <%= horaVenda %></span>
+                    <span class="sep">·</span>
+                    <span>Operador: <%= venda.Funcionario.nome %></span>
+                </div>
             </div>
+        </div>
+        <div class="topbar-right">
+            <button type="button" class="btn btn-outline" id="btnImprimir" onclick="imprimirFactura()">
+                <i class="fas fa-print"></i> Imprimir
+            </button>
+            <button type="button" class="btn btn-primary" id="btnBaixarPdf" onclick="baixarPDF()">
+                <i class="fas fa-file-pdf"></i> PDF
+            </button>
+            <button type="button" class="btn btn-outline" id="btnEnviarEmail" onclick="abrirModalEmail()">
+                <i class="fas fa-envelope"></i> Email
+            </button>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="header">
-            <h1 class="page-title" id="page-title">Vendas</h1>
-            <div class="header-actions">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Pesquisar vendas...">
-                </div>
-                <div class="notification">
-                    <i class="fas fa-bell"></i>
-                    <div class="notification-badge">3</div>
-                </div>
+    <div class="documento" id="factura">
+
+        <div class="doc-top">
+            <div class="doc-empresa">
+                <div class="doc-logo"><i class="fas fa-globe-americas"></i> BOM MUNDO</div>
+                <p>Comércio Geral e Prestação de Serviços</p>
+                <p>NIF: 5000000000</p>
+                <p>Rua da Liberdade, nº 123 — Luanda, Angola</p>
+                <p>Tel: +244 900 000 000 · geral@bomundo.ao</p>
+            </div>
+            <div class="doc-titulo-bloco">
+                <h2>FACTURA</h2>
+                <p><span>Nº:</span> <strong><%= numeroFactura %></strong></p>
+                <p><span>Data:</span> <strong><%= dataVenda %></strong></p>
+                <p><span>Hora:</span> <strong><%= horaVenda %></strong></p>
+                <p><span>Caixa:</span> <strong>#00<%= venda.id %></strong></p>
             </div>
         </div>
 
-        <!-- Alertas -->
-        <div class="alert alert-success" id="success-alert" style="display: none;">
-            <i class="fas fa-check-circle"></i> Venda realizada com sucesso!
+        <div class="doc-metadados">
+            <div class="meta-bloco">
+                <h4>Exmo.(a) Senhor(a)</h4>
+                <p><strong>Consumidor Final</strong></p>
+                <p>NIF: —</p>
+                <p>Luanda — Angola</p>
+            </div>
+            <div class="meta-bloco">
+                <h4>Dados da operação</h4>
+                <p><span>Funcionário:</span> <strong><%= venda.Funcionario.nome %></strong></p>
+                <p><span>Forma de pagamento:</span> <strong><%= formasPagamento[venda.forma_pagamento] || venda.forma_pagamento %></strong></p>
+                <p><span>Status:</span>
+                    <span class="status-badge status-<%= venda.status %>"><%= statusVenda[venda.status] || venda.status %></span>
+                </p>
+            </div>
         </div>
 
-        <!-- Conteúdo da Página -->
-        <div id="page-content">
+        <table class="doc-table">
+            <thead>
+                <tr>
+                    <th style="width:40px;">#</th>
+                    <th>Descrição do produto</th>
+                    <th class="text-center" style="width:70px;">Qtd.</th>
+                    <th class="text-end" style="width:120px;">Preço unit.</th>
+                    <th class="text-end" style="width:120px;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% venda.ItemVendas.forEach((item, index) => { %>
+                <tr>
+                    <td><%= index + 1 %></td>
+                    <td><%= item.Produto.nome %></td>
+                    <td class="text-center"><%= item.quantidade %></td>
+                    <td class="text-end"><%= formatKz(item.preco_unitario) %> Kz</td>
+                    <td class="text-end"><strong><%= formatKz(item.subtotal) %> Kz</strong></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
 
-            <%
-                /* ---------- Helpers de formatação (server-side) ---------- */
-                const formatKz = (valor) => {
-                    const n = Number(valor || 0);
-                    return n.toFixed(2)
-                        .replace('.', ',')
-                        .replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                };
-
-                const dataVendaObj = new Date(venda.data_venda);
-                const dataVenda = dataVendaObj.toLocaleDateString('pt-AO');
-                const horaVenda = dataVendaObj.toLocaleTimeString('pt-AO', { hour: '2-digit', minute: '2-digit' });
-
-                const subtotalFactura = venda.ItemVendas.reduce(
-                    (soma, item) => soma + Number(item.subtotal || 0), 0
-                );
-                const descontoFactura = Number(venda.desconto || 0);
-                const totalFactura = Math.max(0, subtotalFactura - descontoFactura);
-
-                const numeroFactura = 'FT ' + dataVendaObj.getFullYear() + '/' +
-                    String(venda.id).padStart(5, '0');
-
-                const formasPagamento = {
-                    'dinheiro': 'Dinheiro',
-                    'Tpa': 'TPA (Multicaixa)',
-                    'transferencia': 'Transferência Bancária'
-                };
-
-                const statusVenda = {
-                    'pendente': 'Pendente',
-                    'concluida': 'Concluída',
-                    'cancelada': 'Cancelada'
-                };
-            %>
-
-            <div class="page-header no-print">
-                <h2><i class="fas fa-file-invoice"></i> Factura Nº <%= numeroFactura %></h2>
-                <div class="header-actions">
-                    <a href="/vendas" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Voltar
-                    </a>
-                    <button type="button" class="btn btn-info" id="btnImprimir" onclick="imprimirFactura()">
-                        <i class="fas fa-print"></i> Imprimir
-                    </button>
-                    <button type="button" class="btn btn-warning" id="btnBaixarPdf" onclick="baixarPDF()">
-                        <i class="fas fa-file-pdf"></i> Baixar PDF
-                    </button>
-                    <button type="button" class="btn btn-success" id="btnEnviarEmail" onclick="abrirModalEmail()">
-                        <i class="fas fa-envelope"></i> Enviar por Email
-                    </button>
-                </div>
-            </div>
-
-            <!-- ================= FACTURA ================= -->
-            <div class="card factura" id="factura">
-
-                <!-- Cabeçalho -->
-                <div class="factura-top">
-                    <div class="factura-empresa">
-                        <div class="factura-logo">
-                            <i class="fas fa-globe-americas"></i> BOM MUNDO
-                        </div>
-                        <p>Comércio Geral e Prestação de Serviços</p>
-                        <p>NIF: 5000000000</p>
-                        <p>Rua da Liberdade, nº 123 — Luanda, Angola</p>
-                        <p>Tel: +244 900 000 000 &nbsp;|&nbsp; geral@bomundo.ao</p>
-                    </div>
-
-                    <div class="factura-doc">
-                        <h3>FACTURA</h3>
-                        <p><span>Nº:</span> <strong><%= numeroFactura %></strong></p>
-                        <p><span>Data:</span> <strong><%= dataVenda %></strong></p>
-                        <p><span>Hora:</span> <strong><%= horaVenda %></strong></p>
-                        <p><span>Caixa:</span> <strong>#00<%= venda.id %></strong></p>
-                    </div>
-                </div>
-
-                <!-- Dados do cliente / operador -->
-                <div class="factura-info-grid">
-                    <div class="factura-secao">
-                        <h4>Exmo.(a) Senhor(a)</h4>
-                        <p><strong>Consumidor Final</strong></p>
-                        <p>NIF: —</p>
-                        <p>Luanda — Angola</p>
-                    </div>
-
-                    <div class="factura-secao">
-                        <h4>Dados da Operação</h4>
-                        <p><strong>Funcionário:</strong> <%= venda.Funcionario.nome %></p>
-                        <p><strong>Forma de Pagamento:</strong>
-                            <%= formasPagamento[venda.forma_pagamento] || venda.forma_pagamento %>
-                        </p>
-                        <p><strong>Status:</strong>
-                            <span class="status-badge status-<%= venda.status %>">
-                                <%= statusVenda[venda.status] || venda.status %>
-                            </span>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Itens -->
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th style="width:45px;">#</th>
-                            <th>Descrição do Produto</th>
-                            <th class="text-center" style="width:90px;">Qtd.</th>
-                            <th class="text-end" style="width:130px;">Preço Unit.</th>
-                            <th class="text-end" style="width:140px;">Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% venda.ItemVendas.forEach((item, index) => { %>
-                        <tr>
-                            <td><%= index + 1 %></td>
-                            <td><%= item.Produto.nome %></td>
-                            <td class="text-center"><%= item.quantidade %></td>
-                            <td class="text-end"><%= formatKz(item.preco_unitario) %> Kz</td>
-                            <td class="text-end"><%= formatKz(item.subtotal) %> Kz</td>
-                        </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-
-                <!-- Totais -->
-                <div class="factura-totais">
-                    <table>
-                        <tr>
-                            <td>Subtotal</td>
-                            <td><%= formatKz(subtotalFactura) %> Kz</td>
-                        </tr>
-                        <% if (descontoFactura > 0) { %>
-                        <tr>
-                            <td>Desconto</td>
-                            <td class="text-danger">- <%= formatKz(descontoFactura) %> Kz</td>
-                        </tr>
-                        <% } %>
-                        <tr class="grand-total">
-                            <td>TOTAL A PAGAR</td>
-                            <td><%= formatKz(totalFactura) %> Kz</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <!-- Rodapé -->
-                <div class="factura-footer">
-                    <div>
-                        <strong>Documento processado por computador.</strong><br>
-                        Factura emitida em <%= dataVenda %> às <%= horaVenda %>.
-                    </div>
-                    <div>
-                        Obrigado pela sua preferência!<br>
-                        Bom Mundo — Servir bem, sempre.
-                    </div>
-                </div>
-
-                <div class="factura-assinatura">
-                    <div class="linha"></div>
-                    <%= venda.Funcionario.nome %> — Operador de Caixa
-                </div>
-            </div>
-            <!-- =============== FIM DA FACTURA =============== -->
-
+        <div class="doc-totais">
+            <table>
+                <tr>
+                    <td>Subtotal</td>
+                    <td><%= formatKz(subtotalFactura) %> Kz</td>
+                </tr>
+                <% if (descontoFactura > 0) { %>
+                <tr>
+                    <td>Desconto</td>
+                    <td style="color: var(--danger);">- <%= formatKz(descontoFactura) %> Kz</td>
+                </tr>
+                <% } %>
+                <tr class="grand-total">
+                    <td>TOTAL A PAGAR</td>
+                    <td><%= formatKz(totalFactura) %> Kz</td>
+                </tr>
+            </table>
         </div>
+
+        <div class="doc-rodape">
+            <div>
+                Documento processado por computador.<br>
+                Emitido em <%= dataVenda %> às <%= horaVenda %>.
+            </div>
+            <div style="text-align: right;">
+                Bom Mundo — Comércio Geral
+            </div>
+        </div>
+
+        <div class="doc-assinatura">
+            <div class="linha"></div>
+            <strong><%= venda.Funcionario.nome %></strong> — Operador de Caixa
+        </div>
+
     </div>
 
-    <!-- ================= MODAL: ENVIAR POR EMAIL ================= -->
-    <div class="modal-backdrop no-print" id="emailModal" onclick="if (event.target === this) fecharModalEmail()">
-        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="emailModalTitulo">
-            <div class="modal-header">
-                <h3 id="emailModalTitulo"><i class="fas fa-envelope"></i> Enviar Factura por Email</h3>
-                <button type="button" class="modal-close" onclick="fecharModalEmail()" aria-label="Fechar">&times;</button>
+</main>
+
+<!-- MODAL: ENVIAR POR EMAIL -->
+<div class="modal-backdrop no-print" id="emailModal" onclick="if (event.target === this) fecharModalEmail()">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="emailModalTitulo">
+        <div class="modal-header">
+            <h3 id="emailModalTitulo">Enviar factura por email</h3>
+            <button type="button" class="modal-close" onclick="fecharModalEmail()" aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="emailForm" onsubmit="enviarEmailForm(event)">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="emailDestinatario">Email do destinatário <span class="required">*</span></label>
+                    <input type="email" class="form-control" id="emailDestinatario"
+                           placeholder="cliente@email.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="emailMensagem">Mensagem <span style="color: var(--fg-muted); font-weight: 400;">(opcional)</span></label>
+                    <textarea class="form-control" id="emailMensagem" placeholder="Mensagem adicional"></textarea>
+                </div>
+
+                <div class="form-group" style="margin: 0;">
+                    <label class="checkbox-inline" for="emailAnexoPdf">
+                        <input type="checkbox" id="emailAnexoPdf" checked>
+                        Anexar factura em PDF
+                    </label>
+                </div>
             </div>
 
-            <form id="emailForm" onsubmit="enviarEmailForm(event)">
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label" for="emailDestinatario">Email do destinatário *</label>
-                        <input type="email" class="form-control" id="emailDestinatario"
-                               placeholder="cliente@email.com" required autocomplete="email">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="emailMensagem">Mensagem (opcional)</label>
-                        <textarea class="form-control" id="emailMensagem"
-                                  placeholder="Ex.: Segue em anexo a factura da sua compra."></textarea>
-                    </div>
-
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label class="checkbox-inline" for="emailAnexoPdf">
-                            <input type="checkbox" id="emailAnexoPdf" checked>
-                            Anexar factura em PDF
-                        </label>
-                    </div>
-                </div>
-
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="fecharModalEmail()">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-primary" id="btnEnviarEmailConfirmar">
-                        <i class="fas fa-paper-plane"></i> Enviar
-                    </button>
-                </div>
-            </form>
-        </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="fecharModalEmail()">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="btnEnviarEmailConfirmar">
+                    <i class="fas fa-paper-plane"></i> Enviar
+                </button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <!-- Container de notificações -->
-    <div id="toast-container" class="no-print" aria-live="polite"></div>
+<div id="toast-container" class="no-print" aria-live="polite"></div>
 
-    <!-- Biblioteca de geração de PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <script>
-        /* ============================================================
-           DADOS DA VENDA (injetados pelo servidor)
-           ============================================================ */
-        const VENDA = {
-            id: Number('<%= venda.id %>'),
-            numero: '<%= numeroFactura %>',
-            total: Number('<%= totalFactura.toFixed(2) %>'),
-            totalFormatado: '<%= formatKz(totalFactura) %> Kz',
-            funcionario: '<%= venda.Funcionario.nome %>'
+<script>
+const VENDA = {
+    id: Number('<%= venda.id %>'),
+    numero: '<%= numeroFactura %>',
+    total: Number('<%= totalFactura.toFixed(2) %>'),
+    totalFormatado: '<%= formatKz(totalFactura) %> Kz',
+    funcionario: '<%= venda.Funcionario.nome %>'
+};
+
+function mostrarToast(mensagem, tipo = 'info', duracao = 3000) {
+    const container = document.getElementById('toast-container');
+    if (!container) { alert(mensagem); return; }
+    const icones = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + tipo;
+    toast.innerHTML = '<i class="fas ' + (icones[tipo] || icones.info) + '"></i><span></span>';
+    toast.querySelector('span').textContent = mensagem;
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.style.transition = 'opacity .2s ease';
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 200);
+    }, duracao);
+}
+
+function alternarLoading(botao, ativo, texto) {
+    if (!botao) return;
+    if (ativo) {
+        if (!botao.dataset.htmlOriginal) botao.dataset.htmlOriginal = botao.innerHTML;
+        botao.disabled = true;
+        botao.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (texto || 'A processar…');
+    } else {
+        botao.disabled = false;
+        if (botao.dataset.htmlOriginal) botao.innerHTML = botao.dataset.htmlOriginal;
+    }
+}
+
+function nomeFicheiroPdf() {
+    return 'Factura_' + VENDA.numero.replace(/[^\w]+/g, '_') + '.pdf';
+}
+
+/* ---------- 1) IMPRIMIR ---------- */
+function imprimirFactura() {
+    fecharModalEmail();
+    const tituloOriginal = document.title;
+    document.title = 'Factura ' + VENDA.numero + ' - Bom Mundo';
+    window.print();
+    document.title = tituloOriginal;
+}
+
+/* ---------- 2) BAIXAR PDF ---------- */
+function construirPdf() {
+    const elemento = document.getElementById('factura');
+    return html2pdf().set({
+        margin: [10, 10, 12, 10],
+        filename: nomeFicheiroPdf(),
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'] }
+    }).from(elemento);
+}
+
+async function baixarPDF() {
+    if (typeof html2pdf === 'undefined') {
+        mostrarToast('Gerador de PDF não carregado.', 'error');
+        return;
+    }
+    const btn = document.getElementById('btnBaixarPdf');
+    alternarLoading(btn, true, 'A gerar PDF…');
+    try {
+        await construirPdf().save();
+        mostrarToast('PDF gerado com sucesso.', 'success');
+    } catch (erro) {
+        console.error('Erro ao gerar PDF:', erro);
+        mostrarToast('Não foi possível gerar o PDF.', 'error');
+    } finally {
+        alternarLoading(btn, false);
+    }
+}
+
+/* ---------- 3) ENVIAR POR EMAIL ---------- */
+function abrirModalEmail() {
+    document.getElementById('emailModal').classList.add('open');
+    setTimeout(() => document.getElementById('emailDestinatario').focus(), 50);
+}
+
+function fecharModalEmail() {
+    const modal = document.getElementById('emailModal');
+    if (!modal) return;
+    modal.classList.remove('open');
+    const form = document.getElementById('emailForm');
+    if (form) form.reset();
+    const anexo = document.getElementById('emailAnexoPdf');
+    if (anexo) anexo.checked = true;
+}
+
+function pdfParaBase64() {
+    return construirPdf().outputPdf('datauristring').then((dataUri) => {
+        const indice = dataUri.indexOf(',');
+        return indice >= 0 ? dataUri.slice(indice + 1) : dataUri;
+    });
+}
+
+async function enviarEmailForm(evento) {
+    evento.preventDefault();
+
+    const destinatario = document.getElementById('emailDestinatario').value.trim();
+    const mensagem = document.getElementById('emailMensagem').value.trim();
+    const anexarPdf = document.getElementById('emailAnexoPdf').checked;
+    const btn = document.getElementById('btnEnviarEmailConfirmar');
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(destinatario)) {
+        mostrarToast('Email inválido.', 'error');
+        return;
+    }
+
+    alternarLoading(btn, true, 'A enviar…');
+
+    try {
+        const payload = {
+            email: destinatario,
+            mensagem: mensagem,
+            vendaId: VENDA.id,
+            numeroFactura: VENDA.numero,
+            anexarPdf: anexarPdf
         };
 
-        // Variáveis globais (usadas pelo fluxo de "Nova Venda")
-        let carrinho = [];
-        let totalVenda = 0;
-
-        /* ============================================================
-           UTILITÁRIOS
-           ============================================================ */
-        function mostrarToast(mensagem, tipo = 'info', duracao = 3800) {
-            const container = document.getElementById('toast-container');
-            if (!container) { alert(mensagem); return; }
-
-            const icones = {
-                success: 'fa-check-circle',
-                error: 'fa-exclamation-circle',
-                info: 'fa-info-circle'
-            };
-
-            const toast = document.createElement('div');
-            toast.className = 'toast ' + tipo;
-            toast.innerHTML = '<i class="fas ' + (icones[tipo] || icones.info) + '"></i><span></span>';
-            toast.querySelector('span').textContent = mensagem;
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.transition = 'all .3s ease';
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(30px)';
-                setTimeout(() => toast.remove(), 300);
-            }, duracao);
+        if (anexarPdf) {
+            payload.pdfNome = nomeFicheiroPdf();
+            payload.pdfBase64 = await pdfParaBase64();
         }
 
-        function alternarLoading(botao, ativo, texto) {
-            if (!botao) return;
-            if (ativo) {
-                if (!botao.dataset.htmlOriginal) {
-                    botao.dataset.htmlOriginal = botao.innerHTML;
-                }
-                botao.disabled = true;
-                botao.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (texto || 'A processar...');
-            } else {
-                botao.disabled = false;
-                if (botao.dataset.htmlOriginal) {
-                    botao.innerHTML = botao.dataset.htmlOriginal;
-                }
-            }
-        }
-
-        function nomeFicheiroPdf() {
-            return 'Factura_' + VENDA.numero.replace(/[^\w]+/g, '_') + '.pdf';
-        }
-
-        /* ============================================================
-           1) IMPRIMIR FACTURA
-           ============================================================ */
-        function imprimirFactura() {
-            fecharModalEmail();
-
-            // Garante que o título da janela de impressão fica correcto
-            const tituloOriginal = document.title;
-            document.title = 'Factura ' + VENDA.numero + ' - Bom Mundo';
-
-            window.print();
-
-            document.title = tituloOriginal;
-        }
-
-        /* ============================================================
-           2) BAIXAR EM PDF
-           ============================================================ */
-        function construirPdf() {
-            const elemento = document.getElementById('factura');
-
-            const opcoes = {
-                margin: [10, 10, 12, 10],
-                filename: nomeFicheiroPdf(),
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    scrollX: 0,
-                    scrollY: 0
-                },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['css', 'legacy'] }
-            };
-
-            return html2pdf().set(opcoes).from(elemento);
-        }
-
-        async function baixarPDF() {
-            if (typeof html2pdf === 'undefined') {
-                mostrarToast('Gerador de PDF não carregado. Verifique a ligação à internet.', 'error');
-                return;
-            }
-
-            const btn = document.getElementById('btnBaixarPdf');
-            alternarLoading(btn, true, 'A gerar PDF...');
-            document.body.classList.add('pdf-mode');
-
-            try {
-                await construirPdf().save();
-                mostrarToast('PDF da factura gerado com sucesso!', 'success');
-            } catch (erro) {
-                console.error('Erro ao gerar PDF:', erro);
-                mostrarToast('Não foi possível gerar o PDF da factura.', 'error');
-            } finally {
-                document.body.classList.remove('pdf-mode');
-                alternarLoading(btn, false);
-            }
-        }
-
-        /* ============================================================
-           3) ENVIAR POR EMAIL
-           ============================================================ */
-        function abrirModalEmail() {
-            const modal = document.getElementById('emailModal');
-            modal.classList.add('open');
-            setTimeout(() => document.getElementById('emailDestinatario').focus(), 50);
-        }
-
-        function fecharModalEmail() {
-            const modal = document.getElementById('emailModal');
-            if (!modal) return;
-            modal.classList.remove('open');
-            const form = document.getElementById('emailForm');
-            if (form) form.reset();
-            const anexo = document.getElementById('emailAnexoPdf');
-            if (anexo) anexo.checked = true;
-        }
-
-        function pdfParaBase64() {
-            return construirPdf()
-                .outputPdf('datauristring')
-                .then((dataUri) => {
-                    const indice = dataUri.indexOf(',');
-                    return indice >= 0 ? dataUri.slice(indice + 1) : dataUri;
-                });
-        }
-
-        async function enviarEmailForm(evento) {
-            evento.preventDefault();
-
-            const destinatario = document.getElementById('emailDestinatario').value.trim();
-            const mensagem = document.getElementById('emailMensagem').value.trim();
-            const anexarPdf = document.getElementById('emailAnexoPdf').checked;
-            const btn = document.getElementById('btnEnviarEmailConfirmar');
-
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(destinatario)) {
-                mostrarToast('Introduza um endereço de email válido.', 'error');
-                return;
-            }
-
-            alternarLoading(btn, true, 'A enviar...');
-            document.body.classList.add('pdf-mode');
-
-            try {
-                const payload = {
-                    email: destinatario,
-                    mensagem: mensagem,
-                    vendaId: VENDA.id,
-                    numeroFactura: VENDA.numero,
-                    anexarPdf: anexarPdf
-                };
-
-                if (anexarPdf) {
-                    payload.pdfNome = nomeFicheiroPdf();
-                    payload.pdfBase64 = await pdfParaBase64();
-                }
-
-                const resposta = await fetch('/vendas/' + VENDA.id + '/enviar-email', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                let dados = {};
-                try { dados = await resposta.json(); } catch (e) { /* resposta sem JSON */ }
-
-                if (!resposta.ok) {
-                    throw new Error(dados.erro || 'Falha ao enviar o email (HTTP ' + resposta.status + ').');
-                }
-
-                mostrarToast('Factura enviada com sucesso para ' + destinatario, 'success');
-                fecharModalEmail();
-
-            } catch (erro) {
-                console.error('Erro ao enviar email:', erro);
-                mostrarToast(erro.message || 'Não foi possível enviar a factura por email.', 'error');
-            } finally {
-                document.body.classList.remove('pdf-mode');
-                alternarLoading(btn, false);
-            }
-        }
-
-        /* ============================================================
-           NAVEGAÇÃO (mantido do ficheiro original)
-           ============================================================ */
-        function showVendaList() {
-            document.getElementById('page-title').textContent = 'Vendas';
-        }
-
-        function showNovaVenda() {
-            document.getElementById('page-title').textContent = 'Nova Venda';
-            const template = document.getElementById('nova-venda-template');
-            if (!template) return;
-            document.getElementById('page-content').innerHTML = template.innerHTML;
-            inicializarNovaVenda();
-        }
-
-        function limparFiltros() {
-            const campo = document.getElementById('data');
-            if (campo) campo.value = '';
-        }
-
-        function inicializarNovaVenda() {
-            const busca = document.getElementById('produtoSearch');
-            if (busca) {
-                busca.addEventListener('input', function (e) {
-                    const termo = e.target.value.toLowerCase();
-                    document.querySelectorAll('.produto-item').forEach(produto => {
-                        const nome = produto.querySelector('h5').textContent.toLowerCase();
-                        const codigo = produto.querySelector('p').textContent.toLowerCase();
-                        produto.style.display = (nome.includes(termo) || codigo.includes(termo)) ? 'flex' : 'none';
-                    });
-                });
-            }
-        }
-
-        /* ============================================================
-           INICIALIZAÇÃO
-           ============================================================ */
-        document.addEventListener('DOMContentLoaded', function () {
-
-            // Ativar/desativar itens do menu
-            const menuItems = document.querySelectorAll('.nav-menu a');
-            menuItems.forEach(item => {
-                item.addEventListener('click', function () {
-                    menuItems.forEach(i => i.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            // Notificações
-            const notification = document.querySelector('.notification');
-            if (notification) {
-                notification.addEventListener('click', function () {
-                    mostrarToast('Você tem 3 notificações não lidas.', 'info');
-                });
-            }
-
-            // Fechar modal com ESC
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') fecharModalEmail();
-            });
-
-            // Atalhos: Ctrl+P (imprimir) e Ctrl+Shift+S (guardar PDF)
-            document.addEventListener('keydown', function (e) {
-                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
-                    e.preventDefault();
-                    imprimirFactura();
-                }
-                if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 's') {
-                    e.preventDefault();
-                    baixarPDF();
-                }
-            });
+        const resposta = await fetch('/vendas/' + VENDA.id + '/enviar-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
-    </script>
+
+        let dados = {};
+        try { dados = await resposta.json(); } catch (e) {}
+
+        if (!resposta.ok) {
+            throw new Error(dados.erro || 'Falha ao enviar (HTTP ' + resposta.status + ').');
+        }
+
+        mostrarToast('Factura enviada para ' + destinatario, 'success');
+        fecharModalEmail();
+    } catch (erro) {
+        console.error('Erro ao enviar email:', erro);
+        mostrarToast(erro.message || 'Não foi possível enviar.', 'error');
+    } finally {
+        alternarLoading(btn, false);
+    }
+}
+
+/* ---------- Atalhos + init ---------- */
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') fecharModalEmail();
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+        e.preventDefault();
+        imprimirFactura();
+    }
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        baixarPDF();
+    }
+});
+</script>
 </body>
 </html>

@@ -1,0 +1,1694 @@
+<%#
+  ─────────────────────────────────────────────────────────────
+  REGRA DE NEGÓCIO: 1 caixa aberto por funcionário.
+
+  Esta vista desabilita o botão de abertura e bloqueia o submit
+  no cliente. O BACKEND também deve validar (defesa em
+  profundidade), ex. em routes/caixa.js:
+
+    const existente = await Caixa.findOne({
+      where: { funcionario_id: req.user.id, status: 'aberto' }
+    });
+    if (existente) {
+      return res.status(400).render('caixa/index', {
+        caixas: ..., utilizador: ..., currentPath: ...,
+        erro: 'caixa_aberto',
+        caixaAbertoId: existente.id
+      });
+    }
+
+  ─────────────────────────────────────────────────────────────
+%>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caixas — Bom Mundo</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --bg:             #fafafa;
+  --surface:        #ffffff;
+  --border:         #e5e5e5;
+  --fg:             #1a1a1a;
+  --fg-muted:       #666666;
+  --primary:        #c62828;
+  --primary-hover:  #a01f1f;
+  --primary-active: #8b1a1a;
+  --success:        #16a34a;
+  --warning:        #b45309;
+  --info:           #2563eb;
+  --danger:         #c62828;
+  --focus:          #1a1a1a;
+
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg);
+  display: flex;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--fg); color: var(--bg); }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ---------- Botões ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+  white-space: nowrap;
+}
+.btn i { font-size: 11px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+.btn-primary:active:not(:disabled) { background: var(--primary-active); }
+.btn-primary i { color: #fff; }
+
+.btn-outline { background: var(--surface); color: var(--fg); border-color: var(--border); }
+.btn-outline:hover:not(:disabled) { border-color: var(--fg-muted); }
+.btn-outline:active:not(:disabled) { background: var(--bg); }
+.btn-outline i { color: var(--fg-muted); }
+
+.btn-fechar:hover:not(:disabled) { border-color: var(--danger); }
+.btn-fechar:hover:not(:disabled) i { color: var(--danger); }
+.btn-fechar:active:not(:disabled) { background: rgba(198, 40, 40, .04); }
+
+.btn-sm { padding: var(--s-1) var(--s-2); font-size: 12px; }
+.btn-icon { padding: var(--s-1); width: 28px; height: 28px; justify-content: center; }
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  width: 220px;
+  background: #1a1a1a;
+  color: #d4d4d4;
+  position: fixed;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--s-5) 0;
+  z-index: 100;
+  overflow-y: auto;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0 var(--s-5) var(--s-5);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: .5px;
+  border-bottom: 1px solid #2a2a2a;
+  margin-bottom: var(--s-4);
+}
+.logo i { color: var(--primary); font-size: 15px; }
+
+.nav-menu { list-style: none; flex: 1; }
+.nav-menu a {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-5);
+  font-size: 13px;
+  font-weight: 500;
+  color: #d4d4d4;
+  border-left: 3px solid transparent;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+.nav-menu a:hover { background: #2a2a2a; color: var(--primary); }
+.nav-menu a:hover i { color: var(--primary); }
+.nav-menu a.active {
+  background: #2a2a2a;
+  color: var(--primary);
+  border-left-color: var(--primary);
+}
+.nav-menu a.active i { color: var(--primary); }
+.nav-menu a:focus-visible { outline-color: #fff; }
+.nav-menu i {
+  width: 16px;
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  transition: color .2s ease;
+}
+
+.user-info {
+  padding: var(--s-4) var(--s-5) 0;
+  border-top: 1px solid #2a2a2a;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+.user-avatar {
+  width: 32px; height: 32px;
+  background: var(--primary);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: #fff;
+  flex-shrink: 0;
+}
+.user-details { min-width: 0; flex: 1; }
+.user-name { font-size: 13px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 12px; color: #888; }
+
+/* ---------- Main ---------- */
+.main-content {
+  flex: 1;
+  margin-left: 220px;
+  padding: var(--s-5);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+/* ---------- Print header (só visível em @media print) ---------- */
+.print-header { display: none; }
+
+/* ---------- Topbar ---------- */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-4);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.topbar-left h1 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -.005em;
+}
+.topbar-left .page-subtitle {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
+}
+.topbar-left .page-subtitle .sep { color: var(--border); }
+.topbar-left .page-subtitle kbd {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 0 5px;
+  font-size: 10px;
+  font-family: ui-monospace, Consolas, monospace;
+  color: var(--fg-muted);
+  font-weight: 600;
+}
+.topbar-right { display: flex; align-items: center; gap: var(--s-2); flex-wrap: wrap; }
+
+/* ---------- Info bar (outros caixas) ---------- */
+.info-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--info);
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--fg);
+}
+.info-bar i { color: var(--info); font-size: 13px; flex-shrink: 0; }
+.info-bar strong { font-weight: 600; }
+
+/* ---------- Painel caixa ativo ---------- */
+.caixa-ativo {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.caixa-ativo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--border);
+}
+.caixa-ativo-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--success);
+  flex-shrink: 0;
+}
+.caixa-ativo-status::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+.caixa-ativo-title {
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  flex: 1;
+  min-width: 0;
+}
+.caixa-ativo-title span { color: var(--fg-muted); font-weight: 400; font-size: 13px; margin-left: var(--s-2); }
+.caixa-ativo-actions { display: flex; gap: var(--s-2); flex-wrap: wrap; }
+
+.caixa-ativo-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--s-5);
+  padding: var(--s-4);
+}
+.kpi { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.kpi-label { font-size: 12px; color: var(--fg-muted); font-weight: 500; }
+.kpi-value {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -.005em;
+  font-variant-numeric: tabular-nums;
+  word-break: break-word;
+}
+.kpi-sub { font-size: 12px; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+.kpi-primary .kpi-value { color: var(--primary); }
+.kpi-success .kpi-value { color: var(--success); }
+.kpi-warning .kpi-value { color: var(--warning); }
+
+/* ---------- Card ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.card-header {
+  padding: var(--s-4);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+.card-header h3 { font-size: 14px; font-weight: 600; }
+.card-header-actions { display: flex; align-items: center; gap: var(--s-2); flex-wrap: wrap; }
+.card-header .counter {
+  font-size: 12px;
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Filtros: presets ---------- */
+.filter-presets {
+  display: flex;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  padding: var(--s-3) var(--s-4) 0;
+}
+.preset-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: var(--s-1) var(--s-3);
+  font: inherit;
+  font-size: 12px;
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.preset-chip:hover { border-color: var(--fg-muted); color: var(--fg); background: var(--bg); }
+.preset-chip:active { background: var(--border); }
+.preset-chip.active { background: var(--fg); border-color: var(--fg); color: #fff; }
+
+/* ---------- Filtros: barra ---------- */
+.filter-bar {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  flex-wrap: wrap;
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--border);
+}
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: var(--s-1) var(--s-3);
+  transition: border-color .15s;
+}
+.filter-group:focus-within { border-color: var(--fg); }
+.filter-group i { color: var(--fg-muted); font-size: 12px; }
+.filter-group input,
+.filter-group select {
+  border: none;
+  outline: none;
+  font: inherit;
+  font-size: 13px;
+  background: transparent;
+  color: var(--fg);
+  min-width: 120px;
+  caret-color: var(--primary);
+}
+.filter-group input::placeholder { color: #999; }
+
+/* ---------- Tabela principal ---------- */
+.table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; background: var(--surface); }
+.data-table thead th {
+  text-align: left;
+  padding: var(--s-3);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.data-table tbody td {
+  padding: var(--s-3);
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  vertical-align: middle;
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr:not(.expanded-row):hover td { background: var(--bg); }
+.data-table td.text-end,
+.data-table th.text-end { text-align: right; }
+.data-table td.text-end { font-variant-numeric: tabular-nums; }
+.data-table td.text-center,
+.data-table th.text-center { text-align: center; }
+
+.text-end { text-align: right; }
+.text-center { text-align: center; }
+.text-muted { color: var(--fg-muted); }
+.text-success { color: var(--success); font-weight: 500; }
+
+.id-tag {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-muted);
+}
+
+.func-cell { display: flex; align-items: center; gap: var(--s-2); }
+.func-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.func-nome { font-size: 13px; color: var(--fg); }
+
+/* ---------- Status ---------- */
+.status-badge {
+  display: inline;
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.status-badge.status-aberto { color: var(--success); }
+.status-badge.status-fechado { color: var(--fg-muted); }
+
+/* ---------- Métodos de pagamento ---------- */
+.pay-method {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--fg);
+}
+.pay-method::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--fg-muted);
+  flex-shrink: 0;
+  opacity: .8;
+}
+.pay-dinheiro::before { background: var(--success); }
+.pay-tpa::before { background: var(--info); }
+.pay-transferencia::before { background: var(--warning); }
+
+/* ---------- Acções da tabela ---------- */
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  justify-content: center;
+}
+
+/* ---------- Expandir linha ---------- */
+.row-expand-btn {
+  width: 24px; height: 24px;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted);
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background-color .15s, color .15s;
+  font-size: 10px;
+}
+.row-expand-btn:hover { background: var(--bg); color: var(--fg); }
+.row-expand-btn:active { background: var(--border); }
+.row-expand-btn i { transition: transform .2s cubic-bezier(.4, 0, .2, 1); }
+tr.row-open .row-expand-btn { color: var(--fg); }
+tr.row-open .row-expand-btn i { transform: rotate(90deg); }
+
+.expanded-row td {
+  padding: 0 !important;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border) !important;
+}
+.expanded-content {
+  padding: var(--s-4);
+  animation: fadeIn .15s ease;
+}
+.expanded-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-bottom: var(--s-3);
+  font-variant-numeric: tabular-nums;
+}
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--fg);
+  color: var(--surface);
+  font-size: 11px;
+  font-weight: 500;
+}
+.count-badge.neutral { background: var(--border); color: var(--fg-muted); }
+
+.mini-sales-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  background: var(--surface);
+}
+.mini-sales-table thead th {
+  background: var(--bg);
+  padding: var(--s-2) var(--s-3);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.mini-sales-table tbody td {
+  padding: var(--s-2) var(--s-3);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  vertical-align: middle;
+}
+.mini-sales-table tr:last-child td { border-bottom: none; }
+.mini-sales-table td.text-end { text-align: right; font-variant-numeric: tabular-nums; }
+
+.no-sales {
+  text-align: center;
+  padding: var(--s-4);
+  color: var(--fg-muted);
+  font-size: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+/* ---------- Empty ---------- */
+.empty {
+  padding: var(--s-6) var(--s-4);
+  text-align: center;
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+.empty a, .empty button.link {
+  color: var(--primary);
+  text-decoration: underline;
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* ---------- Paginação ---------- */
+.pag-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  padding: var(--s-3) var(--s-4);
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+.pag-controls { display: flex; align-items: center; gap: var(--s-1); }
+.pag-btn {
+  min-width: 28px; height: 28px;
+  padding: 0 var(--s-2);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 4px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  color: var(--fg-muted);
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.pag-btn:hover:not(:disabled) { border-color: var(--fg-muted); color: var(--fg); }
+.pag-btn:active:not(:disabled) { background: var(--bg); }
+.pag-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.pag-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ---------- Painel abrir ---------- */
+.panel-abrir-wrap { max-width: 480px; margin: 0 auto; width: 100%; }
+
+/* ---------- Modal ---------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--s-4);
+  overflow-y: auto;
+}
+.modal-backdrop.open { display: flex; animation: fadeIn .15s ease; }
+.modal {
+  background: var(--surface);
+  border-radius: 4px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .15);
+  overflow: hidden;
+  margin: auto;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--s-4);
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h3 { font-size: 14px; font-weight: 600; }
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--fg-muted);
+  padding: 0 var(--s-1);
+  transition: color .15s;
+}
+.modal-close:hover { color: var(--fg); }
+.modal-body { padding: var(--s-4); display: flex; flex-direction: column; gap: var(--s-3); }
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.notice {
+  display: flex;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border-left: 3px solid var(--warning);
+  background: var(--surface);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--fg);
+  line-height: 1.5;
+}
+.notice i { color: var(--warning); font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.notice strong { color: var(--fg); font-weight: 500; }
+
+.caixa-detalhes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-3);
+  padding: var(--s-3);
+  background: var(--bg);
+  border-radius: 4px;
+}
+.det-label {
+  font-size: 11px;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-weight: 500;
+}
+.det-valor {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Formulário ---------- */
+.form-group { display: flex; flex-direction: column; gap: var(--s-1); }
+.form-label { font-size: 12px; color: var(--fg); font-weight: 500; }
+.form-label .required { color: var(--primary); margin-left: 2px; }
+.form-control {
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--fg);
+  caret-color: var(--primary);
+  transition: border-color .15s;
+}
+.form-control::placeholder { color: #999; }
+.form-control:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+  border-color: var(--fg);
+}
+.form-hint { font-size: 11px; color: var(--fg-muted); margin-top: var(--s-1); }
+.form-actions { display: flex; justify-content: flex-end; gap: var(--s-2); margin-top: var(--s-4); }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 900px) {
+  .sidebar { width: 60px; }
+  .sidebar .logo span,
+  .sidebar .nav-menu a span,
+  .sidebar .user-details { display: none; }
+  .sidebar .logo { justify-content: center; padding: 0 0 var(--s-5); gap: 0; }
+  .sidebar .nav-menu a { justify-content: center; padding: var(--s-3); }
+  .sidebar .user-info { justify-content: center; padding: var(--s-3) 0 0; }
+  .main-content { margin-left: 60px; padding: var(--s-3); }
+}
+
+@media (max-width: 600px) {
+  .caixa-ativo-kpis { gap: var(--s-4); }
+  .caixa-ativo-header { flex-direction: column; align-items: stretch; }
+  .filter-bar { flex-direction: column; align-items: stretch; }
+  .filter-group { width: 100%; }
+  .filter-group input,
+  .filter-group select { width: 100%; }
+  .caixa-detalhes { grid-template-columns: 1fr; }
+  .topbar-right { width: 100%; }
+  .topbar-right .btn { flex: 1; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Impressão ---------- */
+@media print {
+  @page { size: A4 portrait; margin: 12mm 10mm; }
+
+  html, body {
+    background: #fff !important;
+    color: #000;
+    display: block !important;
+    font-size: 10pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sidebar,
+  .topbar-right,
+  .filter-bar,
+  .filter-presets,
+  .pag-bar,
+  .actions,
+  .row-expand-btn,
+  .no-print,
+  .modal-backdrop,
+  .card-header-actions,
+  .info-bar,
+  #emptyFiltro,
+  .topbar-back { display: none !important; }
+
+  .main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    gap: 8pt;
+  }
+
+  .print-header { display: flex !important; }
+  .print-header {
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20pt;
+    padding-bottom: 8pt;
+    margin-bottom: 12pt;
+    border-bottom: 2pt solid #000;
+    flex-wrap: wrap;
+  }
+  .print-brand-name {
+    font-size: 16pt;
+    font-weight: 700;
+    letter-spacing: .5pt;
+  }
+  .print-brand-sub {
+    font-size: 9pt;
+    color: #555;
+    line-height: 1.4;
+  }
+  .print-meta {
+    text-align: right;
+    font-size: 9pt;
+    line-height: 1.5;
+    color: #333;
+  }
+  .print-meta strong { color: #000; }
+
+  .topbar {
+    border-bottom: 1pt solid #999;
+    margin-bottom: 10pt;
+    padding-bottom: 6pt;
+  }
+  .topbar-left h1 { font-size: 14pt; }
+  .topbar-left .page-subtitle { font-size: 9pt; color: #555; }
+
+  .card,
+  .caixa-ativo {
+    border: 1pt solid #999 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    page-break-inside: avoid;
+  }
+  .card-header {
+    border-bottom: 1pt solid #999 !important;
+    background: #f5f5f5 !important;
+    padding: 6pt 10pt !important;
+  }
+  .card-header h3 { font-size: 11pt; }
+
+  .data-table thead th {
+    background: #eee !important;
+    border-bottom: 1pt solid #000 !important;
+    color: #000;
+    font-size: 9pt;
+    padding: 5pt 8pt;
+  }
+  .data-table tbody td {
+    border-bottom: 0.5pt solid #ccc !important;
+    font-size: 9pt;
+    padding: 5pt 8pt;
+  }
+  .data-table tbody tr:hover td { background: transparent !important; }
+
+  /* Filtrar linhas visíveis; mostrar todas as páginas */
+  #tbodyCaixas tr[data-visivel="0"] { display: none !important; }
+  #tbodyCaixas tr[data-visivel="1"] { display: table-row !important; }
+  #tbodyCaixas tr.expanded-row { display: none !important; }
+  #tbodyCaixas tr[data-visivel="1"].row-open + tr.expanded-row { display: table-row !important; }
+
+  .expanded-content { padding: 6pt 10pt !important; background: #fafafa !important; }
+  .expanded-title { font-size: 10pt; margin-bottom: 6pt; }
+  .mini-sales-table thead th { background: #f5f5f5 !important; font-size: 8pt; }
+  .mini-sales-table tbody td { font-size: 9pt; }
+
+  .status-badge.status-aberto { color: #16a34a !important; font-weight: 600; }
+  .kpi-value { font-size: 13pt !important; }
+  .kpi-label { font-size: 9pt !important; }
+
+  .caixa-ativo-kpis { padding: 8pt 10pt !important; gap: 10pt !important; }
+
+  #panel-abrir { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<%
+  /* ---------- Helpers server-side ---------- */
+  const listaCaixas = (typeof caixas !== 'undefined' && Array.isArray(caixas)) ? caixas : [];
+  const fmt = n => Number(n || 0).toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Kz';
+
+  const calcSaldo = (c) => {
+    if (c.saldo_final != null) return Number(c.saldo_final);
+    const movs = Array.isArray(c.MovimentoCaixas) ? c.MovimentoCaixas : [];
+    let ent = 0, sai = 0;
+    movs.forEach(m => {
+      const v = Number(m.valor || 0);
+      if (m.tipo === 'entrada') ent += v; else sai += v;
+    });
+    return Number(c.valor_abertura || 0) + ent - sai;
+  };
+
+  const payClass = (forma) => {
+    const f = (forma || '').toLowerCase();
+    if (f === 'dinheiro') return 'pay-dinheiro';
+    if (f === 'tpa' || f === 'cartao_debito' || f === 'cartao_credito') return 'pay-tpa';
+    if (f === 'transferencia') return 'pay-transferencia';
+    return '';
+  };
+
+  const _nomeOperador = (typeof locals !== 'undefined' && locals.utilizador) ? locals.utilizador : 'Operador';
+  const _iniciaisOperador = _nomeOperador.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+  const _norm = s => String(s || '').trim().toLowerCase();
+
+  /* ---------- REGRA DE NEGÓCIO: 1 caixa aberto por funcionário ---------- */
+  const caixasAbertos = listaCaixas.filter(c => c.status === 'aberto');
+  const meuCaixaAberto = caixasAbertos.find(c => _norm(c.Funcionario?.nome) === _norm(_nomeOperador)) || null;
+  const outrosCaixasAbertos = caixasAbertos.filter(c => _norm(c.Funcionario?.nome) !== _norm(_nomeOperador));
+  const _temCaixaAtivoProprio = !!meuCaixaAberto;
+
+  /* ---------- Agregações do MEU caixa ativo ---------- */
+  let ativoSaldo = 0, ativoEntradas = 0, ativoSaidas = 0;
+  let ativoCountEntradas = 0, ativoCountSaidas = 0;
+  let ativoVendasCount = 0, ativoVendasTotal = 0;
+
+  if (meuCaixaAberto) {
+    const movs = meuCaixaAberto.MovimentoCaixas || [];
+    movs.forEach(m => {
+      const v = Number(m.valor || 0);
+      if (m.tipo === 'entrada') { ativoEntradas += v; ativoCountEntradas++; }
+      else { ativoSaidas += v; ativoCountSaidas++; }
+    });
+    const vendasArr = Array.isArray(meuCaixaAberto.Vendas) ? meuCaixaAberto.Vendas : [];
+    ativoVendasCount = vendasArr.length;
+    ativoVendasTotal = vendasArr.reduce((s, v) => s + Number(v.valor_total || 0), 0);
+    ativoSaldo = calcSaldo(meuCaixaAberto);
+  }
+%>
+
+<aside class="sidebar no-print">
+    <div class="logo"><i class="fas fa-globe-americas"></i><span>BOM MUNDO</span></div>
+    <ul class="nav-menu">
+        <li><a href="/dashboard"><i class="fas fa-tachometer-alt"></i><span>Painel principal</span></a></li>
+        <li><a href="/caixa" class="active"><i class="fas fa-cash-register"></i><span>Caixas</span></a></li>
+        <li><a href="/vendas"><i class="fas fa-shopping-cart"></i><span>Vendas</span></a></li>
+        <li><a href="/produtos"><i class="fas fa-boxes"></i><span>Estoque</span></a></li>
+        <li><a href="#"><i class="fas fa-users"></i><span>Clientes</span></a></li>
+        <li><a href="#"><i class="fas fa-chart-bar"></i><span>Relatórios</span></a></li>
+        <li><a href="#"><i class="fas fa-cog"></i><span>Configurações</span></a></li>
+    </ul>
+    <div class="user-info">
+        <div class="user-avatar"><%= _iniciaisOperador %></div>
+        <div class="user-details">
+            <div class="user-name"><%= _nomeOperador %></div>
+            <div class="user-role">Gerente</div>
+        </div>
+    </div>
+</aside>
+
+<main class="main-content">
+
+    <!-- Print-only header -->
+    <div class="print-header">
+        <div>
+            <div class="print-brand-name">BOM MUNDO</div>
+            <div class="print-brand-sub">Comércio Geral e Prestação de Serviços</div>
+            <div class="print-brand-sub">NIF: 5000000000 · Luanda, Angola</div>
+        </div>
+        <div class="print-meta">
+            <div><strong>Relatório:</strong> Gestão de Caixas</div>
+            <div><strong>Emitido:</strong> <span id="printEmitido">—</span></div>
+            <div><strong>Operador:</strong> <%= _nomeOperador %></div>
+        </div>
+    </div>
+
+    <div class="topbar">
+        <div class="topbar-left">
+            <h1 id="page-title">Gestão de caixas</h1>
+            <div class="page-subtitle" id="page-subtitle">
+                <span>Aberturas, fechos e movimentos</span>
+                <span class="sep">·</span>
+                <span><kbd>/</kbd> pesquisar</span>
+                <span class="sep">·</span>
+                <span><kbd>Ctrl</kbd>+<kbd>P</kbd> imprimir</span>
+                <span class="sep">·</span>
+                <span><kbd>Esc</kbd> voltar</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <!-- Acções da lista -->
+            <div id="topbar-lista-actions" style="display: flex; gap: var(--s-2); flex-wrap: wrap;">
+                <button type="button" class="btn btn-outline" onclick="imprimir()">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+                <a href="/vendas/nova" class="btn btn-outline">
+                    <i class="fas fa-shopping-cart"></i> Nova venda
+                </a>
+                <% if (_temCaixaAtivoProprio) { %>
+                <button type="button" class="btn btn-primary" disabled
+                        title="Já tem um caixa em aberto (#<%= meuCaixaAberto.id %>). Feche-o antes de abrir outro.">
+                    <i class="fas fa-lock"></i> Abrir novo caixa
+                </button>
+                <% } else { %>
+                <button type="button" class="btn btn-primary" onclick="mostrarAbrirCaixa()">
+                    <i class="fas fa-plus"></i> Abrir novo caixa
+                </button>
+                <% } %>
+            </div>
+
+            <!-- Acções do formulário de abertura -->
+            <div id="topbar-abrir-actions" style="display: none; gap: var(--s-2); flex-wrap: wrap;">
+                <button type="button" class="btn btn-outline" onclick="imprimir()">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+                <button type="button" class="btn btn-outline" onclick="mostrarLista()">
+                    <i class="fas fa-arrow-left"></i> Voltar à lista
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aviso quando outro(s) funcionário(s) têm caixa(s) aberto(s) -->
+    <% if (outrosCaixasAbertos.length > 0) { %>
+    <div class="info-bar no-print">
+        <i class="fas fa-info-circle"></i>
+        <div>
+            <strong><%= outrosCaixasAbertos.length %></strong>
+            outro<%= outrosCaixasAbertos.length === 1 ? '' : 's' %>
+            caixa<%= outrosCaixasAbertos.length === 1 ? '' : 's' %>
+            em operação por outro<%= outrosCaixasAbertos.length === 1 ? '' : 's' %> funcionário<%= outrosCaixasAbertos.length === 1 ? '' : 's' %>.
+        </div>
+    </div>
+    <% } %>
+
+    <!-- ============================================================
+         PAINEL: LISTA
+         ============================================================ -->
+    <div id="panel-lista">
+
+        <% if (meuCaixaAberto) { %>
+        <section class="caixa-ativo">
+            <div class="caixa-ativo-header">
+                <span class="caixa-ativo-status">Em operação</span>
+                <div class="caixa-ativo-title">
+                    Caixa #<%= meuCaixaAberto.id %>
+                    <span>· <%= meuCaixaAberto.Funcionario?.nome || '—' %> · Seu caixa</span>
+                </div>
+                <div class="caixa-ativo-actions no-print">
+                    <a href="/caixa/<%= meuCaixaAberto.id %>" class="btn btn-outline btn-sm">
+                        Ver detalhes
+                    </a>
+                    <button type="button" class="btn btn-outline btn-sm btn-fechar"
+                            onclick="abrirModalFecharCaixa(<%= meuCaixaAberto.id %>, '<%= (meuCaixaAberto.Funcionario?.nome || '').replace(/'/g, "\\'") %>', '<%= fmt(ativoSaldo) %>')">
+                        <i class="fas fa-lock"></i> Fechar caixa
+                    </button>
+                </div>
+            </div>
+
+            <div class="caixa-ativo-kpis">
+                <div class="kpi kpi-primary">
+                    <span class="kpi-label">Saldo atual</span>
+                    <span class="kpi-value"><%= fmt(ativoSaldo) %></span>
+                    <span class="kpi-sub">Após todos os movimentos</span>
+                </div>
+                <div class="kpi kpi-success">
+                    <span class="kpi-label">Entradas</span>
+                    <span class="kpi-value"><%= fmt(ativoEntradas) %></span>
+                    <span class="kpi-sub"><%= ativoCountEntradas %> <%= ativoCountEntradas === 1 ? 'movimento' : 'movimentos' %></span>
+                </div>
+                <div class="kpi kpi-warning">
+                    <span class="kpi-label">Saídas</span>
+                    <span class="kpi-value"><%= fmt(ativoSaidas) %></span>
+                    <span class="kpi-sub"><%= ativoCountSaidas %> <%= ativoCountSaidas === 1 ? 'movimento' : 'movimentos' %></span>
+                </div>
+                <div class="kpi">
+                    <span class="kpi-label">Vendas</span>
+                    <span class="kpi-value"><%= ativoVendasCount %></span>
+                    <span class="kpi-sub">Total: <%= fmt(ativoVendasTotal) %></span>
+                </div>
+            </div>
+        </section>
+        <% } %>
+
+        <div class="card" style="margin-top: var(--s-4);">
+            <div class="card-header">
+                <h3>Todos os caixas</h3>
+                <div class="card-header-actions">
+                    <button type="button" class="btn btn-outline btn-sm no-print" onclick="expandirTodas()" title="Expandir todas as linhas">
+                        <i class="fas fa-angles-down"></i> Expandir
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm no-print" onclick="recolherTodas()" title="Recolher todas as linhas">
+                        <i class="fas fa-angles-up"></i> Recolher
+                    </button>
+                    <span class="counter" id="contadorLabel"><%= listaCaixas.length %> registo<%= listaCaixas.length === 1 ? '' : 's' %></span>
+                </div>
+            </div>
+
+            <% if (listaCaixas.length === 0) { %>
+                <div class="empty">
+                    Sem caixas registados.
+                    <% if (!_temCaixaAtivoProprio) { %>
+                        <button type="button" class="link" onclick="mostrarAbrirCaixa()">Abrir primeiro caixa</button>.
+                    <% } %>
+                </div>
+            <% } else { %>
+
+                <!-- Presets de filtro rápido -->
+                <div class="filter-presets no-print">
+                    <button type="button" class="preset-chip" data-preset="hoje" onclick="aplicarPreset('hoje')">Hoje</button>
+                    <button type="button" class="preset-chip" data-preset="abertos" onclick="aplicarPreset('abertos')">Abertos</button>
+                    <button type="button" class="preset-chip" data-preset="fechados" onclick="aplicarPreset('fechados')">Fechados</button>
+                    <button type="button" class="preset-chip active" data-preset="todos" onclick="aplicarPreset('todos')">Todos</button>
+                </div>
+
+                <div class="filter-bar no-print">
+                    <div class="filter-group">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="filtroTexto" placeholder="Pesquisar ID ou funcionário">
+                    </div>
+                    <div class="filter-group">
+                        <i class="fas fa-filter"></i>
+                        <select id="filtroStatus">
+                            <option value="">Todos os estados</option>
+                            <option value="aberto">Abertos</option>
+                            <option value="fechado">Fechados</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <i class="fas fa-calendar"></i>
+                        <input type="date" id="filtroData">
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="data-table" id="tabelaCaixas">
+                        <thead>
+                            <tr>
+                                <th style="width:36px;"></th>
+                                <th style="width:70px;">ID</th>
+                                <th>Funcionário</th>
+                                <th style="width:140px;">Abertura</th>
+                                <th style="width:140px;">Fecho</th>
+                                <th class="text-end" style="width:120px;">Valor inicial</th>
+                                <th class="text-end" style="width:120px;">Saldo atual</th>
+                                <th class="text-center" style="width:90px;">Estado</th>
+                                <th class="text-center" style="width:100px;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyCaixas">
+                            <% listaCaixas.forEach(c => {
+                                const iniciais = (c.Funcionario?.nome || '??').split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+                                const dataAb = c.data_abertura
+                                  ? new Date(c.data_abertura).toLocaleString('pt-AO', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                                  : '—';
+                                const dataFe = c.data_fecho
+                                  ? new Date(c.data_fecho).toLocaleString('pt-AO', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                                  : '—';
+                                const isAberto = c.status === 'aberto';
+                                const saldoFmt = fmt(calcSaldo(c));
+                                const vendasArr = Array.isArray(c.Vendas) ? c.Vendas : [];
+                                const vendasCount = vendasArr.length;
+                                const formasPgto = {
+                                    'dinheiro': 'Dinheiro',
+                                    'cartao_debito': 'TPA',
+                                    'Tpa': 'TPA',
+                                    'cartao_credito': 'Cartão Crédito',
+                                    'transferencia': 'Transferência'
+                                };
+                            %>
+                            <tr data-id="<%= c.id %>" data-status="<%= c.status %>" data-funcionario="<%= (c.Funcionario?.nome || '').toLowerCase() %>" data-data="<%= c.data_abertura || '' %>">
+                                <td class="text-center">
+                                    <button type="button" class="row-expand-btn no-print"
+                                            onclick="toggleRow(<%= c.id %>)"
+                                            aria-expanded="false"
+                                            aria-label="Ver vendas do caixa <%= c.id %>"
+                                            title="Ver vendas">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                </td>
+                                <td><span class="id-tag">#<%= c.id %></span></td>
+                                <td>
+                                    <div class="func-cell">
+                                        <span class="func-avatar"><%= iniciais %></span>
+                                        <span class="func-nome"><%= c.Funcionario?.nome || '—' %></span>
+                                    </div>
+                                </td>
+                                <td><%= dataAb %></td>
+                                <td><%= dataFe %></td>
+                                <td class="text-end"><%= fmt(c.valor_abertura) %></td>
+                                <td class="text-end <%= isAberto ? 'text-success' : '' %>">
+                                    <%= saldoFmt %>
+                                </td>
+                                <td class="text-center">
+                                    <span class="status-badge status-<%= c.status %>">
+                                        <%= isAberto ? 'Aberto' : 'Fechado' %>
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="actions no-print">
+                                        <a href="/caixa/<%= c.id %>" class="btn btn-outline btn-sm btn-icon"
+                                           title="Ver detalhes" aria-label="Ver detalhes do caixa <%= c.id %>">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <% if (isAberto) { %>
+                                        <button type="button" class="btn btn-outline btn-sm btn-icon btn-fechar"
+                                                onclick="abrirModalFecharCaixa(<%= c.id %>, '<%= (c.Funcionario?.nome || '').replace(/'/g, "\\'") %>', '<%= saldoFmt %>')"
+                                                title="Fechar caixa" aria-label="Fechar caixa <%= c.id %>">
+                                            <i class="fas fa-lock"></i>
+                                        </button>
+                                        <% } %>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="expanded-row" data-for="<%= c.id %>" style="display:none;">
+                                <td colspan="9">
+                                    <div class="expanded-content">
+                                        <div class="expanded-title">
+                                            Vendas do caixa #<%= c.id %>
+                                            <span class="count-badge <%= vendasCount === 0 ? 'neutral' : '' %>"><%= vendasCount %></span>
+                                        </div>
+
+                                        <% if (vendasCount > 0) { %>
+                                            <table class="mini-sales-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:60px;">#</th>
+                                                        <th style="width:160px;">Data / hora</th>
+                                                        <th>Pagamento</th>
+                                                        <th class="text-end" style="width:120px;">Valor</th>
+                                                        <th style="width:50px;" class="no-print"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% vendasArr.forEach(v => { %>
+                                                        <tr>
+                                                            <td><strong>#<%= v.id %></strong></td>
+                                                            <td><%= new Date(v.data_venda).toLocaleString('pt-AO') %></td>
+                                                            <td>
+                                                                <span class="pay-method <%= payClass(v.forma_pagamento) %>">
+                                                                    <%= formasPgto[v.forma_pagamento] || v.forma_pagamento %>
+                                                                </span>
+                                                            </td>
+                                                            <td class="text-end"><strong><%= fmt(v.valor_total) %></strong></td>
+                                                            <td class="no-print">
+                                                                <a href="/vendas/<%= v.id %>" class="btn btn-outline btn-sm btn-icon"
+                                                                   title="Ver factura" aria-label="Ver factura <%= v.id %>">
+                                                                    <i class="fas fa-file-invoice"></i>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    <% }); %>
+                                                </tbody>
+                                            </table>
+                                        <% } else { %>
+                                            <div class="no-sales">Sem vendas neste caixa.</div>
+                                        <% } %>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="empty" id="emptyFiltro" style="display:none;">
+                    Sem resultados. Ajuste os filtros.
+                </div>
+
+                <div class="pag-bar no-print">
+                    <span id="pagInfo">—</span>
+                    <div class="pag-controls" id="pagControls"></div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         PAINEL: ABRIR CAIXA (inline)
+         ============================================================ -->
+    <div id="panel-abrir" style="display: none;">
+        <div class="panel-abrir-wrap">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Abertura de caixa</h3>
+                </div>
+                <div style="padding: var(--s-4);">
+                    <% if (_temCaixaAtivoProprio) { %>
+                        <div class="notice" style="margin-bottom: var(--s-4);">
+                            <i class="fas fa-lock"></i>
+                            <div>
+                                <strong>Já tem um caixa em aberto (#<%= meuCaixaAberto.id %>).</strong>
+                                Feche-o antes de abrir um novo caixa.
+                            </div>
+                        </div>
+                    <% } %>
+                    <form method="POST" action="/caixa/abrir" onsubmit="return validarAberturaCaixa();">
+                        <div class="form-group">
+                            <label class="form-label" for="valor_abertura">Valor de abertura (Kz)</label>
+                            <input type="number" id="valor_abertura" name="valor_abertura" class="form-control"
+                                   step="0.01" min="0" value="0" required <%= _temCaixaAtivoProprio ? 'disabled' : '' %>>
+                            <div class="form-hint">Dinheiro disponível no caixa no momento da abertura.</div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline" onclick="mostrarLista()">Cancelar</button>
+                            <button type="submit" class="btn btn-primary" <%= _temCaixaAtivoProprio ? 'disabled' : '' %>>
+                                <i class="fas fa-lock-open"></i> Abrir caixa
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- MODAL: FECHAR CAIXA -->
+<div class="modal-backdrop no-print" id="fecharCaixaModal" onclick="if (event.target === this) fecharModalFechar()">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="fecharCaixaTitulo">
+        <div class="modal-header">
+            <h3 id="fecharCaixaTitulo">Confirmar fecho de caixa</h3>
+            <button type="button" class="modal-close" onclick="fecharModalFechar()" aria-label="Fechar">&times;</button>
+        </div>
+
+        <form id="fecharCaixaForm" method="POST" action="">
+            <div class="modal-body">
+                <div class="notice">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <strong>Operação sensível.</strong> Confirme com a senha do operador que abriu o caixa ou de um administrador.
+                    </div>
+                </div>
+
+                <div class="caixa-detalhes">
+                    <div>
+                        <div class="det-label">Caixa</div>
+                        <div class="det-valor" id="modalFecharCaixaId">#—</div>
+                    </div>
+                    <div>
+                        <div class="det-label">Operador</div>
+                        <div class="det-valor" id="modalFecharOperador">—</div>
+                    </div>
+                    <div style="grid-column: 1 / -1;">
+                        <div class="det-label">Saldo atual</div>
+                        <div class="det-valor text-success" id="modalFecharSaldo">—</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="senhaFechar">
+                        Senha de confirmação <span class="required">*</span>
+                    </label>
+                    <input type="password" id="senhaFechar" name="senha" class="form-control"
+                           placeholder="Introduza a sua senha" autocomplete="current-password" required>
+                    <div class="form-hint">A senha será validada pelo sistema antes de efetivar o fecho.</div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="fecharModalFechar()">Cancelar</button>
+                <button type="submit" class="btn btn-primary" id="btnConfirmarFecho">
+                    <i class="fas fa-lock"></i> Confirmar fecho
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+/* ============================================================
+   BUSINESS RULE
+   ============================================================ */
+const TEM_CAIXA_ATIVO_PROPRIO = <%= _temCaixaAtivoProprio ? 'true' : 'false' %>;
+
+function validarAberturaCaixa() {
+    if (TEM_CAIXA_ATIVO_PROPRIO) {
+        alert('Já tem um caixa em aberto. Feche-o antes de abrir outro.');
+        return false;
+    }
+    return true;
+}
+
+/* ============================================================
+   NAVEGAÇÃO ENTRE PAINÉIS
+   ============================================================ */
+function mostrarAbrirCaixa() {
+    if (TEM_CAIXA_ATIVO_PROPRIO) return;
+    document.getElementById('panel-lista').style.display = 'none';
+    document.getElementById('panel-abrir').style.display = '';
+    document.getElementById('page-title').textContent = 'Abrir caixa';
+    document.getElementById('page-subtitle').innerHTML =
+        '<span>Abertura de um novo caixa</span>' +
+        '<span class="sep">·</span><span><kbd>Esc</kbd> voltar</span>';
+    document.getElementById('topbar-lista-actions').style.display = 'none';
+    document.getElementById('topbar-abrir-actions').style.display = 'flex';
+    setTimeout(() => document.getElementById('valor_abertura')?.focus(), 50);
+}
+
+function mostrarLista() {
+    document.getElementById('panel-abrir').style.display = 'none';
+    document.getElementById('panel-lista').style.display = '';
+    document.getElementById('page-title').textContent = 'Gestão de caixas';
+    document.getElementById('page-subtitle').innerHTML =
+        '<span>Aberturas, fechos e movimentos</span>' +
+        '<span class="sep">·</span><span><kbd>/</kbd> pesquisar</span>' +
+        '<span class="sep">·</span><span><kbd>Ctrl</kbd>+<kbd>P</kbd> imprimir</span>' +
+        '<span class="sep">·</span><span><kbd>Esc</kbd> voltar</span>';
+    document.getElementById('topbar-lista-actions').style.display = 'flex';
+    document.getElementById('topbar-abrir-actions').style.display = 'none';
+}
+
+/* ============================================================
+   IMPRESSÃO
+   ============================================================ */
+function imprimir() {
+    window.print();
+}
+
+window.addEventListener('beforeprint', () => {
+    const el = document.getElementById('printEmitido');
+    if (el) el.textContent = new Date().toLocaleString('pt-AO');
+});
+
+/* ============================================================
+   MODAL: FECHAR CAIXA
+   ============================================================ */
+function abrirModalFecharCaixa(caixaId, operador, saldo) {
+    const modal = document.getElementById('fecharCaixaModal');
+    const form = document.getElementById('fecharCaixaForm');
+    const inputSenha = document.getElementById('senhaFechar');
+
+    document.getElementById('modalFecharCaixaId').textContent = '#' + caixaId;
+    document.getElementById('modalFecharOperador').textContent = operador || '—';
+    document.getElementById('modalFecharSaldo').textContent = saldo || '—';
+
+    form.action = '/caixa/fechar/' + caixaId;
+
+    if (inputSenha) {
+        inputSenha.value = '';
+        setTimeout(() => inputSenha.focus(), 100);
+    }
+
+    const btn = document.getElementById('btnConfirmarFecho');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-lock"></i> Confirmar fecho';
+
+    modal.classList.add('open');
+}
+
+function fecharModalFechar() {
+    document.getElementById('fecharCaixaModal').classList.remove('open');
+    const inputSenha = document.getElementById('senhaFechar');
+    if (inputSenha) inputSenha.value = '';
+}
+
+const formFechar = document.getElementById('fecharCaixaForm');
+if (formFechar) {
+    formFechar.addEventListener('submit', function (e) {
+        const senha = document.getElementById('senhaFechar').value.trim();
+        if (!senha) {
+            e.preventDefault();
+            document.getElementById('senhaFechar').focus();
+            return;
+        }
+        const btn = document.getElementById('btnConfirmarFecho');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A validar…';
+    });
+}
+
+/* ============================================================
+   TOGGLE / EXPANDIR / RECOLHER LINHAS
+   ============================================================ */
+function toggleRow(id) {
+    const main = document.querySelector(`tr[data-id="${id}"]:not(.expanded-row)`);
+    const expanded = document.querySelector(`tr.expanded-row[data-for="${id}"]`);
+    if (!main || !expanded) return;
+
+    const isOpen = main.classList.toggle('row-open');
+    expanded.style.display = isOpen ? '' : 'none';
+
+    const btn = main.querySelector('.row-expand-btn');
+    if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+
+function expandirTodas() {
+    getLinhas().forEach(tr => {
+        if (tr.dataset.visivel === '0') return;
+        if (tr.style.display === 'none') return;
+        tr.classList.add('row-open');
+        const expanded = document.querySelector(`tr.expanded-row[data-for="${tr.dataset.id}"]`);
+        if (expanded) expanded.style.display = '';
+        const btn = tr.querySelector('.row-expand-btn');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+    });
+}
+
+function recolherTodas() {
+    getLinhas().forEach(tr => {
+        tr.classList.remove('row-open');
+        const expanded = document.querySelector(`tr.expanded-row[data-for="${tr.dataset.id}"]`);
+        if (expanded) expanded.style.display = 'none';
+        const btn = tr.querySelector('.row-expand-btn');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+    });
+}
+
+/* ============================================================
+   FILTROS + PAGINAÇÃO
+   ============================================================ */
+const state = { page: 1, perPage: 10, texto: '', status: '', data: '' };
+
+function getLinhas() {
+    return [...document.querySelectorAll('#tbodyCaixas tr:not(.expanded-row)')];
+}
+
+function aplicarFiltros() {
+    let visiveis = 0;
+    getLinhas().forEach(tr => {
+        const id = tr.dataset.id;
+        const func = tr.dataset.funcionario || '';
+        const status = tr.dataset.status;
+        const dataIso = tr.dataset.data ? tr.dataset.data.slice(0, 10) : '';
+
+        const okTexto = !state.texto || id.includes(state.texto) || func.includes(state.texto);
+        const okStatus = !state.status || status === state.status;
+        const okData = !state.data || dataIso === state.data;
+
+        const match = okTexto && okStatus && okData;
+        tr.dataset.visivel = match ? '1' : '0';
+        if (match) visiveis++;
+
+        const expanded = document.querySelector(`tr.expanded-row[data-for="${id}"]`);
+        if (expanded && !match) expanded.style.display = 'none';
+    });
+    return visiveis;
+}
+
+function renderPaginacao(totalVisivel) {
+    const totalPag = Math.max(1, Math.ceil(totalVisivel / state.perPage));
+    if (state.page > totalPag) state.page = totalPag;
+
+    const visiveis = getLinhas().filter(tr => tr.dataset.visivel === '1');
+    visiveis.forEach((tr, i) => {
+        const dentro = (i >= (state.page - 1) * state.perPage) && (i < state.page * state.perPage);
+        tr.style.display = dentro ? '' : 'none';
+
+        const expanded = document.querySelector(`tr.expanded-row[data-for="${tr.dataset.id}"]`);
+        if (expanded) {
+            const isOpen = tr.classList.contains('row-open');
+            expanded.style.display = (dentro && isOpen) ? '' : 'none';
+        }
+    });
+
+    const ini = totalVisivel === 0 ? 0 : (state.page - 1) * state.perPage + 1;
+    const fim = Math.min(state.page * state.perPage, totalVisivel);
+    const info = document.getElementById('pagInfo');
+    if (info) info.textContent = totalVisivel === 0 ? 'Sem resultados' : `Mostrando ${ini}–${fim} de ${totalVisivel}`;
+
+    const c = document.getElementById('pagControls');
+    if (!c) return;
+    if (totalPag <= 1) { c.innerHTML = ''; return; }
+
+    const btns = [];
+    btns.push(`<button class="pag-btn" ${state.page === 1 ? 'disabled' : ''} data-go="${state.page - 1}">‹</button>`);
+    for (let p = 1; p <= totalPag; p++) {
+        if (p === 1 || p === totalPag || Math.abs(p - state.page) <= 1) {
+            btns.push(`<button class="pag-btn ${p === state.page ? 'active' : ''}" data-go="${p}">${p}</button>`);
+        } else if (Math.abs(p - state.page) === 2) {
+            btns.push(`<span style="padding: 0 var(--s-1); color: var(--fg-muted);">…</span>`);
+        }
+    }
+    btns.push(`<button class="pag-btn" ${state.page === totalPag ? 'disabled' : ''} data-go="${state.page + 1}">›</button>`);
+    c.innerHTML = btns.join('');
+
+    c.querySelectorAll('[data-go]').forEach(b => {
+        b.addEventListener('click', () => {
+            if (b.disabled) return;
+            state.page = parseInt(b.dataset.go, 10);
+            renderPaginacao(aplicarFiltros());
+        });
+    });
+}
+
+function atualizarPresets() {
+    const hoje = new Date().toISOString().slice(0, 10);
+    document.querySelectorAll('.preset-chip').forEach(c => {
+        c.classList.remove('active');
+        const p = c.dataset.preset;
+        const ativo =
+            (p === 'hoje'     && state.data === hoje && !state.status && !state.texto) ||
+            (p === 'abertos'  && state.status === 'aberto'  && !state.data && !state.texto) ||
+            (p === 'fechados' && state.status === 'fechado' && !state.data && !state.texto) ||
+            (p === 'todos'    && !state.data && !state.status && !state.texto);
+        if (ativo) c.classList.add('active');
+    });
+}
+
+function aplicarPreset(preset) {
+    state.texto = '';
+    state.data = '';
+    state.status = '';
+    state.page = 1;
+    document.getElementById('filtroTexto').value = '';
+    document.getElementById('filtroData').value = '';
+    document.getElementById('filtroStatus').value = '';
+
+    if (preset === 'hoje') {
+        const hoje = new Date().toISOString().slice(0, 10);
+        state.data = hoje;
+        document.getElementById('filtroData').value = hoje;
+    } else if (preset === 'abertos') {
+        state.status = 'aberto';
+        document.getElementById('filtroStatus').value = 'aberto';
+    } else if (preset === 'fechados') {
+        state.status = 'fechado';
+        document.getElementById('filtroStatus').value = 'fechado';
+    }
+    renderLista();
+}
+
+function renderLista() {
+    const total = aplicarFiltros();
+    renderPaginacao(total);
+
+    const empty = document.getElementById('emptyFiltro');
+    const tabela = document.getElementById('tabelaCaixas');
+    const pag = document.querySelector('.pag-bar');
+    const filtros = document.querySelector('.filter-bar');
+
+    if (empty) empty.style.display = total === 0 ? 'block' : 'none';
+    if (tabela) tabela.style.display = total === 0 ? 'none' : '';
+    if (pag) pag.style.display = total === 0 ? 'none' : 'flex';
+    if (filtros) filtros.style.display = 'flex';
+
+    const cont = document.getElementById('contadorLabel');
+    if (cont) cont.textContent = total + ' de ' + getLinhas().length + ' registos';
+
+    atualizarPresets();
+}
+
+document.getElementById('filtroTexto')?.addEventListener('input', e => {
+    state.texto = e.target.value.toLowerCase().trim();
+    state.page = 1;
+    renderLista();
+});
+document.getElementById('filtroStatus')?.addEventListener('change', e => {
+    state.status = e.target.value;
+    state.page = 1;
+    renderLista();
+});
+document.getElementById('filtroData')?.addEventListener('change', e => {
+    state.data = e.target.value;
+    state.page = 1;
+    renderLista();
+});
+
+/* ============================================================
+   ATALHOS
+   ============================================================ */
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        if (document.getElementById('fecharCaixaModal').classList.contains('open')) {
+            fecharModalFechar();
+            return;
+        }
+        if (document.getElementById('panel-abrir').style.display !== 'none') {
+            mostrarLista();
+            return;
+        }
+    }
+    // Atalhos — ignorar se está a escrever
+    const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
+    if (isTyping) return;
+
+    if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        if (document.getElementById('panel-lista').style.display !== 'none') {
+            document.getElementById('filtroTexto')?.focus();
+        }
+    }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+if (getLinhas().length) renderLista();
+</script>
+</body>
+</html>

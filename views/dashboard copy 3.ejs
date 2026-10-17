@@ -1,0 +1,1331 @@
+<%
+  /* ══════════════════════════════════════════════════════════
+     DADOS BASE (server-side)
+     ══════════════════════════════════════════════════════════ */
+  const _op = (
+    (typeof utilizador !== 'undefined' && utilizador) ? utilizador :
+    ((typeof usuario !== 'undefined' && usuario) ? usuario :
+    ((typeof usuário !== 'undefined' && usuário) ? usuário : 'Operador'))
+  );
+  const _iniciais = _op.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+
+  const _vendas   = (typeof vendas   !== 'undefined' && Array.isArray(vendas))   ? vendas   : [];
+  const _produtos = (typeof produtos !== 'undefined' && Array.isArray(produtos)) ? produtos : [];
+  const _caixas   = (typeof caixas   !== 'undefined' && Array.isArray(caixas))   ? caixas   : [];
+  const _clientes = (typeof clientes !== 'undefined' && Array.isArray(clientes)) ? clientes : [];
+
+  const _fmt = n => Number(n || 0).toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const _fmtM = n => {
+    const v = Number(n || 0);
+    if (Math.abs(v) >= 1000000) return (v / 1000000).toFixed(1) + 'M';
+    if (Math.abs(v) >= 1000) return (v / 1000).toFixed(1) + 'k';
+    return v.toFixed(0);
+  };
+
+  /* ─── Datas ─── */
+  const _agora = new Date();
+  const _diaLocal = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const _hojeStr = _diaLocal(_agora);
+  const _mesAtual = _agora.getMonth();
+  const _anoAtual = _agora.getFullYear();
+  const _iniMes = new Date(_anoAtual, _mesAtual, 1);
+
+  /* ─── Normalizar vendas ─── */
+  const _v = _vendas
+    .map(v => {
+      try {
+        const d = new Date(v.data_venda);
+        if (isNaN(d.getTime())) return null;
+        return {
+          ...v,
+          _d: d,
+          _diaStr: _diaLocal(d),
+          _valor: Number(v.valor_total || 0),
+          _desc: Number(v.desconto || 0),
+          _liq: Math.max(0, Number(v.valor_total || 0) - Number(v.desconto || 0))
+        };
+      } catch (e) { return null; }
+    })
+    .filter(Boolean);
+
+  /* ─── Períodos ─── */
+  const _vHoje = _v.filter(v => v._diaStr === _hojeStr);
+  const _vMes  = _v.filter(v => v._d >= _iniMes);
+  const _ini7  = new Date(_agora); _ini7.setDate(_ini7.getDate() - 6);
+  const _ini30 = new Date(_agora); _ini30.setDate(_ini30.getDate() - 29);
+  const _v7    = _v.filter(v => v._d >= _ini7);
+  const _v30   = _v.filter(v => v._d >= _ini30);
+
+  const _totalHoje  = _vHoje.reduce((s, v) => s + v._liq, 0);
+  const _countHoje  = _vHoje.length;
+  const _ticketHoje = _countHoje ? _totalHoje / _countHoje : 0;
+  const _totalMes   = _vMes.reduce((s, v) => s + v._liq, 0);
+  const _countMes   = _vMes.length;
+  const _total7     = _v7.reduce((s, v) => s + v._liq, 0);
+  const _total30    = _v30.reduce((s, v) => s + v._liq, 0);
+
+  /* ─── Top funcionários (mês) ─── */
+  const _byFunc = {};
+  _vMes.forEach(v => {
+    const nome = (v.Funcionario && v.Funcionario.nome) || '—';
+    if (!_byFunc[nome]) _byFunc[nome] = { count: 0, total: 0 };
+    _byFunc[nome].count++;
+    _byFunc[nome].total += v._liq;
+  });
+  const _topFunc = Object.entries(_byFunc)
+    .map(([nome, d]) => ({ nome, ...d }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 3);
+
+  /* ─── Top produtos (mês) ─── */
+  const _byProd = {};
+  _vMes.forEach(v => {
+    const itens = Array.isArray(v.ItemVendas) ? v.ItemVendas : [];
+    itens.forEach(item => {
+      const nome = (item.Produto && item.Produto.nome) || '—';
+      if (!_byProd[nome]) _byProd[nome] = { qtd: 0, receita: 0 };
+      _byProd[nome].qtd += Number(item.quantidade || 0);
+      _byProd[nome].receita += Number(item.subtotal || 0);
+    });
+  });
+  const _topProd = Object.entries(_byProd)
+    .map(([nome, d]) => ({ nome, ...d }))
+    .sort((a, b) => b.receita - a.receita)
+    .slice(0, 5);
+  const _maxProdReceita = _topProd[0] ? _topProd[0].receita : 1;
+
+  /* ─── Maior venda do mês ─── */
+  const _maiorVenda = _vMes.length
+    ? _vMes.reduce((max, v) => v._liq > max._liq ? v : max, _vMes[0])
+    : null;
+
+  /* ─── Chart 7 dias ─── */
+  const _chart7 = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(_agora); d.setDate(d.getDate() - i);
+    const ds = _diaLocal(d);
+    const total = _v.filter(x => x._diaStr === ds).reduce((s, v) => s + v._liq, 0);
+    _chart7.push({
+      dia: ds,
+      label: d.toLocaleDateString('pt-AO', { weekday: 'short' }).replace('.', ''),
+      labelLonga: d.toLocaleDateString('pt-AO', { weekday: 'long', day: '2-digit', month: '2-digit' }),
+      total
+    });
+  }
+
+  /* ─── Chart 30 dias ─── */
+  const _chart30 = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(_agora); d.setDate(d.getDate() - i);
+    const ds = _diaLocal(d);
+    const total = _v.filter(x => x._diaStr === ds).reduce((s, v) => s + v._liq, 0);
+    _chart30.push({
+      dia: ds,
+      label: d.toLocaleDateString('pt-AO', { day: '2-digit', month: '2-digit' }),
+      labelLonga: d.toLocaleDateString('pt-AO', { day: '2-digit', month: 'long' }),
+      total
+    });
+  }
+
+  /* ─── Pagamentos (30 dias) ─── */
+  const _formasLabel = {
+    'dinheiro':       { nome: 'Dinheiro',           classe: 'pay-dinheiro' },
+    'cartao_debito':  { nome: 'TPA (Multicaixa)',   classe: 'pay-tpa' },
+    'Tpa':            { nome: 'TPA (Multicaixa)',   classe: 'pay-tpa' },
+    'cartao_credito': { nome: 'Cartão de Crédito',  classe: 'pay-tpa' },
+    'transferencia':  { nome: 'Transferência',      classe: 'pay-transferencia' }
+  };
+  const _byForma = {};
+  _v30.forEach(v => {
+    const f = v.forma_pagamento || 'outro';
+    if (!_byForma[f]) _byForma[f] = { count: 0, total: 0 };
+    _byForma[f].count++;
+    _byForma[f].total += v._liq;
+  });
+  const _formasOrdenadas = Object.entries(_byForma).sort((a, b) => b[1].total - a[1].total);
+
+  /* ─── Últimas 5 vendas ─── */
+  const _ultimasVendas = [..._v].sort((a, b) => b._d - a._d).slice(0, 5);
+
+  /* ─── Stock ─── */
+  const _totalProdutos = _produtos.length;
+  const _totalStock = _produtos.reduce((s, p) => s + Number(p.quantidade_estoque || 0), 0);
+  const _stockBaixoLista = _produtos.filter(p => {
+    const q = Number(p.quantidade_estoque || 0);
+    const min = Number(p.quantidade_minima || 5);
+    return q > 0 && q <= min;
+  });
+  const _semStockLista = _produtos.filter(p => Number(p.quantidade_estoque || 0) <= 0);
+  const _valorInventario = _produtos.reduce((s, p) => s + (Number(p.preco_venda || 0) * Number(p.quantidade_estoque || 0)), 0);
+  const _alertasStock = [..._semStockLista, ..._stockBaixoLista].slice(0, 6);
+
+  /* ─── Clientes ─── */
+  const _totalClientes = _clientes.length;
+
+  /* ─── Caixa ─── */
+  const _caixaAberto = _caixas.find(c => c.status === 'aberto') || null;
+  let _saldoCaixa = 0;
+  if (_caixaAberto) {
+    if (_caixaAberto.saldo_final != null) _saldoCaixa = Number(_caixaAberto.saldo_final);
+    else {
+      const movs = Array.isArray(_caixaAberto.MovimentoCaixas) ? _caixaAberto.MovimentoCaixas : [];
+      let ent = 0, sai = 0;
+      movs.forEach(m => { const val = Number(m.valor || 0); if (m.tipo === 'entrada') ent += val; else sai += val; });
+      _saldoCaixa = Number(_caixaAberto.valor_abertura || 0) + ent - sai;
+    }
+  }
+
+  /* ─── Data/hora curta ─── */
+  const _dataHoraCurta = iso => {
+    try {
+      return new Date(iso).toLocaleString('pt-AO', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    } catch (e) { return '—'; }
+  };
+%>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel principal — Bom Mundo</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --primary: #E53935; --primary-dark: #c62828; --primary-soft: #FFF5F5;
+  --dark: #2E2E2E; --dark-2: #3a3a3a;
+  --success: #4CAF50; --success-dark: #2E7D32; --success-soft: #E8F5E9;
+  --warning: #FF9800; --warning-dark: #E65100; --warning-soft: #FFF8E1;
+  --info: #2196F3; --info-dark: #1565C0; --info-soft: #E3F2FD;
+
+  --bg: #F5F6F8; --surface: #FFFFFF; --surface-subtle: #FAFBFC;
+  --border: #e6e8ec; --border-strong: #d0d4dc;
+  --fg: #1f2328; --fg-soft: #4a5058; --fg-muted: #8b939f; --fg-placeholder: #b0b7c0;
+  --neutral-soft: #F2F4F7;
+
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px;
+
+  --sidebar-w: 220px; --radius: 4px;
+  color-scheme: light;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px; line-height: 1.5;
+  color: var(--fg); background: var(--bg);
+  display: flex; min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--fg); color: var(--surface); }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 4px; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* Botões */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid transparent; border-radius: var(--radius);
+  font: inherit; font-size: 13px; font-weight: 500; line-height: 1.4;
+  cursor: pointer; white-space: nowrap;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.btn i { font-size: 11px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
+.btn-primary i { color: #fff; }
+.btn-info { background: var(--info); color: #fff; }
+.btn-info:hover:not(:disabled) { background: var(--info-dark); }
+.btn-info i { color: #fff; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-success:hover:not(:disabled) { background: var(--success-dark); }
+.btn-success i { color: #fff; }
+.btn-warning { background: var(--warning); color: #fff; }
+.btn-warning:hover:not(:disabled) { background: var(--warning-dark); }
+.btn-warning i { color: #fff; }
+.btn-outline { background: var(--surface); color: var(--fg); border-color: var(--border-strong); }
+.btn-outline:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.btn-outline:hover:not(:disabled) i { color: var(--primary); }
+.btn-outline:active:not(:disabled) { background: var(--surface-subtle); }
+.btn-outline i { color: var(--fg-soft); }
+.btn-sm { padding: var(--s-1) var(--s-2); font-size: 12px; }
+.btn-icon { padding: 0; width: 28px; height: 28px; justify-content: center; }
+.btn-block { display: flex; width: 100%; }
+.btn-block + .btn-block { margin-top: var(--s-2); }
+
+/* kbd */
+kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 1px 5px; border: 1px solid var(--border); border-bottom-width: 2px;
+  border-radius: 3px; background: var(--surface);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 10px; font-weight: 500; color: var(--fg-muted); line-height: 1;
+  min-width: 16px; height: 16px;
+}
+
+/* Sidebar */
+.sidebar {
+  width: var(--sidebar-w); background: var(--dark); color: #fff;
+  padding: var(--s-5) 0; height: 100vh; position: fixed; inset: 0 auto 0 0;
+  overflow-y: auto; z-index: 100; display: flex; flex-direction: column;
+}
+.logo {
+  display: flex; align-items: center; gap: var(--s-2);
+  font-size: 15px; font-weight: 700; color: var(--primary); letter-spacing: .5px;
+  padding: 0 var(--s-5) var(--s-5); border-bottom: 1px solid #2a2a2a; margin-bottom: var(--s-4);
+}
+.logo i { color: var(--primary); font-size: 15px; }
+.nav-menu { list-style: none; flex: 1; }
+.nav-menu a {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-3) var(--s-5); font-size: 13px; font-weight: 500; color: #d5d9df;
+  border-left: 3px solid transparent;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+}
+.nav-menu a:hover { background: var(--dark-2); color: var(--primary); }
+.nav-menu a:hover i { color: var(--primary); }
+.nav-menu a.active { background: var(--dark-2); color: var(--primary); border-left-color: var(--primary); }
+.nav-menu a.active i { color: var(--primary); }
+.nav-menu i { width: 16px; text-align: center; font-size: 12px; color: #666; transition: color .2s ease; }
+.user-info {
+  padding: var(--s-4) var(--s-5) 0; border-top: 1px solid #2a2a2a;
+  margin-top: var(--s-4); display: flex; align-items: center; gap: var(--s-3);
+}
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 600; font-size: 12px; flex-shrink: 0;
+}
+.user-details { min-width: 0; flex: 1; }
+.user-name { font-size: 13px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.user-role { font-size: 12px; color: #888; }
+
+/* Main */
+.main-content {
+  flex: 1; margin-left: var(--sidebar-w); padding: var(--s-5);
+  min-width: 0; display: flex; flex-direction: column;
+}
+.page-container { width: 100%; max-width: 1240px; margin: 0 auto; display: flex; flex-direction: column; gap: var(--s-4); }
+.print-header { display: none; }
+
+/* Topbar */
+.topbar {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: var(--s-4); flex-wrap: wrap; padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-left h1 { font-size: 20px; font-weight: 600; letter-spacing: -.005em; line-height: 1.2; }
+.topbar-left .page-subtitle {
+  font-size: 12px; color: var(--fg-muted); margin-top: 2px;
+  display: flex; align-items: center; gap: var(--s-2); flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
+}
+.topbar-left .page-subtitle .sep { color: var(--border); }
+.topbar-left .page-subtitle .hint { display: inline-flex; align-items: center; gap: 4px; }
+.topbar-right { display: flex; align-items: center; gap: var(--s-2); flex-wrap: wrap; }
+
+/* Grid */
+.grid-layout {
+  display: grid; grid-template-columns: minmax(0, 1fr) 340px;
+  gap: var(--s-4); align-items: start;
+}
+.main-col { min-width: 0; display: flex; flex-direction: column; gap: var(--s-4); }
+
+/* Metrics bar */
+.metrics-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.metric {
+  padding: var(--s-3) var(--s-4); display: flex; flex-direction: column; gap: 2px;
+  border-right: 1px solid var(--border); min-width: 0;
+}
+.metric:last-child { border-right: none; }
+.metric-label {
+  font-size: 11px; color: var(--fg-muted); font-weight: 500;
+  text-transform: uppercase; letter-spacing: .5px;
+  display: flex; align-items: center; gap: var(--s-2); line-height: 1.3;
+}
+.metric-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: var(--fg-muted); }
+.metric-value {
+  font-size: 18px; font-weight: 600; color: var(--fg);
+  font-variant-numeric: tabular-nums; line-height: 1.2;
+  letter-spacing: -.005em; word-break: break-word;
+}
+.metric-sub { font-size: 11px; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+
+.metric.is-success .metric-dot { background: var(--success); }
+.metric.is-success .metric-value { color: var(--success-dark); }
+.metric.is-info .metric-dot { background: var(--info); }
+.metric.is-info .metric-value { color: var(--info-dark); }
+.metric.is-warning .metric-dot { background: var(--warning); }
+.metric.is-warning.is-active .metric-value { color: var(--warning-dark); }
+.metric.is-danger .metric-dot { background: var(--primary); }
+.metric.is-danger.is-active .metric-value { color: var(--primary-dark); }
+
+/* Alert banner */
+.alert-banner {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: var(--warning-soft); border: 1px solid rgba(255, 152, 0, 0.35);
+  border-left: 3px solid var(--warning); border-radius: var(--radius);
+  font-size: 13px; color: var(--warning-dark);
+}
+.alert-banner i { font-size: 16px; flex-shrink: 0; }
+.alert-banner strong { font-weight: 600; }
+.alert-banner .alert-banner-action {
+  margin-left: auto; font-size: 12px; font-weight: 500;
+  color: var(--warning-dark); text-decoration: underline;
+}
+.alert-banner .alert-banner-action:hover { color: var(--fg); }
+
+/* Card */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.card-head {
+  padding: var(--s-3) var(--s-4); border-bottom: 1px solid var(--border);
+  background: var(--surface-subtle); display: flex; justify-content: space-between;
+  align-items: center; gap: var(--s-3); flex-wrap: wrap;
+}
+.card-head h3 {
+  font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; gap: var(--s-2);
+}
+.card-head .card-icon {
+  display: inline-flex; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--primary-soft); color: var(--primary);
+  align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0;
+}
+.card-head .card-actions { display: flex; align-items: center; gap: var(--s-2); flex-wrap: wrap; }
+.card-head .card-actions a { font-size: 12px; font-weight: 500; color: var(--primary); }
+.card-head .card-actions a:hover { color: var(--primary-dark); text-decoration: underline; }
+.card-body { padding: var(--s-4); }
+
+/* Chart */
+.chart-summary {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-3);
+  padding: 0 var(--s-4) var(--s-3);
+}
+.chart-summary-item .lbl {
+  font-size: 11px; color: var(--fg-muted); text-transform: uppercase;
+  letter-spacing: .5px; font-weight: 500;
+}
+.chart-summary-item .val {
+  font-size: 15px; font-weight: 600; color: var(--fg);
+  font-variant-numeric: tabular-nums; margin-top: 2px;
+}
+
+.chart-toggle {
+  display: inline-flex; border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.chart-toggle button {
+  background: var(--surface); border: none;
+  padding: var(--s-1) var(--s-3);
+  font: inherit; font-size: 12px; font-weight: 500;
+  color: var(--fg-muted); cursor: pointer;
+  transition: background-color .15s, color .15s;
+}
+.chart-toggle button + button { border-left: 1px solid var(--border); }
+.chart-toggle button:hover { background: var(--surface-subtle); color: var(--fg); }
+.chart-toggle button.active { background: var(--fg); color: #fff; }
+
+.chart-bars {
+  display: flex; align-items: flex-end; gap: var(--s-1);
+  height: 160px; padding: var(--s-4); padding-top: 0;
+}
+.chart-bar-wrap {
+  flex: 1; display: flex; flex-direction: column; justify-content: flex-end;
+  align-items: center; height: 100%; gap: var(--s-1); min-width: 0;
+}
+.chart-bar-value {
+  font-size: 10px; color: var(--fg-muted); font-variant-numeric: tabular-nums;
+  font-weight: 500; white-space: nowrap; visibility: hidden;
+}
+.chart-bar-wrap:hover .chart-bar-value { visibility: visible; }
+.chart-bar-track {
+  width: 100%; max-width: 40px; background: var(--neutral-soft);
+  border-radius: 3px 3px 0 0; overflow: hidden; display: flex;
+  align-items: flex-end; flex: 1; min-height: 4px;
+  transition: background-color .15s;
+}
+.chart-bar-wrap:hover .chart-bar-track { background: var(--border); }
+.chart-bar-fill {
+  width: 100%; background: var(--primary);
+  border-radius: 3px 3px 0 0; transition: height .3s ease; min-height: 2px;
+}
+.chart-bar-wrap.is-today .chart-bar-fill { background: var(--primary-dark); }
+.chart-bar-wrap.is-today .chart-bar-value { visibility: visible; font-weight: 600; color: var(--fg-soft); }
+.chart-bar-label {
+  font-size: 10px; color: var(--fg-muted); font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.chart-bar-wrap.is-today .chart-bar-label { color: var(--fg); font-weight: 600; }
+.chart-bars.is-dense .chart-bar-label { font-size: 9px; }
+.chart-bars.is-dense .chart-bar-track { max-width: none; }
+
+.chart-empty {
+  padding: var(--s-6) var(--s-4); text-align: center; color: var(--fg-muted);
+  font-size: 13px; display: flex; flex-direction: column; align-items: center; gap: var(--s-2);
+}
+.chart-empty i { font-size: 20px; color: var(--border-strong); }
+
+/* Tabela */
+.table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; background: var(--surface); }
+.data-table thead th {
+  text-align: left; padding: var(--s-2) var(--s-4);
+  font-size: 11px; font-weight: 500; color: var(--fg-muted);
+  text-transform: uppercase; letter-spacing: .5px;
+  border-bottom: 1px solid var(--border); background: var(--surface-subtle);
+  white-space: nowrap;
+}
+.data-table tbody td {
+  padding: var(--s-3) var(--s-4); border-bottom: 1px solid var(--border);
+  font-size: 13px; vertical-align: middle;
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr { transition: background-color .1s; }
+.data-table tbody tr:hover td { background: var(--surface-subtle); }
+.data-table td.text-end, .data-table th.text-end { text-align: right; font-variant-numeric: tabular-nums; }
+.data-table td.text-center, .data-table th.text-center { text-align: center; }
+.text-end { text-align: right; }
+.text-center { text-align: center; }
+.text-muted { color: var(--fg-muted); }
+
+/* Sale cells */
+.sale-id { font-family: ui-monospace, Consolas, monospace; font-size: 12px; font-weight: 500; color: var(--fg-soft); }
+.sale-meta { font-size: 11px; color: var(--fg-muted); margin-top: 1px; font-variant-numeric: tabular-nums; }
+.sale-valor { font-size: 13px; font-weight: 600; color: var(--fg); font-variant-numeric: tabular-nums; }
+
+/* Pay method */
+.pay-method {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--fg);
+}
+.pay-method::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--fg-muted); flex-shrink: 0; opacity: .8;
+}
+.pay-dinheiro::before     { background: var(--success); }
+.pay-tpa::before          { background: var(--info); }
+.pay-transferencia::before { background: var(--warning); }
+
+/* Status indicator */
+.status-indicator {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; color: var(--fg-soft);
+}
+.status-indicator .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fg-muted); flex-shrink: 0; }
+.status-indicator.status-ok .dot { background: var(--success); }
+.status-indicator.status-ok { color: var(--success-dark); }
+.status-indicator.status-low .dot { background: var(--warning); }
+.status-indicator.status-low { color: var(--warning-dark); }
+.status-indicator.status-cancelada .dot { background: var(--primary); }
+.status-indicator.status-cancelada { color: var(--primary-dark); }
+
+/* Top produtos */
+.top-prod-list { display: flex; flex-direction: column; gap: var(--s-2); }
+.top-prod-row {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--border);
+}
+.top-prod-row:last-child { border-bottom: none; }
+.top-prod-pos {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--neutral-soft); color: var(--fg-muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.top-prod-pos.pos-1 { background: #FFF3CD; color: #8a6d00; }
+.top-prod-pos.pos-2 { background: #E8EAEC; color: #555; }
+.top-prod-pos.pos-3 { background: #FFE4CC; color: #8a4b1f; }
+.top-prod-info { flex: 1; min-width: 0; }
+.top-prod-name {
+  font-size: 13px; font-weight: 500; color: var(--fg);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.top-prod-meta {
+  font-size: 11px; color: var(--fg-muted); margin-top: 1px;
+  font-variant-numeric: tabular-nums;
+}
+.top-prod-receita {
+  text-align: right; flex-shrink: 0;
+  font-size: 12px; font-weight: 600; color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+.top-prod-bar {
+  margin-top: var(--s-1);
+  height: 3px; background: var(--border);
+  border-radius: 2px; overflow: hidden;
+}
+.top-prod-bar-fill {
+  height: 100%; background: var(--primary); border-radius: 2px;
+}
+
+/* Rank (top funcionários) */
+.rank-list { display: flex; flex-direction: column; gap: var(--s-2); }
+.rank-item {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--border);
+}
+.rank-item:last-child { border-bottom: none; }
+.rank-pos {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--neutral-soft); color: var(--fg-muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.rank-pos.pos-1 { background: #FFF3CD; color: #8a6d00; }
+.rank-pos.pos-2 { background: #E8EAEC; color: #555; }
+.rank-pos.pos-3 { background: #FFE4CC; color: #8a4b1f; }
+.rank-info { flex: 1; min-width: 0; }
+.rank-name {
+  font-size: 13px; font-weight: 500; color: var(--fg);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.rank-meta {
+  font-size: 11px; color: var(--fg-muted); margin-top: 1px;
+  font-variant-numeric: tabular-nums;
+}
+.rank-value {
+  text-align: right; flex-shrink: 0;
+  font-size: 12px; font-weight: 600; color: var(--success-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Maior venda do mês */
+.top-sale {
+  display: flex; flex-direction: column; gap: var(--s-3);
+  padding: var(--s-4);
+  background: linear-gradient(180deg, var(--primary-soft) 0%, var(--surface) 60%);
+  border-radius: var(--radius);
+}
+.top-sale-badge {
+  display: inline-flex; align-items: center; gap: var(--s-2);
+  padding: 2px 8px; background: var(--primary); color: #fff;
+  border-radius: 999px; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .5px;
+  align-self: flex-start;
+}
+.top-sale-badge i { font-size: 9px; }
+.top-sale-value {
+  font-size: 22px; font-weight: 700; color: var(--primary-dark);
+  font-variant-numeric: tabular-nums; line-height: 1.2;
+  letter-spacing: -.01em;
+}
+.top-sale-meta {
+  display: flex; flex-direction: column; gap: 2px;
+  font-size: 12px; color: var(--fg-soft);
+  font-variant-numeric: tabular-nums;
+}
+.top-sale-meta .row {
+  display: flex; align-items: center; gap: var(--s-2); flex-wrap: wrap;
+}
+.top-sale-meta .row strong { color: var(--fg); font-weight: 500; }
+.top-sale-meta .sep { color: var(--border-strong); }
+
+/* Empty */
+.empty {
+  padding: var(--s-5) var(--s-4); text-align: center; color: var(--fg-muted);
+  font-size: 13px; display: flex; flex-direction: column; align-items: center; gap: var(--s-2);
+}
+.empty-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--info-soft); color: var(--info);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.empty-icon.is-warning { background: var(--warning-soft); color: var(--warning); }
+.empty-icon.is-success { background: var(--success-soft); color: var(--success); }
+
+/* Side panel */
+.side-panel { position: sticky; top: var(--s-5); display: flex; flex-direction: column; gap: var(--s-3); }
+
+/* Caixa */
+.caixa-status { display: flex; flex-direction: column; gap: var(--s-3); }
+.caixa-status-head {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s-2);
+}
+.caixa-status-indicator {
+  display: inline-flex; align-items: center; gap: var(--s-2);
+  font-size: 12px; font-weight: 600;
+}
+.caixa-status-indicator .dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+}
+.caixa-status-indicator.is-open { color: var(--success-dark); }
+.caixa-status-indicator.is-open .dot { background: var(--success); }
+.caixa-status-indicator.is-closed { color: var(--fg-muted); }
+.caixa-status-indicator.is-closed .dot { background: var(--fg-muted); }
+.caixa-numero { font-family: ui-monospace, Consolas, monospace; font-size: 13px; font-weight: 500; color: var(--fg-soft); }
+.caixa-saldo {
+  padding: var(--s-3); background: var(--surface-subtle);
+  border-radius: var(--radius); text-align: center;
+}
+.caixa-saldo .lbl {
+  font-size: 11px; color: var(--fg-muted); text-transform: uppercase;
+  letter-spacing: .5px; font-weight: 500;
+}
+.caixa-saldo .val {
+  font-size: 20px; font-weight: 700; color: var(--primary-dark);
+  font-variant-numeric: tabular-nums; margin-top: var(--s-1); line-height: 1.2;
+}
+
+/* Pagamentos */
+.pay-list { display: flex; flex-direction: column; gap: var(--s-3); }
+.pay-row { display: flex; flex-direction: column; gap: var(--s-1); }
+.pay-row-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s-2); font-size: 13px;
+}
+.pay-row-head .pay-label { display: flex; align-items: center; gap: var(--s-2); font-weight: 500; color: var(--fg); }
+.pay-row-head .pay-pct { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--fg-muted); font-weight: 500; }
+.pay-bar-track { width: 100%; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.pay-bar-fill { height: 100%; border-radius: 2px; }
+.pay-bar-fill.pay-dinheiro { background: var(--success); }
+.pay-bar-fill.pay-tpa      { background: var(--info); }
+.pay-bar-fill.pay-transferencia { background: var(--warning); }
+.pay-row-foot { font-size: 11px; color: var(--fg-muted); font-variant-numeric: tabular-nums; }
+
+/* Stock alertas */
+.stock-alerts { display: flex; flex-direction: column; }
+.stock-alert {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s-2); padding: var(--s-2) 0;
+  border-bottom: 1px solid var(--border); font-size: 13px;
+}
+.stock-alert:last-child { border-bottom: none; }
+.stock-alert-info { min-width: 0; flex: 1; }
+.stock-alert-name { font-weight: 500; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stock-alert-meta { font-size: 11px; color: var(--fg-muted); font-variant-numeric: tabular-nums; margin-top: 1px; }
+.stock-alert-count { font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.stock-alert-count.is-zero { color: var(--primary-dark); }
+.stock-alert-count.is-low { color: var(--warning-dark); }
+
+/* Quick actions */
+.quick-actions { display: flex; flex-direction: column; gap: var(--s-2); }
+
+/* Toast */
+#toast-container {
+  position: fixed; top: var(--s-4); right: var(--s-4); z-index: 2000;
+  display: flex; flex-direction: column; gap: var(--s-2);
+}
+.toast {
+  display: flex; align-items: center; gap: var(--s-2);
+  padding: var(--s-2) var(--s-3); border-radius: var(--radius);
+  background: var(--surface); border: 1px solid var(--border);
+  border-left: 3px solid var(--fg-muted); color: var(--fg);
+  font-size: 13px; font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  animation: fadeIn .15s ease; max-width: 360px;
+}
+.toast i { font-size: 12px; flex-shrink: 0; }
+.toast.success { border-left-color: var(--success); }
+.toast.success i { color: var(--success); }
+.toast.error { border-left-color: var(--primary); }
+.toast.error i { color: var(--primary); }
+.toast.info { border-left-color: var(--info); }
+.toast.info i { color: var(--info); }
+.toast.warning { border-left-color: var(--warning); }
+.toast.warning i { color: var(--warning); }
+
+/* Responsivo */
+@media (max-width: 1100px) { .grid-layout { grid-template-columns: minmax(0, 1fr) 300px; } }
+@media (max-width: 1000px) {
+  .grid-layout { grid-template-columns: 1fr; }
+  .side-panel { position: static; }
+}
+@media (max-width: 900px) {
+  :root { --sidebar-w: 60px; }
+  .sidebar .logo span, .sidebar .nav-menu a span, .sidebar .user-details { display: none; }
+  .sidebar .logo { justify-content: center; padding: 0 0 var(--s-5); gap: 0; }
+  .sidebar .nav-menu a { justify-content: center; padding: var(--s-3); }
+  .sidebar .user-info { justify-content: center; padding: var(--s-3) 0 0; }
+  .main-content { padding: var(--s-3); }
+}
+@media (max-width: 720px) {
+  .metrics-bar { grid-template-columns: 1fr 1fr; }
+  .metric { border-right: none; border-bottom: 1px solid var(--border); }
+  .metric:nth-child(odd) { border-right: 1px solid var(--border); }
+  .metric:last-child { border-bottom: none; }
+  .chart-summary { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .metrics-bar { grid-template-columns: 1fr; }
+  .metric { border-right: none !important; }
+  .topbar-right { width: 100%; }
+  .topbar-right .btn { flex: 1; justify-content: center; }
+  .page-subtitle .hint { display: none; }
+  .chart-summary { grid-template-columns: 1fr; }
+  .alert-banner { flex-wrap: wrap; }
+  .alert-banner .alert-banner-action { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+}
+
+/* Impressão */
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+  html, body {
+    background: #fff !important; display: block !important; font-size: 10pt;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .sidebar, .topbar-right, .side-panel, kbd,
+  .btn, #toast-container, .card-head .card-actions, .chart-toggle,
+  .chart-bar-value, .page-subtitle .hint { display: none !important; }
+  .main-content { margin: 0 !important; padding: 0 !important; }
+  .page-container { max-width: 100%; gap: 12pt; }
+  .grid-layout { display: block; }
+  .main-col { margin-bottom: 12pt; }
+  .print-header {
+    display: flex !important; justify-content: space-between; align-items: flex-start;
+    gap: 20pt; padding-bottom: 8pt; margin-bottom: 12pt;
+    border-bottom: 2pt solid var(--dark); flex-wrap: wrap;
+  }
+  .print-brand-name { font-size: 16pt; font-weight: 700; letter-spacing: .5pt; }
+  .print-brand-sub { font-size: 9pt; color: #555; line-height: 1.4; }
+  .print-meta { text-align: right; font-size: 9pt; line-height: 1.5; color: #333; }
+  .print-meta strong { color: #000; }
+  .topbar { border-bottom: 1pt solid #999; padding-bottom: 6pt; }
+  .topbar-left h1 { font-size: 14pt; }
+  .metrics-bar { page-break-inside: avoid; }
+  .metric-value { font-size: 11pt; }
+  .metric-label { font-size: 8pt; }
+  .card { box-shadow: none !important; break-inside: avoid; }
+  .card-head { background: #f5f5f5 !important; }
+  .data-table thead th { background: var(--dark) !important; color: #fff !important; }
+  .alert-banner { border: 1pt solid #999 !important; }
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar no-print">
+    <div class="logo"><i class="fas fa-globe-americas"></i><span>BOM MUNDO</span></div>
+    <ul class="nav-menu">
+        <li><a href="/dashboard" class="<%= currentPath === '/dashboard' || currentPath === '/' ? 'active' : '' %>"><i class="fas fa-tachometer-alt"></i><span>Painel</span></a></li>
+        <li><a href="/caixa" class="<%= currentPath.startsWith('/caixa') ? 'active' : '' %>"><i class="fas fa-cash-register"></i><span>Caixas</span></a></li>
+        <li><a href="/vendas" class="<%= currentPath.startsWith('/vendas') ? 'active' : '' %>"><i class="fas fa-shopping-cart"></i><span>Vendas</span></a></li>
+        <li><a href="/produtos" class="<%= currentPath.startsWith('/produtos') ? 'active' : '' %>"><i class="fas fa-boxes"></i><span>Estoque</span></a></li>
+        <li><a href="#"><i class="fas fa-users"></i><span>Clientes</span></a></li>
+        <li><a href="#"><i class="fas fa-chart-bar"></i><span>Relatórios</span></a></li>
+        <li><a href="#"><i class="fas fa-cog"></i><span>Config.</span></a></li>
+    </ul>
+    <div class="user-info">
+        <div class="user-avatar"><%= _iniciais %></div>
+        <div class="user-details">
+            <div class="user-name"><%= _op %></div>
+            <div class="user-role">Gerente</div>
+        </div>
+    </div>
+</aside>
+
+<main class="main-content">
+    <div class="page-container">
+
+        <div class="print-header">
+            <div>
+                <div class="print-brand-name">BOM MUNDO</div>
+                <div class="print-brand-sub">Comércio Geral e Prestação de Serviços</div>
+                <div class="print-brand-sub">NIF: 5000000000 · Luanda, Angola</div>
+            </div>
+            <div class="print-meta">
+                <div><strong>Relatório:</strong> Painel principal</div>
+                <div><strong>Emitido:</strong> <span id="printEmitido">—</span></div>
+                <div><strong>Operador:</strong> <%= _op %></div>
+            </div>
+        </div>
+
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h1>Painel principal</h1>
+                <div class="page-subtitle">
+                    <span><%= _agora.toLocaleDateString('pt-AO', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' }) %></span>
+                    <span class="sep">·</span>
+                    <span class="hint"><kbd>Ctrl</kbd>+<kbd>P</kbd> imprimir</span>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <% if (_caixaAberto) { %>
+                    <a href="/vendas/nova" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nova venda
+                    </a>
+                <% } else { %>
+                    <a href="/caixa/abrir" class="btn btn-primary">
+                        <i class="fas fa-lock-open"></i> Abrir caixa
+                    </a>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- ALERTA -->
+        <% if (_alertasStock.length > 0) { %>
+        <div class="alert-banner">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong><%= _alertasStock.length %></strong>
+                <%= _alertasStock.length === 1 ? 'produto precisa' : 'produtos precisam' %> de reposição
+                (<%= _semStockLista.length %> sem stock, <%= _stockBaixoLista.length %> abaixo do mínimo).
+            </div>
+            <a href="/produtos" class="alert-banner-action">Ver estoque</a>
+        </div>
+        <% } %>
+
+        <!-- METRICS -->
+        <div class="metrics-bar">
+            <div class="metric is-success">
+                <div class="metric-label"><span class="metric-dot"></span>Vendas hoje</div>
+                <div class="metric-value"><%= _fmt(_totalHoje) %> Kz</div>
+                <div class="metric-sub"><%= _countHoje %> <%= _countHoje === 1 ? 'venda' : 'vendas' %></div>
+            </div>
+            <div class="metric is-success">
+                <div class="metric-label"><span class="metric-dot"></span>Vendas mês</div>
+                <div class="metric-value"><%= _fmt(_totalMes) %> Kz</div>
+                <div class="metric-sub"><%= _countMes %> vendas · ticket <%= _fmt(_countMes ? _totalMes / _countMes : 0) %> Kz</div>
+            </div>
+            <div class="metric is-info">
+                <div class="metric-label"><span class="metric-dot"></span>Ticket médio hoje</div>
+                <div class="metric-value"><%= _fmt(_ticketHoje) %> Kz</div>
+                <div class="metric-sub">por venda</div>
+            </div>
+            <div class="metric is-info">
+                <div class="metric-label"><span class="metric-dot"></span>Produtos</div>
+                <div class="metric-value"><%= _totalProdutos %></div>
+                <div class="metric-sub"><%= _totalStock %> unidades</div>
+            </div>
+            <div class="metric is-info">
+                <div class="metric-label"><span class="metric-dot" style="background: var(--dark)"></span>Clientes</div>
+                <div class="metric-value"><%= _totalClientes %></div>
+                <div class="metric-sub">registados</div>
+            </div>
+            <div class="metric <%= _semStockLista.length > 0 ? 'is-danger is-active' : '' %>">
+                <div class="metric-label"><span class="metric-dot"></span>Sem stock</div>
+                <div class="metric-value"><%= _semStockLista.length %></div>
+                <div class="metric-sub"><%= _semStockLista.length > 0 ? 'requer reposição' : 'tudo disponível' %></div>
+            </div>
+        </div>
+
+        <!-- GRID -->
+        <div class="grid-layout">
+            <div class="main-col">
+
+                <!-- Chart -->
+                <div class="card">
+                    <div class="card-head">
+                        <h3>
+                            <span class="card-icon"><i class="fas fa-chart-line"></i></span>
+                            Vendas
+                        </h3>
+                        <div class="chart-toggle" role="group" aria-label="Período do gráfico">
+                            <button type="button" data-range="7" class="active">7 dias</button>
+                            <button type="button" data-range="30">30 dias</button>
+                        </div>
+                    </div>
+
+                    <div class="chart-summary">
+                        <div class="chart-summary-item">
+                            <div class="lbl">Hoje</div>
+                            <div class="val"><%= _fmt(_totalHoje) %> Kz</div>
+                        </div>
+                        <div class="chart-summary-item">
+                            <div class="lbl">7 dias</div>
+                            <div class="val"><%= _fmt(_total7) %> Kz</div>
+                        </div>
+                        <div class="chart-summary-item">
+                            <div class="lbl">30 dias</div>
+                            <div class="val"><%= _fmt(_total30) %> Kz</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-bars" id="chartBars" role="img" aria-label="Gráfico de vendas">
+                        <!-- renderizado por JS -->
+                    </div>
+                </div>
+
+                <!-- Top produtos -->
+                <div class="card">
+                    <div class="card-head">
+                        <h3>
+                            <span class="card-icon"><i class="fas fa-trophy"></i></span>
+                            Produtos mais vendidos (mês)
+                        </h3>
+                        <div class="card-actions">
+                            <a href="/produtos">Ver estoque</a>
+                        </div>
+                    </div>
+
+                    <% if (_topProd.length === 0) { %>
+                        <div class="empty">
+                            <div class="empty-icon"><i class="fas fa-box-open"></i></div>
+                            <span>Sem vendas este mês.</span>
+                        </div>
+                    <% } else { %>
+                        <div class="card-body">
+                            <div class="top-prod-list">
+                                <% _topProd.forEach((p, i) => {
+                                    const pct = (_maxProdReceita > 0) ? (p.receita / _maxProdReceita) * 100 : 0;
+                                %>
+                                <div class="top-prod-row">
+                                    <div class="top-prod-pos pos-<%= i + 1 %>"><%= i + 1 %></div>
+                                    <div class="top-prod-info">
+                                        <div class="top-prod-name"><%= p.nome %></div>
+                                        <div class="top-prod-meta"><%= p.qtd %> <%= p.qtd === 1 ? 'unidade' : 'unidades' %> vendidas</div>
+                                        <div class="top-prod-bar">
+                                            <div class="top-prod-bar-fill" style="width: <%= pct %>%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="top-prod-receita"><%= _fmt(p.receita) %> Kz</div>
+                                </div>
+                                <% }); %>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Últimas vendas -->
+                <div class="card">
+                    <div class="card-head">
+                        <h3>
+                            <span class="card-icon"><i class="fas fa-receipt"></i></span>
+                            Últimas vendas
+                        </h3>
+                        <div class="card-actions">
+                            <a href="/vendas">Ver todas</a>
+                        </div>
+                    </div>
+
+                    <% if (_ultimasVendas.length === 0) { %>
+                        <div class="empty">
+                            <div class="empty-icon"><i class="fas fa-receipt"></i></div>
+                            <span>Sem vendas registadas.</span>
+                            <% if (_caixaAberto) { %>
+                                <a href="/vendas/nova" class="btn btn-primary btn-sm" style="margin-top: var(--s-2);">
+                                    <i class="fas fa-plus"></i> Registar venda
+                                </a>
+                            <% } %>
+                        </div>
+                    <% } else { %>
+                        <div class="table-wrap">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px;">Venda</th>
+                                        <th>Data / hora</th>
+                                        <th>Funcionário</th>
+                                        <th>Pagamento</th>
+                                        <th class="text-end" style="width: 130px;">Valor</th>
+                                        <th class="text-center" style="width: 100px;">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% _ultimasVendas.forEach(v => {
+                                        const forma = v.forma_pagamento || 'outro';
+                                        const info = _formasLabel[forma] || { nome: forma, classe: '' };
+                                        const st = (v.status || 'pendente').toLowerCase();
+                                        const stLabel = st === 'concluida' ? 'Concluída' : (st === 'cancelada' ? 'Cancelada' : 'Pendente');
+                                        const stClass = st === 'concluida' ? 'status-ok' : (st === 'cancelada' ? 'status-cancelada' : 'status-low');
+                                    %>
+                                    <tr>
+                                        <td><span class="sale-id">#<%= v.id %></span></td>
+                                        <td><div class="sale-meta"><%= _dataHoraCurta(v.data_venda) %></div></td>
+                                        <td><%= (v.Funcionario && v.Funcionario.nome) ? v.Funcionario.nome : '—' %></td>
+                                        <td><span class="pay-method <%= info.classe %>"><%= info.nome %></span></td>
+                                        <td class="text-end"><span class="sale-valor"><%= _fmt(v._liq) %> Kz</span></td>
+                                        <td class="text-center">
+                                            <span class="status-indicator <%= stClass %>">
+                                                <span class="dot"></span><%= stLabel %>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } %>
+                </div>
+
+            </div>
+
+            <!-- SIDE -->
+            <aside class="side-panel no-print">
+
+                <!-- Caixa -->
+                <div class="card">
+                    <div class="card-head">
+                        <h3><i class="fas fa-cash-register"></i> Caixa</h3>
+                    </div>
+                    <div class="card-body">
+                        <% if (_caixaAberto) { %>
+                            <div class="caixa-status">
+                                <div class="caixa-status-head">
+                                    <span class="caixa-status-indicator is-open">
+                                        <span class="dot"></span> Em operação
+                                    </span>
+                                    <span class="caixa-numero">#<%= _caixaAberto.id %></span>
+                                </div>
+                                <div class="caixa-saldo">
+                                    <div class="lbl">Saldo actual</div>
+                                    <div class="val"><%= _fmt(_saldoCaixa) %> Kz</div>
+                                </div>
+                                <% if (_caixaAberto.Funcionario && _caixaAberto.Funcionario.nome) { %>
+                                    <div style="font-size: 12px; color: var(--fg-muted);">
+                                        Operador: <strong style="color: var(--fg);"><%= _caixaAberto.Funcionario.nome %></strong>
+                                    </div>
+                                <% } %>
+                                <div style="display: flex; gap: var(--s-2); flex-wrap: wrap;">
+                                    <a href="/caixa/<%= _caixaAberto.id %>" class="btn btn-outline btn-sm" style="flex: 1; justify-content: center;">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </a>
+                                    <a href="/caixa/fechar/<%= _caixaAberto.id %>" class="btn btn-outline btn-sm"
+                                       onclick="return confirm('Fechar o caixa #<%= _caixaAberto.id %>?');"
+                                       style="flex: 1; justify-content: center;">
+                                        <i class="fas fa-lock"></i> Fechar
+                                    </a>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <div class="caixa-status">
+                                <div class="caixa-status-head">
+                                    <span class="caixa-status-indicator is-closed">
+                                        <span class="dot"></span> Sem caixa aberto
+                                    </span>
+                                </div>
+                                <p style="font-size: 12px; color: var(--fg-muted); line-height: 1.5;">
+                                    Abra um caixa para começar a registar vendas.
+                                </p>
+                                <a href="/caixa/abrir" class="btn btn-primary btn-block">
+                                    <i class="fas fa-lock-open"></i> Abrir caixa
+                                </a>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Top funcionários -->
+                <div class="card">
+                    <div class="card-head">
+                        <h3><i class="fas fa-user-tie"></i> Melhores funcionários</h3>
+                        <span class="text-muted" style="font-size: 11px;">mês</span>
+                    </div>
+                    <div class="card-body">
+                        <% if (_topFunc.length === 0) { %>
+                            <div class="empty" style="padding: var(--s-3);">
+                                <span style="font-size: 12px;">Sem vendas este mês.</span>
+                            </div>
+                        <% } else { %>
+                            <div class="rank-list">
+                                <% _topFunc.forEach((f, i) => {
+                                    const pct = _totalMes > 0 ? ((f.total / _totalMes) * 100).toFixed(1) : '0';
+                                %>
+                                <div class="rank-item">
+                                    <div class="rank-pos pos-<%= i + 1 %>"><%= i + 1 %></div>
+                                    <div class="rank-info">
+                                        <div class="rank-name"><%= f.nome %></div>
+                                        <div class="rank-meta"><%= f.count %> <%= f.count === 1 ? 'venda' : 'vendas' %> · <%= pct %>% do total</div>
+                                    </div>
+                                    <div class="rank-value"><%= _fmt(f.total) %> Kz</div>
+                                </div>
+                                <% }); %>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Maior venda -->
+                <% if (_maiorVenda) { %>
+                <div class="card">
+                    <div class="card-head">
+                        <h3><i class="fas fa-crown"></i> Maior venda do mês</h3>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        <div class="top-sale">
+                            <div class="top-sale-badge">
+                                <i class="fas fa-crown"></i> Recorde
+                            </div>
+                            <div class="top-sale-value"><%= _fmt(_maiorVenda._liq) %> Kz</div>
+                            <div class="top-sale-meta">
+                                <div class="row">
+                                    <span>#<%= _maiorVenda.id %></span>
+                                    <span class="sep">·</span>
+                                    <span><%= _dataHoraCurta(_maiorVenda.data_venda) %></span>
+                                </div>
+                                <div class="row">
+                                    <span>Funcionário:</span>
+                                    <strong><%= (_maiorVenda.Funcionario && _maiorVenda.Funcionario.nome) || '—' %></strong>
+                                </div>
+                                <% if (_maiorVenda.Cliente && _maiorVenda.Cliente.nome) { %>
+                                    <div class="row">
+                                        <span>Cliente:</span>
+                                        <strong><%= _maiorVenda.Cliente.nome %></strong>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <a href="/vendas/<%= _maiorVenda.id %>" class="btn btn-outline btn-sm btn-block" style="margin-top: var(--s-3);">
+                                <i class="fas fa-eye"></i> Ver detalhes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Pagamentos -->
+                <div class="card">
+                    <div class="card-head">
+                        <h3><i class="fas fa-credit-card"></i> Pagamentos</h3>
+                        <span class="text-muted" style="font-size: 11px;">30 dias</span>
+                    </div>
+                    <div class="card-body">
+                        <% if (_formasOrdenadas.length === 0) { %>
+                            <div class="empty" style="padding: var(--s-3);">
+                                <span style="font-size: 12px;">Sem vendas nos últimos 30 dias.</span>
+                            </div>
+                        <% } else { %>
+                            <div class="pay-list">
+                                <% _formasOrdenadas.forEach(([forma, dados]) => {
+                                    const info = _formasLabel[forma] || { nome: forma, classe: '' };
+                                    const pct = _total30 > 0 ? (dados.total / _total30) * 100 : 0;
+                                %>
+                                <div class="pay-row">
+                                    <div class="pay-row-head">
+                                        <span class="pay-label">
+                                            <span class="pay-method <%= info.classe %>" style="padding: 0;">
+                                                <%= info.nome %>
+                                            </span>
+                                        </span>
+                                        <span class="pay-pct"><%= pct.toFixed(1) %>%</span>
+                                    </div>
+                                    <div class="pay-bar-track">
+                                        <div class="pay-bar-fill <%= info.classe %>" style="width: <%= pct %>%"></div>
+                                    </div>
+                                    <div class="pay-row-foot">
+                                        <%= _fmt(dados.total) %> Kz · <%= dados.count %> <%= dados.count === 1 ? 'venda' : 'vendas' %>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Reposição -->
+                <% if (_alertasStock.length > 0) { %>
+                <div class="card">
+                    <div class="card-head">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Reposição</h3>
+                        <div class="card-actions">
+                            <a href="/produtos">Ver todos</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="stock-alerts">
+                            <% _alertasStock.forEach(p => {
+                                const q = Number(p.quantidade_estoque || 0);
+                                const min = Number(p.quantidade_minima || 5);
+                                const isZero = q <= 0;
+                            %>
+                            <div class="stock-alert">
+                                <div class="stock-alert-info">
+                                    <div class="stock-alert-name"><%= p.nome %></div>
+                                    <div class="stock-alert-meta"><%= q %> / mín <%= min %></div>
+                                </div>
+                                <div class="stock-alert-count <%= isZero ? 'is-zero' : 'is-low' %>">
+                                    <%= isZero ? '0' : q %>
+                                </div>
+                            </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </aside>
+        </div>
+    </div>
+</main>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   DADOS DO SERVIDOR
+   ══════════════════════════════════════════════════════════ */
+window.__CHART_DATA__ = {
+  d7: <%- JSON.stringify(_chart7) %>,
+  d30: <%- JSON.stringify(_chart30) %>,
+  hojeDia: <%- JSON.stringify(_hojeStr) %>
+};
+
+/* ══════════════════════════════════════════════════════════
+   CHART (7 / 30 dias)
+   ══════════════════════════════════════════════════════════ */
+const fmtKz = v => Number(v || 0).toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+let currentRange = 7;
+
+function renderChart(range) {
+  const data = range === 7 ? window.__CHART_DATA__.d7 : window.__CHART_DATA__.d30;
+  const container = document.getElementById('chartBars');
+  if (!container) return;
+
+  const max = Math.max(...data.map(x => x.total), 1);
+  const hoje = window.__CHART_DATA__.hojeDia;
+
+  container.classList.toggle('is-dense', range === 30);
+
+  container.innerHTML = data.map((d, i) => {
+    const pct = (d.total / max) * 100;
+    const isToday = d.dia === hoje;
+    const showLabel = range === 7 || i % 5 === 0 || i === data.length - 1;
+    const labelVis = showLabel ? '' : 'visibility:hidden';
+    return `<div class="chart-bar-wrap ${isToday ? 'is-today' : ''}"
+                 title="${d.labelLonga}: ${fmtKz(d.total)} Kz">
+      <div class="chart-bar-value">${fmtKz(d.total)}</div>
+      <div class="chart-bar-track">
+        <div class="chart-bar-fill" style="height:${Math.max(pct, 2)}%"></div>
+      </div>
+      <div class="chart-bar-label" style="${labelVis}">${d.label}</div>
+    </div>`;
+  }).join('');
+}
+
+document.querySelectorAll('.chart-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.chart-toggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentRange = parseInt(btn.dataset.range, 10);
+    renderChart(currentRange);
+  });
+});
+
+/* Atalhos */
+document.addEventListener('keydown', e => {
+  const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName);
+  if (isTyping) return;
+});
+
+/* Print */
+window.addEventListener('beforeprint', () => {
+  const el = document.getElementById('printEmitido');
+  if (el) el.textContent = new Date().toLocaleString('pt-AO');
+});
+
+/* Init */
+renderChart(7);
+</script>
+
+</body>
+</html>
