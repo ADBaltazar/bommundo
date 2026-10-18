@@ -18,7 +18,7 @@ const pedidoRoutes = require('./routes/pedidos');
 const producaoRoutes = require('./routes/producao');
 
 const app = express();
-
+ 
 // Configuração da view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -58,7 +58,7 @@ app.use('/vendas', vendaRoutes);
 app.use('/caixa', caixaRoutes);
 //app.use('/pedidos', pedidoRoutes);
 //app.use('/producao', producaoRoutes);
-
+  
 // Rota para página não encontrada
 app.use((req, res) => {
   console.log({message:'pagina não encontrada'})

@@ -1,785 +1,1395 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bom Mundo - Acesso ao Sistema</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Bom Mundo — Acesso Empresarial</title>
     <style>
-        /* Reset e configurações gerais */
-        * {
+        *, *::before, *::after {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
+        :root {
+            --bg: #f5f5f4;
+            --surface: #ffffff;
+            --border: #e7e5e4;
+            --border-strong: #d6d3d1;
+            --fg: #1c1917;
+            --fg-muted: #57534e;
+            --fg-subtle: #a8a29e;
+            --primary: #b91c1c;
+            --primary-hover: #991b1b;
+            --brand-bg: #0c0a09;
+            --brand-fg: #fafaf9;
+            --brand-fg-muted: #a8a29e;
+            --brand-border: #292524;
+            --danger: #b91c1c;
+            --success: #15803d;
+            --focus: #b91c1c;
+            --radius: 4px;
+            --radius-lg: 6px;
+            --s-1: 4px;
+            --s-2: 8px;
+            --s-3: 12px;
+            --s-4: 16px;
+            --s-5: 24px;
+            --s-6: 32px;
+            --s-7: 48px;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
         body {
-            background: linear-gradient(135deg, #2E2E2E 0%, #000000 100%);
-            color: #2E2E2E;
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--fg);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
         }
-        
+
         a {
+            color: var(--primary);
             text-decoration: none;
-            color: inherit;
         }
-        
-        .container {
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* ============================================================
+           LAYOUT PRINCIPAL
+           ============================================================ */
+        .shell {
+            display: grid;
+            grid-template-columns: minmax(420px, 5fr) 7fr;
+            min-height: 100vh;
+        }
+
+        @media (max-width: 960px) {
+            .shell {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ============================================================
+           PAINEL INSTITUCIONAL (esquerda)
+           ============================================================ */
+        .brand-panel {
+            background: var(--brand-bg);
+            color: var(--brand-fg);
+            padding: var(--s-6) var(--s-6);
             display: flex;
-            max-width: 1000px;
-            width: 100%;
-            background-color: white;
-            border-radius: 15px;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
             overflow: hidden;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-            min-height: 600px;
         }
-        
-        .welcome-section {
-            flex: 1;
-            background: linear-gradient(rgba(229, 57, 53, 0.9), rgba(198, 40, 40, 0.9)), 
-                        url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 50px;
+
+        .brand-top {
+            display: flex;
+            align-items: center;
+            gap: var(--s-3);
+        }
+
+        .brand-mark {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius);
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .brand-mark svg {
+            width: 18px;
+            height: 18px;
+            fill: #ffffff;
+        }
+
+        .brand-name {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .brand-category {
+            font-size: 12px;
+            color: var(--brand-fg-muted);
+            margin-top: 1px;
+        }
+
+        .brand-middle {
+            max-width: 480px;
+            margin: var(--s-7) 0;
+        }
+
+        .brand-middle h1 {
+            font-size: 26px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            line-height: 1.25;
+            margin-bottom: var(--s-4);
+        }
+
+        .brand-middle p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--brand-fg-muted);
+        }
+
+        /* Visual animado — equivalente profissional a GIF */
+        .brand-visual {
+            margin: var(--s-5) 0;
+            color: var(--brand-fg);
+            position: relative;
+        }
+
+        .brand-visual svg {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+        }
+
+        .network-line {
+            stroke: currentColor;
+            stroke-width: 1;
+            fill: none;
+            opacity: 0.15;
+        }
+
+        .network-node {
+            fill: currentColor;
+            opacity: 0.5;
+            transform-origin: center;
+            animation: nodePulse 4s ease-in-out infinite;
+        }
+
+        .network-node:nth-child(2) { animation-delay: 0.4s; }
+        .network-node:nth-child(3) { animation-delay: 0.8s; }
+        .network-node:nth-child(4) { animation-delay: 1.2s; }
+        .network-node:nth-child(5) { animation-delay: 1.6s; }
+        .network-node:nth-child(6) { animation-delay: 2.0s; }
+        .network-node:nth-child(7) { animation-delay: 2.4s; }
+        .network-node:nth-child(8) { animation-delay: 2.8s; }
+
+        @keyframes nodePulse {
+            0%, 100% { opacity: 0.35; }
+            50%      { opacity: 1; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .network-node { animation: none; opacity: 0.7; }
+        }
+
+        .visual-caption {
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--brand-fg-muted);
+            margin-top: var(--s-3);
+            opacity: 0.7;
+        }
+
+        /* Selos institucionais */
+        .brand-bottom {
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            gap: var(--s-4);
         }
-        
-        .welcome-content h1 {
-            font-size: 36px;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        
-        .welcome-content p {
-            font-size: 18px;
-            margin-bottom: 30px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-        
-        .features {
+
+        .trust-list {
             list-style: none;
-            margin-top: 30px;
-        }
-        
-        .features li {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .features i {
-            margin-right: 10px;
-            color: #FFD700;
-            font-size: 18px;
-        }
-        
-        .auth-section {
-            flex: 1;
-            padding: 50px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            gap: var(--s-2);
+            padding-top: var(--s-4);
+            border-top: 1px solid var(--brand-border);
         }
-        
-        .logo {
-            font-size: 28px;
-            font-weight: 700;
-            color: #E53935;
+
+        .trust-list li {
+            font-size: 12.5px;
+            color: var(--brand-fg-muted);
             display: flex;
             align-items: center;
-            margin-bottom: 30px;
+            gap: var(--s-2);
         }
-        
-        .logo i {
-            margin-right: 10px;
+
+        .trust-list li::before {
+            content: '';
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--brand-fg-muted);
+            flex-shrink: 0;
+            opacity: 0.5;
         }
-        
+
+        .copyright {
+            font-size: 11px;
+            color: var(--brand-fg-muted);
+            opacity: 0.6;
+        }
+
+        @media (max-width: 960px) {
+            .brand-panel {
+                padding: var(--s-5);
+            }
+            .brand-middle {
+                margin: var(--s-5) 0 var(--s-4);
+            }
+            .brand-middle h1 {
+                font-size: 20px;
+            }
+            .brand-visual {
+                display: none;
+            }
+        }
+
+        /* ============================================================
+           PAINEL DE AUTENTICAÇÃO (direita)
+           ============================================================ */
+        .auth-panel {
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--s-6) var(--s-5);
+            overflow-y: auto;
+        }
+
+        .auth-inner {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .auth-header {
+            margin-bottom: var(--s-5);
+        }
+
+        .auth-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: var(--s-2);
+        }
+
+        .auth-header p {
+            font-size: 13.5px;
+            color: var(--fg-muted);
+        }
+
+        /* Separador de abas */
         .auth-tabs {
             display: flex;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #eee;
+            gap: var(--s-5);
+            border-bottom: 1px solid var(--border);
+            margin-bottom: var(--s-5);
         }
-        
+
         .auth-tab {
-            padding: 12px 20px;
+            padding: var(--s-3) 0;
+            margin-bottom: -1px;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--fg-subtle);
             cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-            font-weight: 600;
-            color: #666;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-family: inherit;
+            transition: color 0.15s, border-color 0.15s;
         }
-        
-        .auth-tab.active {
-            border-bottom-color: #E53935;
-            color: #E53935;
-        }
-        
+
         .auth-tab:hover {
-            color: #E53935;
+            color: var(--fg-muted);
         }
-        
+
+        .auth-tab.active {
+            color: var(--fg);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Formulários */
         .auth-form {
             display: none;
         }
-        
+
         .auth-form.active {
             display: block;
-            animation: fadeIn 0.5s ease;
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: var(--s-4);
         }
-        
+
         .form-label {
             display: block;
-            margin-bottom: 8px;
-            color: #2E2E2E;
+            font-size: 12.5px;
             font-weight: 500;
+            color: var(--fg-muted);
+            margin-bottom: var(--s-2);
         }
-        
+
         .form-control {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            padding: var(--s-3) var(--s-3);
+            font-size: 14px;
+            font-family: inherit;
+            color: var(--fg);
+            background: var(--surface);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius);
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
-        
+
         .form-control:focus {
-            border-color: #E53935;
             outline: none;
+            border-color: var(--focus);
+            box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.08);
         }
-        
-        .auth-btn {
-            background-color: #E53935;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            width: 100%;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 10px;
+
+        .form-control::placeholder {
+            color: var(--fg-subtle);
         }
-        
-        .auth-btn:hover {
-            background-color: #c62828;
+
+        .form-control:invalid:not(:placeholder-shown) {
+            border-color: var(--danger);
         }
-        
-        .form-footer {
-            text-align: center;
-            margin-top: 20px;
-            color: #2E2E2E;
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--s-3);
         }
-        
-        .form-footer a {
-            color: #E53935;
-            font-weight: 500;
-            cursor: pointer;
+
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
         }
-        
-        /* File Upload Styles */
-        .file-upload {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-        }
-        
-        .file-upload-input {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-        
-        .file-upload-label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 15px;
-            border: 2px dashed #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .file-upload-label:hover {
-            border-color: #E53935;
-            background-color: #f0f0f0;
-        }
-        
-        .file-upload-label i {
-            margin-right: 10px;
-            color: #666;
-        }
-        
-        .file-preview {
-            margin-top: 15px;
-            text-align: center;
-        }
-        
-        .logo-preview {
-            max-width: 200px;
-            max-height: 200px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            display: none;
-            margin: 0 auto;
-        }
-        
-        .logo-controls {
-            margin-top: 10px;
-            display: none;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .logo-control-btn {
-            padding: 5px 10px;
-            background-color: #2E2E2E;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
+
         .form-check {
             display: flex;
             align-items: flex-start;
-            margin-bottom: 15px;
-        }
-        
-        .form-check-input {
-            margin-right: 10px;
-            margin-top: 3px;
-        }
-        
-        .form-check-label {
-            font-size: 14px;
-            color: #2E2E2E;
-        }
-        
-        .terms-link {
-            color: #E53935;
+            gap: var(--s-2);
+            font-size: 13px;
+            color: var(--fg-muted);
+            line-height: 1.5;
             cursor: pointer;
-            text-decoration: underline;
         }
-        
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
+
+        .form-check input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            margin-top: 2px;
+            accent-color: var(--primary);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .form-check label {
+            cursor: pointer;
+        }
+
+        .form-check a {
+            color: var(--fg);
+            text-decoration: underline;
+            text-decoration-color: var(--border-strong);
+            text-underline-offset: 2px;
+        }
+
+        .form-check a:hover {
+            color: var(--primary);
+            text-decoration-color: var(--primary);
+        }
+
+        /* Botão principal */
+        .btn-primary {
+            display: flex;
             align-items: center;
             justify-content: center;
-            animation: fadeIn 0.3s ease;
-            padding: 20px;
+            gap: var(--s-2);
+            width: 100%;
+            padding: var(--s-3) var(--s-4);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            color: #ffffff;
+            background: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color 0.15s, border-color 0.15s;
         }
-        
-        .modal-content {
-            background-color: white;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 700px;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            animation: slideUp 0.3s ease;
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
         }
-        
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 30px;
-            border-bottom: 1px solid #eee;
-            background-color: #2E2E2E;
-            color: white;
-            border-radius: 10px 10px 0 0;
-        }
-        
-        .modal-title {
-            font-size: 24px;
-            font-weight: 600;
-            color: white;
-        }
-        
-        .modal-close {
+
+        .btn-link {
             background: none;
             border: none;
-            font-size: 24px;
+            padding: 0;
+            font-family: inherit;
+            font-size: 13px;
+            color: var(--fg-muted);
             cursor: pointer;
-            color: white;
-            transition: color 0.3s;
+            text-decoration: underline;
+            text-decoration-color: var(--border-strong);
+            text-underline-offset: 2px;
         }
-        
+
+        .btn-link:hover {
+            color: var(--primary);
+            text-decoration-color: var(--primary);
+        }
+
+        /* Rodapé do form */
+        .form-footer {
+            margin-top: var(--s-4);
+            font-size: 13px;
+            color: var(--fg-muted);
+            text-align: center;
+        }
+
+        /* Secção: campos agrupados */
+        .form-section {
+            margin-bottom: var(--s-5);
+            padding-bottom: var(--s-5);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-section:last-of-type {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .form-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--fg-subtle);
+            margin-bottom: var(--s-3);
+        }
+
+        /* Info box (multiempresa) */
+        .info-box {
+            display: flex;
+            gap: var(--s-3);
+            padding: var(--s-3);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 12.5px;
+            color: var(--fg-muted);
+            line-height: 1.55;
+            margin-bottom: var(--s-4);
+        }
+
+        .info-box svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            fill: var(--fg-subtle);
+        }
+
+        /* Upload de logotipo */
+        .file-upload {
+            position: relative;
+        }
+
+        .file-upload-input {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .file-upload-label {
+            display: flex;
+            align-items: center;
+            gap: var(--s-2);
+            padding: var(--s-3);
+            font-size: 13px;
+            color: var(--fg-muted);
+            background: var(--surface);
+            border: 1px dashed var(--border-strong);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: border-color 0.15s, background-color 0.15s;
+        }
+
+        .file-upload-label:hover {
+            border-color: var(--primary);
+            background: var(--bg);
+        }
+
+        .file-upload-label svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            fill: var(--fg-subtle);
+        }
+
+        .file-upload-label span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-preview {
+            margin-top: var(--s-3);
+            display: none;
+        }
+
+        .file-preview.visible {
+            display: flex;
+            align-items: center;
+            gap: var(--s-3);
+        }
+
+        .file-preview img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--bg);
+        }
+
+        .file-preview-meta {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-preview-name {
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--fg);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-preview-size {
+            font-size: 11.5px;
+            color: var(--fg-subtle);
+        }
+
+        .file-remove {
+            background: none;
+            border: none;
+            padding: var(--s-1);
+            color: var(--fg-subtle);
+            cursor: pointer;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-remove:hover {
+            color: var(--danger);
+            background: var(--bg);
+        }
+
+        .file-remove svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        /* Feedback inline */
+        .form-error {
+            display: none;
+            padding: var(--s-2) var(--s-3);
+            margin-bottom: var(--s-4);
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: var(--radius);
+            font-size: 12.5px;
+            color: var(--danger);
+        }
+
+        .form-error.visible {
+            display: block;
+        }
+
+        .form-success {
+            display: none;
+            padding: var(--s-2) var(--s-3);
+            margin-bottom: var(--s-4);
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: var(--radius);
+            font-size: 12.5px;
+            color: var(--success);
+        }
+
+        .form-success.visible {
+            display: block;
+        }
+
+        /* ============================================================
+           MODAL DE TERMOS
+           ============================================================ */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(12, 10, 9, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: var(--s-4);
+            z-index: 1000;
+        }
+
+        .modal.open {
+            display: flex;
+        }
+
+        .modal-dialog {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 680px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--s-4) var(--s-5);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h3 {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            color: var(--fg-subtle);
+            font-size: 22px;
+            line-height: 1;
+            font-family: inherit;
+        }
+
         .modal-close:hover {
-            color: #E53935;
+            background: var(--bg);
+            color: var(--fg);
         }
-        
+
         .modal-body {
-            padding: 30px;
+            padding: var(--s-5);
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.7;
+            color: var(--fg-muted);
         }
-        
-        .terms-content {
-            font-size: 14px;
-            line-height: 1.6;
+
+        .modal-body h4 {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--fg);
+            margin: var(--s-5) 0 var(--s-2);
         }
-        
-        .terms-content h3 {
-            margin-bottom: 15px;
-            color: #2E2E2E;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
+
+        .modal-body h4:first-child {
+            margin-top: 0;
         }
-        
-        .terms-content h4 {
-            margin: 20px 0 10px 0;
-            color: #E53935;
+
+        .modal-body p {
+            margin-bottom: var(--s-3);
         }
-        
-        .terms-content p {
-            margin-bottom: 15px;
+
+        .modal-body ul {
+            margin: 0 0 var(--s-3) var(--s-5);
         }
-        
-        .terms-content ul {
-            margin-left: 20px;
-            margin-bottom: 15px;
+
+        .modal-body li {
+            margin-bottom: var(--s-1);
         }
-        
-        .terms-content li {
-            margin-bottom: 8px;
+
+        .modal-body strong {
+            color: var(--fg);
+            font-weight: 600;
         }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                max-width: 500px;
-            }
-            
-            .welcome-section {
-                padding: 30px;
-            }
-            
-            .auth-section {
-                padding: 30px;
-            }
-            
-            .welcome-content h1 {
-                font-size: 28px;
-            }
-            
-            .welcome-content p {
-                font-size: 16px;
-            }
+
+        .modal-footer {
+            padding: var(--s-3) var(--s-5);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
         }
-        
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
-            .welcome-section, .auth-section {
-                padding: 20px;
-            }
-            
-            .auth-tabs {
-                flex-direction: column;
-            }
-            
-            .auth-tab {
-                text-align: center;
-                border-bottom: none;
-                border-left: 3px solid transparent;
-            }
-            
-            .auth-tab.active {
-                border-left-color: #E53935;
-                border-bottom-color: transparent;
-            }
+
+        /* Toast (notificação) */
+        .toast-container {
+            position: fixed;
+            top: var(--s-4);
+            right: var(--s-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--s-2);
+            z-index: 2000;
+        }
+
+        .toast {
+            padding: var(--s-3) var(--s-4);
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--fg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            min-width: 260px;
+            max-width: 360px;
+            animation: toastIn 0.2s ease;
+        }
+
+        .toast.success {
+            border-left: 3px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 3px solid var(--danger);
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Seção de Boas-Vindas -->
-        <div class="welcome-section">
-            <div class="welcome-content">
-                <h1>Sistema de Gestão Bom Mundo</h1>
-                <p>Gerencie seu negócio de forma eficiente com nossa plataforma completa de gestão empresarial.</p>
-                
-                <ul class="features">
-                    <li><i class="fas fa-check-circle"></i> Controle completo de estoque</li>
-                    <li><i class="fas fa-check-circle"></i> Gestão de vendas e clientes</li>
-                    <li><i class="fas fa-check-circle"></i> Relatórios financeiros detalhados</li>
-                    <li><i class="fas fa-check-circle"></i> Suporte técnico especializado</li>
-                    <li><i class="fas fa-check-circle"></i> Multiplataforma e responsivo</li>
-                </ul>
+
+<div class="shell">
+
+    <!-- ============================================================
+         PAINEL INSTITUCIONAL
+         ============================================================ -->
+    <aside class="brand-panel">
+        <div class="brand-top">
+            <div class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                </svg>
+            </div>
+            <div>
+                <div class="brand-name">BOM MUNDO</div>
+                <div class="brand-category">Plataforma de Gestão Empresarial</div>
             </div>
         </div>
-        
-        <!-- Seção de Autenticação -->
-        <div class="auth-section">
-            <div class="logo">
-                <i class="fas fa-globe-americas"></i>
-                BOM MUNDO
+
+        <div class="brand-middle">
+            <h1>Gestão integrada para múltiplas empresas, num único ambiente.</h1>
+            <p>Isolamento de dados por organização, controlo de vendas, stock, caixa e relatórios. Construído para operações sérias.</p>
+
+            <div class="brand-visual" aria-hidden="true">
+                <svg viewBox="0 0 480 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Linhas de conexão -->
+                    <g>
+                        <path class="network-line" d="M 60 40 Q 140 90 220 60 T 420 80"/>
+                        <path class="network-line" d="M 40 120 Q 130 100 200 140 T 400 120"/>
+                        <path class="network-line" d="M 100 180 Q 200 140 300 170"/>
+                    </g>
+                    <!-- Nós -->
+                    <g>
+                        <circle class="network-node" cx="60"  cy="40"  r="4"/>
+                        <circle class="network-node" cx="220" cy="60"  r="5"/>
+                        <circle class="network-node" cx="420" cy="80"  r="4"/>
+                        <circle class="network-node" cx="40"  cy="120" r="4"/>
+                        <circle class="network-node" cx="200" cy="140" r="5"/>
+                        <circle class="network-node" cx="400" cy="120" r="4"/>
+                        <circle class="network-node" cx="100" cy="180" r="3"/>
+                        <circle class="network-node" cx="300" cy="170" r="4"/>
+                    </g>
+                </svg>
+                <div class="visual-caption">Operações conectadas em tempo real</div>
             </div>
-            
-            <div class="auth-tabs">
-                <div class="auth-tab active" onclick="alternarFormulario('login')">Login</div>
-                <div class="auth-tab" onclick="alternarFormulario('registro')">Criar Conta</div>
+        </div>
+
+        <div class="brand-bottom">
+            <ul class="trust-list">
+                <li>Arquitectura multiempresa com isolamento total de dados</li>
+                <li>Conforme Lei n.º 22/11 de Protecção de Dados Pessoais</li>
+                <li>Registo de auditoria e rastreabilidade por operação</li>
+            </ul>
+            <div class="copyright">
+                © <span id="ano">2025</span> Bom Mundo · Luanda, Angola
             </div>
-            
-            <!-- Formulário de Login -->
-            <div id="login-form" class="auth-form active">
-                <form id="login-empresa-form" action="/auth/login" method="post">
+        </div>
+    </aside>
+
+    <!-- ============================================================
+         PAINEL DE AUTENTICAÇÃO
+         ============================================================ -->
+    <main class="auth-panel">
+        <div class="auth-inner">
+
+            <header class="auth-header">
+                <h2 id="authTitulo">Entrar na sua conta</h2>
+                <p id="authSubtitulo">Aceda ao ambiente da sua empresa.</p>
+            </header>
+
+            <div class="auth-tabs" role="tablist">
+                <button type="button" class="auth-tab active" role="tab"
+                        aria-selected="true" onclick="alternarFormulario('login')">
+                    Entrar
+                </button>
+                <button type="button" class="auth-tab" role="tab"
+                        aria-selected="false" onclick="alternarFormulario('registo')">
+                    Criar conta empresarial
+                </button>
+            </div>
+
+            <!-- ---------- FORMULÁRIO DE LOGIN ---------- -->
+            <div id="login-form" class="auth-form active" role="tabpanel">
+                <form id="login-empresa-form" action="/auth/login" method="post" novalidate>
+                    <div id="login-error" class="form-error" role="alert"></div>
+
                     <div class="form-group">
-                        <label for="email-empresa" class="form-label">E-mail Corporativo</label>
-                        <input type="email" id="email-empresa" name="email" class="form-control" placeholder="seu.email@empresa.com" required>
+                        <label for="email-empresa" class="form-label">E-mail corporativo</label>
+                        <input type="email" id="email-empresa" name="email"
+                               class="form-control" placeholder="nome@empresa.ao"
+                               required autocomplete="email">
                     </div>
+
                     <div class="form-group">
-                        <label for="senha-empresa" class="form-label">Senha</label>
-                        <input type="password" id="senha-empresa" name="senha" class="form-control" placeholder="Digite sua senha" required>
+                        <label for="senha-empresa" class="form-label">Palavra-passe</label>
+                        <input type="password" id="senha-empresa" name="senha"
+                               class="form-control" placeholder="Introduza a sua palavra-passe"
+                               required autocomplete="current-password">
                     </div>
+
                     <div class="form-group">
-                        <div class="form-check">
-                            <input type="checkbox" id="lembrar" class="form-check-input">
-                            <label for="lembrar" class="form-check-label">Lembrar-me</label>
-                        </div>
+                        <label class="form-check">
+                            <input type="checkbox" id="lembrar" name="lembrar" value="1">
+                            <span>Manter sessão iniciada neste dispositivo</span>
+                        </label>
                     </div>
-                    <button type="submit" class="auth-btn">Entrar no Sistema</button>
+
+                    <button type="submit" class="btn-primary">
+                        Entrar
+                    </button>
+
+                    <div class="form-footer">
+                        <button type="button" class="btn-link" onclick="mostrarRecuperacao()">
+                            Recuperar palavra-passe
+                        </button>
+                    </div>
                 </form>
-                <div class="form-footer">
-                    <p>Problemas com acesso? <a href="#">Recuperar senha</a></p>
-                </div>
             </div>
-            
-            <!-- Formulário de Registo -->
-            <div id="registro-form" class="auth-form">
-                <form id="registro-empresa-form">
-                    <div class="form-group">
-                        <label for="nome-empresa" class="form-label">Nome da Empresa</label>
-                        <input type="text" id="nome-empresa" name="nome_empresa" class="form-control" placeholder="Nome completo da empresa" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="nif-empresa" class="form-label">NIF da Empresa</label>
-                        <input type="text" id="nif-empresa" name="nif" class="form-control" placeholder="Número de Identificação Fiscal" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email-empresa-registro" class="form-label">E-mail Corporativo</label>
-                        <input type="email" id="email-empresa-registro" name="email" class="form-control" placeholder="empresa@exemplo.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="telefone-empresa" class="form-label">Telefone</label>
-                        <input type="tel" id="telefone-empresa" name="telefone" class="form-control" placeholder="+351 XXX XXX XXX" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="senha-empresa-registro" class="form-label">Senha</label>
-                        <input type="password" id="senha-empresa-registro" name="senha" class="form-control" placeholder="Crie uma senha segura" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="confirmar-senha" class="form-label">Confirmar Senha</label>
-                        <input type="password" id="confirmar-senha" name="confirmar_senha" class="form-control" placeholder="Repita a senha" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Logotipo da Empresa</label>
-                        <div class="file-upload">
-                            <input type="file" id="logo-empresa" name="logo" class="file-upload-input" accept="image/*">
-                            <label for="logo-empresa" class="file-upload-label">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <span id="file-label">Clique para fazer upload do logotipo</span>
-                            </label>
+
+            <!-- ---------- FORMULÁRIO DE REGISTO ---------- -->
+            <div id="registo-form" class="auth-form" role="tabpanel">
+                <form id="registo-empresa-form" novalidate>
+
+                    <div class="info-box">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                        </svg>
+                        <div>
+                            Será provisionado um ambiente isolado para a sua empresa. Os dados da sua organização nunca se misturam com outras.
                         </div>
-                        <div class="file-preview">
-                            <img id="logo-preview" class="logo-preview" src="" alt="Pré-visualização do logotipo">
-                            <div id="logo-controls" class="logo-controls">
-                                <button type="button" class="logo-control-btn" onclick="ajustarLogotipo('aumentar')">
-                                    <i class="fas fa-search-plus"></i> Aumentar
-                                </button>
-                                <button type="button" class="logo-control-btn" onclick="ajustarLogotipo('diminuir')">
-                                    <i class="fas fa-search-minus"></i> Diminuir
-                                </button>
-                                <button type="button" class="logo-control-btn" onclick="ajustarLogotipo('reset')">
-                                    <i class="fas fa-undo"></i> Reset
-                                </button>
+                    </div>
+
+                    <div id="registo-error" class="form-error" role="alert"></div>
+                    <div id="registo-success" class="form-success" role="status"></div>
+
+                    <!-- Empresa -->
+                    <div class="form-section">
+                        <div class="form-section-title">Empresa</div>
+
+                        <div class="form-group">
+                            <label for="nome-empresa" class="form-label">Denominação social</label>
+                            <input type="text" id="nome-empresa" name="nome_empresa"
+                                   class="form-control" placeholder="Ex.: Comércio Bom Mundo, Lda."
+                                   required autocomplete="organization">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nif-empresa" class="form-label">NIF</label>
+                                <input type="text" id="nif-empresa" name="nif"
+                                       class="form-control" placeholder="5000000000"
+                                       required inputmode="numeric" maxlength="20">
+                            </div>
+                            <div class="form-group">
+                                <label for="sector-empresa" class="form-label">Sector</label>
+                                <select id="sector-empresa" name="sector" class="form-control" required>
+                                    <option value="">Seleccione</option>
+                                    <option value="retalho">Comércio a retalho</option>
+                                    <option value="grossista">Comércio grossista</option>
+                                    <option value="servicos">Serviços</option>
+                                    <option value="restauracao">Restauração</option>
+                                    <option value="industria">Indústria</option>
+                                    <option value="outro">Outro</option>
+                                </select>
                             </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input type="checkbox" id="aceitar-termos" class="form-check-input" required>
-                            <label for="aceitar-termos" class="form-check-label">
-                                Li e concordo com os <span class="terms-link" onclick="abrirModalTermos()">Termos e Condições</span> de utilização do sistema
-                            </label>
+
+                    <!-- Administrador -->
+                    <div class="form-section">
+                        <div class="form-section-title">Administrador</div>
+
+                        <div class="form-group">
+                            <label for="admin-nome" class="form-label">Nome completo</label>
+                            <input type="text" id="admin-nome" name="admin_nome"
+                                   class="form-control" placeholder="Nome do responsável"
+                                   required autocomplete="name">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email-empresa-registo" class="form-label">E-mail corporativo</label>
+                                <input type="email" id="email-empresa-registo" name="email"
+                                       class="form-control" placeholder="admin@empresa.ao"
+                                       required autocomplete="email">
+                            </div>
+                            <div class="form-group">
+                                <label for="telefone-empresa" class="form-label">Telefone</label>
+                                <input type="tel" id="telefone-empresa" name="telefone"
+                                       class="form-control" placeholder="+244 900 000 000"
+                                       required autocomplete="tel">
+                            </div>
                         </div>
                     </div>
-                    <button type="submit" class="auth-btn">Criar Conta Empresarial</button>
+
+                    <!-- Segurança -->
+                    <div class="form-section">
+                        <div class="form-section-title">Segurança</div>
+
+                        <div class="form-group">
+                            <label for="senha-empresa-registo" class="form-label">Palavra-passe</label>
+                            <input type="password" id="senha-empresa-registo" name="senha"
+                                   class="form-control" placeholder="Mínimo 8 caracteres"
+                                   required autocomplete="new-password" minlength="8">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmar-senha" class="form-label">Confirmar palavra-passe</label>
+                            <input type="password" id="confirmar-senha" name="confirmar_senha"
+                                   class="form-control" placeholder="Repita a palavra-passe"
+                                   required autocomplete="new-password" minlength="8">
+                        </div>
+                    </div>
+
+                    <!-- Logótipo -->
+                    <div class="form-section">
+                        <div class="form-section-title">Logótipo (opcional)</div>
+
+                        <div class="file-upload">
+                            <input type="file" id="logo-empresa" name="logo"
+                                   class="file-upload-input" accept="image/png,image/jpeg,image/svg+xml">
+                            <label for="logo-empresa" class="file-upload-label">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+                                </svg>
+                                <span id="file-label">Escolher ficheiro</span>
+                            </label>
+                        </div>
+
+                        <div class="file-preview" id="file-preview">
+                            <img id="logo-preview" src="" alt="">
+                            <div class="file-preview-meta">
+                                <div class="file-preview-name" id="file-preview-name">—</div>
+                                <div class="file-preview-size" id="file-preview-size">—</div>
+                            </div>
+                            <button type="button" class="file-remove" onclick="removerLogotipo()" title="Remover">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Termos -->
+                    <div class="form-group">
+                        <label class="form-check">
+                            <input type="checkbox" id="aceitar-termos" required>
+                            <span>
+                                Li e aceito os
+                                <a href="#" onclick="abrirModalTermos(); return false;">Termos e Condições</a>
+                                e a Política de Privacidade.
+                            </span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="btnCriarConta">
+                        Criar conta empresarial
+                    </button>
+
+                    <div class="form-footer">
+                        Já tem conta?
+                        <button type="button" class="btn-link" onclick="alternarFormulario('login')">
+                            Entrar
+                        </button>
+                    </div>
                 </form>
             </div>
+
+        </div>
+    </main>
+
+</div>
+
+<!-- ============================================================
+     MODAL — TERMOS E CONDIÇÕES
+     ============================================================ -->
+<div class="modal" id="modal-termos" onclick="if(event.target===this) fecharModalTermos()">
+    <div class="modal-dialog" role="dialog" aria-modal="true">
+        <div class="modal-header">
+            <h3>Termos e Condições de Utilização</h3>
+            <button type="button" class="modal-close" onclick="fecharModalTermos()" aria-label="Fechar">&times;</button>
+        </div>
+        <div class="modal-body">
+            <h4>1. Aceitação dos Termos</h4>
+            <p>Ao criar uma conta na plataforma Bom Mundo, a empresa utilizadora concorda integralmente com estes Termos e Condições. Caso não concorde, não deverá prosseguir com o registo.</p>
+
+            <h4>2. Definições</h4>
+            <ul>
+                <li><strong>Sistema</strong> — plataforma de gestão empresarial Bom Mundo.</li>
+                <li><strong>Utilizador</strong> — pessoa singular ou colectiva titular de uma conta.</li>
+                <li><strong>Conta Empresarial</strong> — ambiente isolado provisionado para cada organização.</li>
+                <li><strong>Dados</strong> — informação introduzida no Sistema pelo Utilizador.</li>
+            </ul>
+
+            <h4>3. Registo e Conta</h4>
+            <p>O Utilizador compromete-se a:</p>
+            <ul>
+                <li>Fornecer informação verdadeira, precisa e completa no registo.</li>
+                <li>Manter actualizados os dados da conta.</li>
+                <li>Manter a confidencialidade das credenciais de acesso.</li>
+                <li>Ser maior de idade ou possuir autorização legal para contratar em nome da empresa.</li>
+            </ul>
+
+            <h4>4. Arquitectura Multiempresa</h4>
+            <p>Cada conta empresarial opera num ambiente logicamente isolado. Os dados de uma organização não são acessíveis a outra, salvo por acções de administração interna expressamente autorizadas pela própria organização.</p>
+
+            <h4>5. Licença de Utilização</h4>
+            <p>A Bom Mundo concede ao Utilizador uma licença limitada, não exclusiva, intransmissível e revogável para utilização do Sistema, nos termos destes Termos.</p>
+
+            <h4>6. Restrições</h4>
+            <p>O Utilizador compromete-se a não:</p>
+            <ul>
+                <li>Utilizar o Sistema para fins ilícitos ou não autorizados.</li>
+                <li>Copiar, modificar ou redistribuir o Sistema sem autorização escrita.</li>
+                <li>Tentar aceder a áreas restritas ou a dados de outras organizações.</li>
+                <li>Interferir com a segurança ou o normal funcionamento da plataforma.</li>
+                <li>Partilhar credenciais com terceiros fora da sua organização.</li>
+            </ul>
+
+            <h4>7. Propriedade Intelectual</h4>
+            <p>Todo o conteúdo do Sistema — incluindo software, design, marcas, textos e gráficos — é propriedade da Bom Mundo ou dos seus licenciantes, protegido pela legislação aplicável.</p>
+
+            <h4>8. Dados do Utilizador</h4>
+            <p>O Utilizador mantém a titularidade plena sobre os seus dados. A Bom Mundo processa esses dados exclusivamente para a prestação do serviço contratado, em conformidade com a Lei n.º 22/11 de Protecção de Dados Pessoais.</p>
+
+            <h4>9. Limitação de Responsabilidade</h4>
+            <p>O Sistema é fornecido "no estado em que se encontra". A Bom Mundo não garante funcionamento ininterrupto, ausência de erros ou adequação a finalidades específicas não contratadas.</p>
+
+            <h4>10. Modificações do Serviço</h4>
+            <p>A Bom Mundo reserva-se o direito de modificar, suspender ou descontinuar funcionalidades, com aviso prévio razoável sempre que possível.</p>
+
+            <h4>11. Rescisão</h4>
+            <p>O Utilizador pode cessar a utilização a qualquer momento. A Bom Mundo pode rescindir o acesso em caso de incumprimento destes Termos, mediante notificação.</p>
+
+            <h4>12. Lei Aplicável</h4>
+            <p>Estes Termos regem-se pela lei angolana. Fica eleito o foro da Comarca de Luanda para dirimir quaisquer litígios emergentes.</p>
+
+            <h4>13. Contactos</h4>
+            <p>
+                E-mail: <strong>abprimesoft@gmail.com</strong><br>
+                Telefone: <strong>+244 933 493 238</strong><br>
+                Endereço: Bairro Mbemba Ngango, Rua A, junto à entrada da Escola 17 de Setembro
+            </p>
+
+            <p style="margin-top: var(--s-5); font-size: 12px; color: var(--fg-subtle);">
+                Última actualização: 25 de Outubro de 2025
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-link" onclick="fecharModalTermos()">Fechar</button>
         </div>
     </div>
+</div>
 
-    <!-- Modal de Termos e Condições -->
-    <div id="modal-termos" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Termos e Condições de Utilização</h3>
-                <button class="modal-close" onclick="fecharModalTermos()">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="terms-content">
-                    <h3>Termos e Condições de Utilização do Sistema Bom Mundo</h3>
-                    
-                    <h4>1. Aceitação dos Termos</h4>
-                    <p>Ao registar-se no Sistema de Gestão Bom Mundo, você concorda com estes termos e condições na íntegra. Se não concordar com qualquer parte destes termos, não poderá utilizar o nosso sistema.</p>
-                    
-                    <h4>2. Definições</h4>
-                    <p>Para efeitos destes Termos e Condições:</p>
-                    <ul>
-                        <li><strong>"Sistema"</strong> refere-se ao software de gestão empresarial Bom Mundo;</li>
-                        <li><strong>"Utilizador"</strong> refere-se à pessoa ou empresa que utiliza o Sistema;</li>
-                        <li><strong>"Dados"</strong> refere-se a toda a informação inserida no Sistema pelo Utilizador;</li>
-                        <li><strong>"Conta"</strong> refere-se ao perfil de acesso único criado pelo Utilizador.</li>
-                    </ul>
-                    
-                    <h4>3. Registo e Conta</h4>
-                    <p>Para utilizar o Sistema, o Utilizador deve:</p>
-                    <ul>
-                        <li>Fornecer informações verdadeiras, precisas e completas durante o registo;</li>
-                        <li>Manter e atualizar rapidamente os dados de registo para mantê-los verdadeiros, precisos e completos;</li>
-                        <li>Ser maior de 18 anos ou ter autorização legal para celebrar contratos;</li>
-                        <li>Manter a segurança da sua conta e senha.</li>
-                    </ul>
-                    
-                    <h4>4. Licença de Utilização</h4>
-                    <p>A Bom Mundo concede ao Utilizador uma licença limitada, não exclusiva, não transferível e revogável para utilizar o Sistema de acordo com estes Termos.</p>
-                    
-                    <h4>5. Restrições de Utilização</h4>
-                    <p>O Utilizador compromete-se a não:</p>
-                    <ul>
-                        <li>Utilizar o Sistema para qualquer finalidade ilegal ou não autorizada;</li>
-                        <li>Copiar, modificar ou distribuir o Sistema sem autorização;</li>
-                        <li>Tentar aceder a áreas restritas do Sistema;</li>
-                        <li>Interferir com a segurança ou o funcionamento do Sistema;</li>
-                        <li>Partilhar a sua conta com terceiros.</li>
-                    </ul>
-                    
-                    <h4>6. Propriedade Intelectual</h4>
-                    <p>Todo o conteúdo do Sistema, incluindo mas não limitado a texto, gráficos, logótipos, ícones, imagens, clipes de áudio, downloads digitais e compilações de dados, é propriedade da Bom Mundo ou dos seus fornecedores de conteúdo e está protegido por leis de direitos de autor.</p>
-                    
-                    <h4>7. Dados do Utilizador</h4>
-                    <p>O Utilizador mantém todos os direitos sobre os seus dados. A Bom Mundo apenas processa estes dados para fornecer os serviços contratados e em conformidade com a nossa Política de Privacidade.</p>
-                    
-                    <h4>8. Limitação de Responsabilidade</h4>
-                    <p>O Sistema é fornecido "no estado em que se encontra". A Bom Mundo não garante que:</p>
-                    <ul>
-                        <li>O Sistema atenderá a todos os requisitos do Utilizador;</li>
-                        <li>O funcionamento do Sistema será ininterrupto ou livre de erros;</li>
-                        <li>Quaisquer erros no Sistema serão corrigidos.</li>
-                    </ul>
-                    
-                    <h4>9. Modificações do Serviço</h4>
-                    <p>A Bom Mundo reserva-se o direito de modificar ou descontinuar, temporária ou permanentemente, o Sistema com ou sem aviso prévio. A Bom Mundo não será responsável perante o Utilizador ou qualquer terceiro por qualquer modificação, suspensão ou descontinuação do Sistema.</p>
-                    
-                    <h4>10. Rescisão</h4>
-                    <p>Estes Termos são efectivos até serem rescindidos pelo Utilizador ou pela Bom Mundo. O Utilizador pode rescindir estes Termos a qualquer momento, notificando a Bom Mundo por escrito. A Bom Mundo pode rescindir estes Termos imediatamente, sem aviso prévio, se o Utilizador não cumprir qualquer disposição destes Termos.</p>
-                    
-                    <h4>11. Lei Aplicável</h4>
-                    <p>Estes Termos serão regidos e interpretados de acordo com as leis de Portugal. Qualquer disputa decorrente destes Termos será submetida à jurisdição exclusiva dos tribunais de Lisboa.</p>
-                    
-                    <h4>12. Alterações aos Termos</h4>
-                    <p>A Bom Mundo reserva-se o direito de modificar estes Termos a qualquer momento. As alterações entrarão em vigor imediatamente após a sua publicação no Sistema. O uso continuado do Sistema após tais alterações constitui aceitação dos novos Termos.</p>
-                    
-                    <h4>13. Contactos</h4>
-                    <p>Para questões relacionadas com estes Termos, entre em contacto connosco através de:</p>
-                    <p>Email: abprimesoft@gmail.com<br>
-                    Telefone: +244 933 493 238<br>
-                    Endereço: Bairro Mbemba Nagango, Rua A, Junto a Entrada da Escola 17 de Setembro</p>
-                    
-                    <p><em>Data da última atualização: 25 de Outubro de 2025</em></p>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="toast-container" id="toast-container" aria-live="polite"></div>
 
-    <script>
-        // Variáveis para controle do logotipo
-        let logoScale = 1;
-        const originalLogoSize = { width: 0, height: 0 };
-        
-        // Função para alternar entre formulários
-        function alternarFormulario(tipo) {
-            const loginForm = document.getElementById('login-form');
-            const registroForm = document.getElementById('registro-form');
-            const loginTab = document.querySelectorAll('.auth-tab')[0];
-            const registroTab = document.querySelectorAll('.auth-tab')[1];
-            
-            if (tipo === 'login') {
-                loginForm.classList.add('active');
-                registroForm.classList.remove('active');
-                loginTab.classList.add('active');
-                registroTab.classList.remove('active');
-            } else {
-                loginForm.classList.remove('active');
-                registroForm.classList.add('active');
-                loginTab.classList.remove('active');
-                registroTab.classList.add('active');
-            }
+<script>
+    /* ============================================================
+       ESTADO
+       ============================================================ */
+    const state = {
+        logoFile: null
+    };
+
+    /* ============================================================
+       ANO DINÂMICO
+       ============================================================ */
+    document.getElementById('ano').textContent = new Date().getFullYear();
+
+    /* ============================================================
+       ALTERNAR ENTRE FORMULÁRIOS
+       ============================================================ */
+    function alternarFormulario(tipo) {
+        const isLogin = tipo === 'login';
+
+        document.getElementById('login-form').classList.toggle('active', isLogin);
+        document.getElementById('registo-form').classList.toggle('active', !isLogin);
+
+        const tabs = document.querySelectorAll('.auth-tab');
+        tabs[0].classList.toggle('active', isLogin);
+        tabs[1].classList.toggle('active', !isLogin);
+        tabs[0].setAttribute('aria-selected', isLogin ? 'true' : 'false');
+        tabs[1].setAttribute('aria-selected', !isLogin ? 'true' : 'false');
+
+        document.getElementById('authTitulo').textContent = isLogin
+            ? 'Entrar na sua conta'
+            : 'Criar conta empresarial';
+        document.getElementById('authSubtitulo').textContent = isLogin
+            ? 'Aceda ao ambiente da sua empresa.'
+            : 'Registe uma nova organização na plataforma.';
+
+        // Limpa erros ao mudar de aba
+        document.getElementById('login-error').classList.remove('visible');
+        document.getElementById('registo-error').classList.remove('visible');
+        document.getElementById('registo-success').classList.remove('visible');
+    }
+
+    /* ============================================================
+       MODAL DE TERMOS
+       ============================================================ */
+    function abrirModalTermos() {
+        document.getElementById('modal-termos').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fecharModalTermos() {
+        document.getElementById('modal-termos').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') fecharModalTermos();
+    });
+
+    /* ============================================================
+       UPLOAD DE LOGÓTIPO
+       ============================================================ */
+    document.getElementById('logo-empresa').addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.size > 2 * 1024 * 1024) {
+            toast('O ficheiro excede o limite de 2 MB.', 'error');
+            this.value = '';
+            return;
         }
-        
-        // Função para abrir modal de termos
-        function abrirModalTermos() {
-            document.getElementById('modal-termos').style.display = 'flex';
+
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+            document.getElementById('logo-preview').src = ev.target.result;
+            document.getElementById('file-preview-name').textContent = file.name;
+            document.getElementById('file-preview-size').textContent = formatarTamanho(file.size);
+            document.getElementById('file-preview').classList.add('visible');
+            document.getElementById('file-label').textContent = 'Substituir ficheiro';
+            state.logoFile = file;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    function removerLogotipo() {
+        document.getElementById('logo-empresa').value = '';
+        document.getElementById('logo-preview').src = '';
+        document.getElementById('file-preview').classList.remove('visible');
+        document.getElementById('file-label').textContent = 'Escolher ficheiro';
+        state.logoFile = null;
+    }
+
+    function formatarTamanho(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    /* ============================================================
+       TOAST
+       ============================================================ */
+    function toast(mensagem, tipo) {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        el.className = 'toast ' + (tipo || '');
+        el.textContent = mensagem;
+        container.appendChild(el);
+
+        setTimeout(() => {
+            el.style.transition = 'opacity 0.2s';
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 200);
+        }, 3500);
+    }
+
+    /* ============================================================
+       RECUPERAÇÃO DE PALAVRA-PASSE
+       ============================================================ */
+    function mostrarRecuperacao() {
+        const email = document.getElementById('email-empresa').value.trim();
+
+        if (!email) {
+            document.getElementById('login-error').textContent =
+                'Introduza o e-mail corporativo antes de recuperar a palavra-passe.';
+            document.getElementById('login-error').classList.add('visible');
+            document.getElementById('email-empresa').focus();
+            return;
         }
-        
-        // Função para fechar modal de termos
-        function fecharModalTermos() {
-            document.getElementById('modal-termos').style.display = 'none';
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            document.getElementById('login-error').textContent =
+                'O e-mail introduzido não é válido.';
+            document.getElementById('login-error').classList.add('visible');
+            return;
         }
-        
-        // Preview do logotipo
-        document.getElementById('logo-empresa').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            const preview = document.getElementById('logo-preview');
-            const fileLabel = document.getElementById('file-label');
-            const logoControls = document.getElementById('logo-controls');
-            
-            if (file) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
-                    fileLabel.textContent = file.name;
-                    logoControls.style.display = 'flex';
-                    
-                    // Salvar tamanho original
-                    preview.onload = function() {
-                        originalLogoSize.width = preview.naturalWidth;
-                        originalLogoSize.height = preview.naturalHeight;
-                        logoScale = 1;
-                        aplicarEscalaLogotipo();
-                    };
-                }
-                
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        // Função para ajustar o tamanho do logotipo
-        function ajustarLogotipo(acao) {
-            const preview = document.getElementById('logo-preview');
-            
-            switch(acao) {
-                case 'aumentar':
-                    logoScale = Math.min(logoScale + 0.1, 2); // Máximo 200%
-                    break;
-                case 'diminuir':
-                    logoScale = Math.max(logoScale - 0.1, 0.5); // Mínimo 50%
-                    break;
-                case 'reset':
-                    logoScale = 1;
-                    break;
-            }
-            
-            aplicarEscalaLogotipo();
+
+        document.getElementById('login-error').classList.remove('visible');
+        toast('Se o e-mail estiver registado, receberá instruções de recuperação.', 'success');
+    }
+
+    /* ============================================================
+       SUBMISSÃO DO LOGIN
+       ============================================================ */
+    document.getElementById('login-empresa-form').addEventListener('submit', function (e) {
+        const email = document.getElementById('email-empresa').value.trim();
+        const senha = document.getElementById('senha-empresa').value;
+        const erroEl = document.getElementById('login-error');
+
+        erroEl.classList.remove('visible');
+
+        if (!email || !senha) {
+            e.preventDefault();
+            erroEl.textContent = 'Preencha o e-mail e a palavra-passe.';
+            erroEl.classList.add('visible');
+            return;
         }
-        
-        // Aplicar escala ao logotipo
-        function aplicarEscalaLogotipo() {
-            const preview = document.getElementById('logo-preview');
-            preview.style.width = (originalLogoSize.width * logoScale) + 'px';
-            preview.style.height = (originalLogoSize.height * logoScale) + 'px';
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            e.preventDefault();
+            erroEl.textContent = 'O e-mail introduzido não é válido.';
+            erroEl.classList.add('visible');
+            return;
         }
-        
-        // Adicionar event listeners aos formulários
-        document.addEventListener('DOMContentLoaded', function() {
-            // Login de empresas
-            document.getElementById('login-empresa-form').addEventListener('submit', function(e) {
-                //e.preventDefault();
-                // Simulação de login bem-sucedido
-                //alert('Login realizado com sucesso! Redirecionando para o sistema...');
-                // Em uma implementação real, aqui seria o redirecionamento
-            });
-            
-            // Registro de empresas
-            document.getElementById('registro-empresa-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Validações
-                const senha = document.getElementById('senha-empresa-registro').value;
-                const confirmarSenha = document.getElementById('confirmar-senha').value;
-                const termosAceitos = document.getElementById('aceitar-termos').checked;
-                
-                if (senha !== confirmarSenha) {
-                    alert('As senhas não coincidem!');
-                    return;
-                }
-                
-                if (!termosAceitos) {
-                    alert('É necessário aceitar os Termos e Condições para criar uma conta.');
-                    return;
-                }
-                
-                // Simular sucesso
-                alert('Conta empresarial criada com sucesso! Em breve você receberá um e-mail de confirmação.');
+
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'A entrar…';
+    });
+
+    /* ============================================================
+       SUBMISSÃO DO REGISTO
+       ============================================================ */
+    document.getElementById('registo-empresa-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const erroEl = document.getElementById('registo-error');
+        const sucessoEl = document.getElementById('registo-success');
+        erroEl.classList.remove('visible');
+        sucessoEl.classList.remove('visible');
+
+        const nomeEmpresa = document.getElementById('nome-empresa').value.trim();
+        const nif = document.getElementById('nif-empresa').value.trim();
+        const sector = document.getElementById('sector-empresa').value;
+        const adminNome = document.getElementById('admin-nome').value.trim();
+        const email = document.getElementById('email-empresa-registo').value.trim();
+        const telefone = document.getElementById('telefone-empresa').value.trim();
+        const senha = document.getElementById('senha-empresa-registo').value;
+        const confirmar = document.getElementById('confirmar-senha').value;
+        const termos = document.getElementById('aceitar-termos').checked;
+
+        const falhar = (msg, campoId) => {
+            erroEl.textContent = msg;
+            erroEl.classList.add('visible');
+            if (campoId) document.getElementById(campoId).focus();
+        };
+
+        if (!nomeEmpresa) return falhar('Indique a denominação social da empresa.', 'nome-empresa');
+        if (!nif) return falhar('Indique o NIF da empresa.', 'nif-empresa');
+        if (!sector) return falhar('Seleccione o sector de actividade.', 'sector-empresa');
+        if (!adminNome) return falhar('Indique o nome do administrador.', 'admin-nome');
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) return falhar('O e-mail corporativo não é válido.', 'email-empresa-registo');
+
+        if (!telefone) return falhar('Indique o número de telefone.', 'telefone-empresa');
+
+        if (senha.length < 8) return falhar('A palavra-passe deve ter no mínimo 8 caracteres.', 'senha-empresa-registo');
+        if (senha !== confirmar) return falhar('As palavras-passe não coincidem.', 'confirmar-senha');
+        if (!termos) return falhar('É necessário aceitar os Termos e Condições.');
+
+        const btn = document.getElementById('btnCriarConta');
+        btn.disabled = true;
+        btn.textContent = 'A criar conta…';
+
+        // Simulação — substituir por POST real quando o endpoint estiver pronto
+        setTimeout(() => {
+            sucessoEl.textContent = 'Conta empresarial criada. Verifique o e-mail para confirmar.';
+            sucessoEl.classList.add('visible');
+            toast('Conta criada com sucesso.', 'success');
+            btn.disabled = false;
+            btn.textContent = 'Criar conta empresarial';
+
+            setTimeout(() => {
                 this.reset();
-                document.getElementById('logo-preview').style.display = 'none';
-                document.getElementById('file-label').textContent = 'Clique para fazer upload do logotipo';
-                document.getElementById('logo-controls').style.display = 'none';
+                removerLogotipo();
                 alternarFormulario('login');
-            });
-            
-            // Fechar modal ao clicar fora
-            window.addEventListener('click', function(e) {
-                const modal = document.getElementById('modal-termos');
-                if (e.target === modal) {
-                    fecharModalTermos();
-                }
-            });
-            
-            // Fechar modal com ESC
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    fecharModalTermos();
-                }
-            });
-        });
-    </script>
+            }, 2000);
+        }, 800);
+    });
+
+    /* ============================================================
+       INIT
+       ============================================================ */
+    window.addEventListener('DOMContentLoaded', () => {
+        const emailLogin = document.getElementById('email-empresa');
+        if (emailLogin) setTimeout(() => emailLogin.focus(), 200);
+    });
+</script>
+
 </body>
 </html>

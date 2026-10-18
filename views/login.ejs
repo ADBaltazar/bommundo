@@ -1,19 +1,652 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#1a1a1a">
+<title>Autenticação — Bom Mundo</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --primary:        #E53935;
+  --primary-dark:   #c62828;
+  --success:        #4CAF50;
+  --success-dark:   #2E7D32;
+
+  --dark:           #1a1a1a;
+  --dark-2:         #262626;
+
+  --bg:             #F5F6F8;
+  --surface:        #FFFFFF;
+  --surface-subtle: #FAFBFC;
+  --border:         #e6e8ec;
+  --border-strong:  #d0d4dc;
+  --fg:             #1f2328;
+  --fg-soft:        #4a5058;
+  --fg-muted:       #8b939f;
+  --fg-placeholder: #b0b7c0;
+
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px;
+
+  --radius: 4px;
+  color-scheme: light;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--fg); color: var(--surface); }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: 4px; }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Layout ─── */
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 45% 55%;
+}
+
+/* ─── Brand panel (institucional) ─── */
+.brand-panel {
+  background: var(--dark);
+  color: #fff;
+  padding: var(--s-7) var(--s-6);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+/* linha institucional superior — único acento cromático do painel */
+.brand-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--primary);
+}
+
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.brand-body {
+  margin: var(--s-7) 0;
+  max-width: 380px;
+}
+
+.brand-body h1 {
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -.01em;
+  margin-bottom: var(--s-3);
+}
+
+.brand-body .brand-tagline {
+  font-size: 13px;
+  color: rgba(255,255,255,.6);
+  line-height: 1.65;
+}
+
+.brand-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.trust-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding-top: var(--s-4);
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+
+.trust-item {
+  display: flex;
+  gap: var(--s-2);
+  font-size: 11px;
+  color: rgba(255,255,255,.5);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+}
+
+.trust-item span {
+  color: rgba(255,255,255,.85);
+  font-weight: 500;
+  min-width: 110px;
+  flex-shrink: 0;
+}
+
+.legal {
+  font-size: 10.5px;
+  color: rgba(255,255,255,.35);
+  line-height: 1.6;
+}
+
+/* ─── Form panel ─── */
+.form-panel {
+  background: var(--surface);
+  padding: var(--s-7) var(--s-6);
+  display: flex;
+  flex-direction: column;
+}
+
+.form-wrapper {
+  width: 100%;
+  max-width: 380px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+}
+
+/* Lang switcher */
+.form-header {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  font-size: 12px;
+}
+
+.form-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--fg-muted);
+}
+
+.form-lang a {
+  color: var(--fg-muted);
+  padding: 2px 4px;
+  transition: color .15s;
+}
+.form-lang a:hover { color: var(--fg); }
+.form-lang a.is-active { color: var(--fg); font-weight: 600; }
+.form-lang .sep { color: var(--border-strong); }
+
+/* Title */
+.form-title h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--fg);
+  letter-spacing: -.005em;
+  line-height: 1.25;
+  margin-bottom: var(--s-2);
+}
+
+.form-title p {
+  font-size: 13px;
+  color: var(--fg-muted);
+  line-height: 1.55;
+}
+
+/* Error banner (server-side) */
+.form-error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--primary);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--radius);
+  font-size: 12.5px;
+  color: var(--fg);
+  line-height: 1.5;
+}
+.form-error i { color: var(--primary); font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+/* Form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.field input {
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--fg);
+  caret-color: var(--primary);
+  transition: border-color .15s;
+}
+
+.field input::placeholder {
+  color: var(--fg-placeholder);
+}
+
+.field input:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-color: var(--fg);
+}
+
+.field input:disabled {
+  background: var(--surface-subtle);
+  color: var(--fg-muted);
+  cursor: not-allowed;
+}
+
+.field-with-action {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.field-with-action input {
+  padding-right: 40px;
+}
+
+.field-action {
+  position: absolute;
+  right: var(--s-1);
+  background: none;
+  border: none;
+  padding: var(--s-1) var(--s-2);
+  color: var(--fg-muted);
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 12px;
+  transition: color .15s, background-color .15s;
+}
+.field-action:hover { color: var(--fg); background: var(--surface-subtle); }
+.field-action i { font-size: 12px; }
+
+/* Options */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-3);
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.checkbox-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--fg-soft);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-inline input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  margin: 0;
+}
+
+.link-muted {
+  color: var(--fg-muted);
+  font-weight: 500;
+  transition: color .15s;
+}
+.link-muted:hover { color: var(--primary); }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, color .15s;
+  white-space: nowrap;
+}
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
+.btn-block { display: flex; width: 100%; }
+.btn-lg { padding: var(--s-3) var(--s-4); font-size: 14px; }
+
+/* Loading state */
+.btn.is-loading {
+  color: transparent;
+  pointer-events: none;
+  position: relative;
+}
+.btn.is-loading::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+}
+
+/* Security strip */
+.form-security {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+.form-security i { color: var(--success); font-size: 11px; flex-shrink: 0; }
+
+/* Footer */
+.form-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--fg-muted);
+  line-height: 1.55;
+}
+.form-footer .row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+.form-footer a { color: var(--fg-soft); font-weight: 500; }
+.form-footer a:hover { color: var(--primary); }
+.form-footer .sep { color: var(--border-strong); }
+.form-version {
+  font-family: ui-monospace, Consolas, monospace;
+  color: var(--fg-muted);
+}
+
+/* ─── Responsivo ─── */
+@media (max-width: 900px) {
+  .login-page {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .brand-panel {
+    padding: var(--s-5) var(--s-4);
+  }
+  .brand-body { margin: var(--s-4) 0 0; }
+  .brand-body h1 { font-size: 20px; }
+  .brand-body .brand-tagline { font-size: 12.5px; }
+  .brand-footer { display: none; }
+  .form-panel { padding: var(--s-5) var(--s-4); }
+}
+
+@media (max-width: 480px) {
+  .form-wrapper { gap: var(--s-4); }
+  .form-title h2 { font-size: 20px; }
+  .form-options { flex-direction: column; align-items: flex-start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+</style>
 </head>
 <body>
-    <form action="/login" method="post">
 
-        <h1> Cadastramento principal *** </h1>
-        <input type="text" name="email">
-        <input type="text" name="senha">
-        <button type="submit"> Login </button>
+<div class="login-page">
 
-    </form>
+  <!-- ═══════════════════════════════════════════════════════════
+       PAINEL INSTITUCIONAL
+       ═══════════════════════════════════════════════════════════ -->
+  <aside class="brand-panel" aria-label="Identificação institucional">
+    <div class="brand-header">
+      <div class="brand-mark" aria-hidden="true">BM</div>
+      <div class="brand-name">BOM MUNDO</div>
+    </div>
+
+    <div class="brand-body">
+      <h1>Sistema de Gestão Comercial</h1>
+      <p class="brand-tagline">
+        Plataforma integrada de vendas, stock, tesouraria e contabilidade.
+        Acesso reservado a utilizadores autorizados da organização.
+      </p>
+    </div>
+
+    <div class="brand-footer">
+      <div class="trust-list">
+        <div class="trust-item">
+          <span>NIF</span>
+          <span style="color:rgba(255,255,255,.55)">5000000000</span>
+        </div>
+        <div class="trust-item">
+          <span>Registo Comercial</span>
+          <span style="color:rgba(255,255,255,.55)">LU-2024-00123</span>
+        </div>
+        <div class="trust-item">
+          <span>Sede</span>
+          <span style="color:rgba(255,255,255,.55)">Luanda, Angola</span>
+        </div>
+      </div>
+      <div class="legal">
+        © <%= new Date().getFullYear() %> Bom Mundo — Comércio Geral e Prestação de Serviços.<br>
+        Todos os direitos reservados.
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FORMULÁRIO DE AUTENTICAÇÃO
+       ═══════════════════════════════════════════════════════════ -->
+  <main class="form-panel">
+    <div class="form-wrapper">
+
+      <div class="form-header">
+        <nav class="form-lang" aria-label="Idioma">
+          <a href="?lang=pt" class="is-active" hreflang="pt">PT</a>
+          <span class="sep" aria-hidden="true">·</span>
+          <a href="?lang=en" hreflang="en">EN</a>
+        </nav>
+      </div>
+
+      <div class="form-title">
+        <h2>Autenticação</h2>
+        <p>Introduza as suas credenciais institucionais para aceder ao sistema.</p>
+      </div>
+
+      <%# Erro de autenticação vindo do servidor — EJS %>
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="form-error" role="alert">
+          <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
+          <div><%= error %></div>
+        </div>
+      <% } %>
+
+      <form class="login-form" id="loginForm" action="/login" method="POST" autocomplete="on" novalidate>
+        <input type="hidden" name="_csrf"
+               value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+
+        <div class="field">
+          <label for="email">Endereço de email institucional</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            autocomplete="username"
+            autocapitalize="none"
+            spellcheck="false"
+            placeholder="nome@bomundo.ao"
+            aria-describedby="emailHelp"
+            autofocus>
+        </div>
+
+        <div class="field">
+          <label for="senha">Palavra-passe</label>
+          <div class="field-with-action">
+            <input
+              type="password"
+              id="senha"
+              name="senha"
+              required
+              autocomplete="current-password"
+              minlength="6"
+              aria-describedby="senhaHelp">
+            <button
+              type="button"
+              class="field-action"
+              id="btnToggleSenha"
+              onclick="toggleSenha()"
+              aria-label="Mostrar palavra-passe"
+              tabindex="-1">
+              <i class="fas fa-eye" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-options">
+          <label class="checkbox-inline" for="remember">
+            <input type="checkbox" id="remember" name="remember" value="1">
+            <span>Manter sessão neste dispositivo</span>
+          </label>
+          <a href="/login/recuperar" class="link-muted">Recuperar acesso</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg" id="btnLogin">
+          Entrar no sistema
+        </button>
+      </form>
+
+      <div class="form-security">
+        <i class="fas fa-shield-alt" aria-hidden="true"></i>
+        <span>Ligação encriptada · TLS 1.3 · Acesso monitorizado</span>
+      </div>
+
+      <footer class="form-footer">
+        <div class="row">
+          <span>Suporte: <a href="mailto:suporte@bomundo.ao">suporte@bomundo.ao</a></span>
+          <span>+244 900 000 000</span>
+        </div>
+        <div class="row">
+          <span>
+            <a href="/termos">Termos de utilização</a>
+            <span class="sep" aria-hidden="true">·</span>
+            <a href="/privacidade">Política de privacidade</a>
+          </span>
+          <span class="form-version">v2.4.1</span>
+        </div>
+      </footer>
+
+    </div>
+  </main>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   TOGGLE DE PALAVRA-PASSE
+   ═══════════════════════════════════════════════════════════ */
+function toggleSenha() {
+  const input = document.getElementById('senha');
+  const btn = document.getElementById('btnToggleSenha');
+  const icon = btn.querySelector('i');
+  const isPassword = input.type === 'password';
+
+  input.type = isPassword ? 'text' : 'password';
+  icon.className = isPassword ? 'fas fa-eye-slash' : 'fas fa-eye';
+  btn.setAttribute('aria-label', isPassword ? 'Ocultar palavra-passe' : 'Mostrar palavra-passe');
+  input.focus();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ESTADO DE LOADING NO SUBMIT
+   Evita duplo clique e dá feedback visual imediato.
+   ═══════════════════════════════════════════════════════════ */
+document.getElementById('loginForm').addEventListener('submit', function (e) {
+  const email = document.getElementById('email').value.trim();
+  const senha = document.getElementById('senha').value;
+
+  if (!email || !senha) {
+    e.preventDefault();
+    (!email ? document.getElementById('email') : document.getElementById('senha')).focus();
+    return;
+  }
+
+  const btn = document.getElementById('btnLogin');
+  btn.classList.add('is-loading');
+  btn.disabled = true;
+});
+
+/* ═══════════════════════════════════════════════════════════
+   HIGIENE: caps-lock sobre password não navega
+   ═══════════════════════════════════════════════════════════ */
+document.getElementById('senha').addEventListener('keydown', function (e) {
+  /* apenas garante que Enter no campo de senha submete (comportamento nativo) */
+});
+</script>
 
 </body>
 </html>
